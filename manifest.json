@@ -1,0 +1,51 @@
+{
+  "name": "掘金扩展增强插件",
+  "description": "稀土掘金工程师社区功能增强插件",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background/service.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "css": [
+        "css/common.css"
+      ],
+      "js": [
+        "page/index/main.js"
+      ],
+      "matches": [
+        "https://juejin.cn/*"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/logo.png",
+    "32": "icons/logo.png",
+    "48": "icons/logo.png",
+    "128": "icons/logo.png"
+  },
+  "permissions": [
+    "cookies",
+    "storage",
+    "contextMenus",
+    "tabs",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "1",
+        "enabled": true,
+        "path": "declarative_net_request_rule.json"
+      }
+    ]
+  },
+  "host_permissions": [
+    "https://*.juejin.cn/*",
+    "https://.juejin.cn/*"
+  ]
+}
