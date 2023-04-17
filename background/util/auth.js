@@ -44,11 +44,34 @@ export const signin = async () => {
         headers: {'Content-Type': 'application/json', 'Cookie': cookie},
     }).then(res => res.json());
     let {success, data, err_msg} = handleApiResult(res);
-    await chrome.notifications.create(uuid(), {
+    chrome.notifications.create(uuid(), {
         type: 'basic',
-        title: '掘金签到结果',
-        message: success ? '成功' : '失败',
-        contextMessage: success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg,
+        title: '掘金签到：' + (success ? '成功' : '失败'),
+        message: success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg,
         iconUrl: '/icons/logo.png'
     });
+}
+
+// 收集bug
+export const bugfix = async () => {
+    let cookie = await getCookie();
+    let res = await fetch('https://api.juejin.cn/user_api/v1/bugfix/not_collect', {
+        method: 'POST',
+        headers: {'Cookie': cookie},
+    }).then(res => res.json());
+    let {success, data, err_msg} = handleApiResult(res);
+    chrome.notifications.create(uuid(), {
+        type: 'basic',
+        title: '掘金BugFix：' + (success ? '成功' : '失败'),
+        message: success ? `今日掘金bugfix：${data.length}` : err_msg,
+        iconUrl: '/icons/logo.png'
+    });
+    if (!success) return;
+    data.forEach(bug => {
+        fetch('https://api.juejin.cn/user_api/v1/bugfix/collect', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Cookie': cookie},
+            body: JSON.stringify(bug)
+        })
+    })
 }
