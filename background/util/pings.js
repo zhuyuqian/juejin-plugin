@@ -55,8 +55,17 @@ export const notifyAllTabMessage = async () => {
     let storage = await getPingsStorage();
     let pingsTabs = await chrome.tabs.query({url: `https://juejin.cn/user/${self.user_basic.user_id}/pins`});
     pingsTabs.forEach(tab => {
-        chrome.tabs.sendMessage(tab.id, {from: 'background', event: 'pings-info-change', data: storage});
+        chrome.tabs.sendMessage(tab.id, {from: 'background', event: 'ping-info-change', data: storage});
     })
+}
+
+export const pageUpdateComplete = async (page) => {
+    let self = await getSelfInfo();
+    if (!self || page.url !== `https://juejin.cn/user/${self.user_basic.user_id}/pins`) return;
+    let store = await getPingsStorage();
+    if (store.status === 'normal') {
+        await resetSelfPings();
+    }
 }
 
 // 重置登录人的沸点信息

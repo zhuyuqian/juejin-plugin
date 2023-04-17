@@ -10,10 +10,10 @@
   "content_scripts": [
     {
       "css": [
-        "css/common.css"
+        "page/main.css"
       ],
       "js": [
-        "page/index/main.js"
+        "page/main.js"
       ],
       "matches": [
         "https://juejin.cn/*"
