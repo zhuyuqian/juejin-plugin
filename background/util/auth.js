@@ -1,5 +1,5 @@
 import {resetContextMenus} from "./contextMenus.js";
-import {getCookie, handleApiResult, getAllJueJinTabs} from "./tool.js";
+import {getCookie, handleApiResult, getAllJueJinTabs, uuid} from "./tool.js";
 import {setSelfInfo} from "./storage.js";
 
 export const initAuth = async () => {
@@ -34,4 +34,21 @@ export const resetSelfInfo = async () => {
     if (!userInfo) return await setSelfInfo(null)
     await setSelfInfo(userInfo);
     return userInfo;
+}
+
+// 签到
+export const signin = async () => {
+    let cookie = await getCookie();
+    let res = await fetch('https://api.juejin.cn/growth_api/v1/check_in', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Cookie': cookie},
+    }).then(res => res.json());
+    let {success, data, err_msg} = handleApiResult(res);
+    await chrome.notifications.create(uuid(), {
+        type: 'basic',
+        title: '掘金签到结果',
+        message: success ? '成功' : '失败',
+        contextMessage: success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg,
+        iconUrl: '/icons/logo.png'
+    });
 }

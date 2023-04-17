@@ -74,10 +74,10 @@ const initUrlInfo = () => {
 
 // 初始化所有需要用到的dom节点
 const initCreateElements = () => {
-    let currentElementMap = useElementMap[urlInfo.type];
-    for (let key in currentElementMap) {
-        let element = currentElementMap[key];
-        element.create();
+    for (let pageKey in useElementMap) {
+        for (let key in useElementMap[pageKey]) {
+            useElementMap[pageKey][key].create();
+        }
     }
 }
 
@@ -98,7 +98,7 @@ const insertOrRemoveElement = () => {
         for (let key in currentElementMap) {
             let currentElement = currentElementMap[key];
             currentElement.parent.insertAdjacentElement('afterbegin', currentElement.el);
-            sendMessageToBackground({to: 'background', event: 'dom-insert-complete', info: {key: key}})
+            sendMessageToBackground({to: 'background', event: 'dom-insert-complete', data: {key: key}})
                 .then(res => currentElement.handleInfoChange(res))
         }
     } else {

@@ -33,7 +33,8 @@
     "tabs",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback"
+    "declarativeNetRequestFeedback",
+    "notifications"
   ],
   "declarative_net_request": {
     "rule_resources": [

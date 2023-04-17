@@ -1,5 +1,5 @@
 import {getSelfInfo} from "./storage.js";
-import {logout} from "./auth.js";
+import {logout, signin} from "./auth.js";
 
 export const initContentMenus = async () => {
     await resetContextMenus();
@@ -14,12 +14,9 @@ export const resetContextMenus = async () => {
     // 移除所有菜单先
     await chrome.contextMenus.removeAll();
     // 获取用户信息
-    let userInfo = await getSelfInfo()
-    // 未登录
-    if (!userInfo) {
-        await chrome.contextMenus.create({id: 'OPEN_JUEJIN', title: `打开掘金`, contexts: ['page']});
-    } else {
-        // 已登录
+    let userInfo = await getSelfInfo();
+    // 已登录
+    if (userInfo) {
         await chrome.contextMenus.create({
             id: 'MENU_PARENT',
             title: `${userInfo.user_basic.user_name}的掘金`,
@@ -27,7 +24,11 @@ export const resetContextMenus = async () => {
         });
         await chrome.contextMenus.create({id: 'SELF_HOME', title: '我的主页', parentId: 'MENU_PARENT'})
         await chrome.contextMenus.create({id: 'SELF_NOTIFICATION', title: '我的消息', parentId: 'MENU_PARENT'})
+        await chrome.contextMenus.create({id: 'SIGN_IN', title: '快速签到', parentId: 'MENU_PARENT'})
+        await chrome.contextMenus.create({id: 'separator1', type: 'separator', parentId: 'MENU_PARENT'});
         await chrome.contextMenus.create({id: 'LOGOUT', title: '登出', parentId: 'MENU_PARENT'})
+    } else {
+        await chrome.contextMenus.create({id: 'OPEN_JUEJIN', title: `掘金首页`, contexts: ['page']});
     }
     resetContextMenusIng = false;
 }
@@ -51,5 +52,8 @@ export const onClick = async (info, tab) => {
     }
     if (menuItemId === 'LOGOUT') { // 登出
         await logout();
+    }
+    if (menuItemId === 'SIGN_IN') { // 签到
+        await signin();
     }
 }
