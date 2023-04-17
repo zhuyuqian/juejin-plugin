@@ -1,15 +1,17 @@
 /*
 * 1、清空我的全部沸点功能
 * */
+
 let useElementMap = {
-    USER_HOME_PINS_SELF: {
+    USER_PINS_SELF: {
         REMOVE_ALL_PINGS: {
-            parentSelector: '[type="pins"]',
-            elSelector: '.plugin-remove-button',
-            parent: null,
-            el: null,
+            mastSelector: '[type="pins"]',
+            insert: function () {
+                if (document.querySelector('.plugin-remove-button')) return;
+                document.querySelector('[type="pins"]').insertAdjacentElement('afterbegin', this.create());
+            },
             create: function () {
-                if (this.el) return;
+                if (this.el) return this.el;
                 this.el = document.createElement('div');
                 this.el.className = 'plugin-remove-button';
                 this.el.onclick = async () => {
@@ -18,8 +20,10 @@ let useElementMap = {
                         await sendMessageToBackground({to: 'background', event: 'remove-all-ping'});
                     }
                 }
+                return this.el;
             },
             handleInfoChange: function (pingsInfo) {
+                if (!this.el) return;
                 let {status, list, remove} = pingsInfo;
                 if (status === 'normal' && list.length) {
                     this.el.className = `plugin-remove-button`;
@@ -30,12 +34,40 @@ let useElementMap = {
                     if (!list.length) this.el.innerHTML = `沸点已全部清空`;
                 }
             }
+        },
+    },
+    COMMON: {
+        SPECIAL_FOCUS_USERS: {
+            mastSelector: '#juejin',
+            insert: function () {
+                if (document.querySelector('.plugin-special-focus')) return;
+                document.querySelector('#juejin').insertAdjacentElement('afterbegin', this.create());
+            },
+            create: function () {
+                if (this.el) return this.el;
+                this.el = document.createElement('div');
+                this.el.className = 'plugin-special-focus';
+                let titleDiv = document.createElement('div');
+                titleDiv.className = 'plugin-special-focus-title';
+                titleDiv.innerHTML = '特别关注';
+                let contentDiv = document.createElement('div');
+                contentDiv.className = 'plugin-special-focus-content';
+                this.el.appendChild(titleDiv);
+                this.el.appendChild(contentDiv);
+                return this.el;
+            },
+            handleInfoChange: function (users) {
+                if (!this.el) return;
+                if (!users.length) {
+                    this.el.style.display = 'none';
+                }
+            }
         }
     }
 }
 
 let selfInfo = null;
-let urlInfo = {type: '', url: '', info: {}};
+let urlInfo = {type: [], url: '', info: {}};
 
 // 向后台发送信息
 const sendMessageToBackground = (message) => {
@@ -57,39 +89,34 @@ const initSelfInfo = async () => {
 // 初始化当前url信息
 const initUrlInfo = () => {
     urlInfo.url = window.location.href;
-    if (urlInfo.url.startsWith('https://juejin.cn/user/')) {
-        urlInfo.type = 'USER_HOME';
-        let tempUrl = urlInfo.url.split('https://juejin.cn/user/')[1];
-        let tempParams = tempUrl.split('/');
-        urlInfo.info.userId = tempParams[0];
-        if (tempParams[1] === 'pins') {
-            urlInfo.type = 'USER_HOME_PINS';
-        }
-
-        if (selfInfo && selfInfo.user_basic.user_id === urlInfo.info.userId) {
-            urlInfo.type = `${urlInfo.type}_SELF`;
+    urlInfo.type = ['COMMON']
+    let urlArr = urlInfo.url.split('/');
+    if (urlArr[3] === 'user') {
+        urlInfo.info = {userId: urlArr[4]}
+        if (urlArr[5] === 'pins') {
+            urlInfo.type.push('PINS');
+            if (selfInfo && selfInfo.user_basic.user_id === urlInfo.info.userId) {
+                urlInfo.type.push('USER_PINS_SELF');
+            }
         }
     }
-}
-
-// 初始化所有需要用到的dom节点
-const initCreateElements = () => {
-    for (let pageKey in useElementMap) {
-        for (let key in useElementMap[pageKey]) {
-            useElementMap[pageKey][key].create();
-        }
+    if (urlArr.includes('myclub') || urlArr.includes('club')) {
+        urlInfo.type.push('PINS_CLUB');
+        urlInfo.info = {clubId: urlArr[urlArr.length - 1]}
     }
 }
 
 // 插入或移除节点到父亲节点
 const insertOrRemoveElement = () => {
-    let currentElementMap = useElementMap[urlInfo.type];
+    let currentElementMap = {};
+    urlInfo.type.forEach(type => {
+        Object.assign(currentElementMap, useElementMap[type]);
+    })
     if (!currentElementMap) return;
     let complete = true;
     for (let key in currentElementMap) {
         let currentElement = currentElementMap[key];
-        currentElement.parent = document.querySelector(currentElement.parentSelector);
-        if (!currentElement.el || !currentElement.parent) {
+        if (!document.querySelector(currentElement.mastSelector)) {
             complete = false;
             break
         }
@@ -97,7 +124,7 @@ const insertOrRemoveElement = () => {
     if (complete) {
         for (let key in currentElementMap) {
             let currentElement = currentElementMap[key];
-            currentElement.parent.insertAdjacentElement('afterbegin', currentElement.el);
+            currentElement.insert();
             sendMessageToBackground({to: 'background', event: 'dom-insert-complete', data: {key: key}})
                 .then(res => currentElement.handleInfoChange(res))
         }
@@ -115,17 +142,20 @@ const initOnMessage = async () => {
             insertOrRemoveElement();
         }
         if (event === 'ping-info-change') {
-            useElementMap.USER_HOME_PINS_SELF.REMOVE_ALL_PINGS.handleInfoChange(data)
+            useElementMap.USER_PINS_SELF.REMOVE_ALL_PINGS.handleInfoChange(data)
         }
     })
 
 }
 
 const init = async () => {
+    // 初始化登录人信息
     await initSelfInfo();
+    // 初始化url信息
     initUrlInfo();
-    initCreateElements();
+    // 插入或删除节点
     insertOrRemoveElement();
+    // 初始化监听函数
     await initOnMessage();
 }
 

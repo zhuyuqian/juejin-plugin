@@ -18,3 +18,26 @@
     background: rgba(29, 128, 255, 0.5);
     cursor: not-allowed;
 }
+
+.plugin-special-focus {
+    position: fixed;
+    bottom:100px;
+    right:20px;
+    background: #fff;
+    width: 240px;
+    font-size: 14px;
+    color: #666;
+    border-radius: 4px;
+}
+
+.plugin-special-focus-title {
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(230,230,231,.5);
+}
+
+.plugin-special-focus-content{
+    padding: 10px
+}

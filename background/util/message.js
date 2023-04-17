@@ -1,6 +1,7 @@
 import {resetSelfInfo} from "./auth.js";
 import {getSelfInfo} from "./storage.js";
 import {getPingsStorage, removeSelfAllPings} from "./pings.js";
+import {getSpecialFocusUsers} from "./specialFocus.js";
 
 const onMessageSync = async (request, sender, callback) => {
     let {to, event, data} = request;
@@ -12,6 +13,9 @@ const onMessageSync = async (request, sender, callback) => {
     if (event === 'dom-insert-complete') { // dom插入完毕
         if (data.key === 'REMOVE_ALL_PINGS') {
             callback((await getPingsStorage()))
+        }
+        if (data.key === 'SPECIAL_FOCUS_USERS') {
+            callback((await getSpecialFocusUsers()))
         }
     }
     if (event === 'remove-all-ping') { // 删除全部我的沸点

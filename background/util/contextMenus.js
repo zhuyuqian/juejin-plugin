@@ -20,17 +20,37 @@ export const resetContextMenus = async () => {
         await chrome.contextMenus.create({
             id: 'MENU_PARENT',
             title: `${userInfo.user_basic.user_name}的掘金`,
-            contexts: ['page']
+            contexts: ['all']
         });
-        await chrome.contextMenus.create({id: 'SELF_HOME', title: '我的主页', parentId: 'MENU_PARENT'})
-        await chrome.contextMenus.create({id: 'SELF_NOTIFICATION', title: '我的消息', parentId: 'MENU_PARENT'})
-        await chrome.contextMenus.create({id: 'separator1', type: 'separator', parentId: 'MENU_PARENT'});
-        await chrome.contextMenus.create({id: 'SIGN_IN', title: '快速签到', parentId: 'MENU_PARENT'})
-        await chrome.contextMenus.create({id: 'BUG_FIX', title: '收集BUG', parentId: 'MENU_PARENT'})
-        await chrome.contextMenus.create({id: 'separator2', type: 'separator', parentId: 'MENU_PARENT'});
-        await chrome.contextMenus.create({id: 'LOGOUT', title: '登出', parentId: 'MENU_PARENT'})
+        await chrome.contextMenus.create({
+            id: 'SELF_HOME',
+            title: '我的主页',
+            parentId: 'MENU_PARENT',
+            contexts: ['all']
+        })
+        await chrome.contextMenus.create({
+            id: 'SELF_NOTIFICATION',
+            title: '我的消息',
+            parentId: 'MENU_PARENT',
+            contexts: ['all']
+        })
+        await chrome.contextMenus.create({
+            id: 'separator1',
+            type: 'separator',
+            parentId: 'MENU_PARENT',
+            contexts: ['all']
+        });
+        await chrome.contextMenus.create({id: 'SIGN_IN', title: '快速签到', parentId: 'MENU_PARENT', contexts: ['all']})
+        await chrome.contextMenus.create({id: 'BUG_FIX', title: '收集BUG', parentId: 'MENU_PARENT', contexts: ['all']})
+        await chrome.contextMenus.create({
+            id: 'separator2',
+            type: 'separator',
+            parentId: 'MENU_PARENT',
+            contexts: ['all']
+        });
+        await chrome.contextMenus.create({id: 'LOGOUT', title: '登出', parentId: 'MENU_PARENT', contexts: ['all']})
     } else {
-        await chrome.contextMenus.create({id: 'OPEN_JUEJIN', title: `掘金首页`, contexts: ['page']});
+        await chrome.contextMenus.create({id: 'OPEN_JUEJIN', type: 'normal', title: `掘金首页`, contexts: ['all']});
     }
     resetContextMenusIng = false;
 }
