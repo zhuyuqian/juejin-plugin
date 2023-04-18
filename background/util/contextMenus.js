@@ -1,5 +1,4 @@
-import {getSelfInfo} from "./storage.js";
-import {logout, signin, bugfix} from "./auth.js";
+import { getSelfInfoStorage, logout, signin, bugfix } from "./auth.js";
 
 export const initContentMenus = async () => {
     await resetContextMenus();
@@ -14,12 +13,12 @@ export const resetContextMenus = async () => {
     // 移除所有菜单先
     await chrome.contextMenus.removeAll();
     // 获取用户信息
-    let userInfo = await getSelfInfo();
+    let self = await getSelfInfoStorage();
     // 已登录
-    if (userInfo) {
+    if (self) {
         await chrome.contextMenus.create({
             id: 'MENU_PARENT',
-            title: `${userInfo.user_basic.user_name}的掘金`,
+            title: `${self.user_basic.user_name}的掘金`,
             contexts: ['all']
         });
         await chrome.contextMenus.create({
@@ -40,37 +39,37 @@ export const resetContextMenus = async () => {
             parentId: 'MENU_PARENT',
             contexts: ['all']
         });
-        await chrome.contextMenus.create({id: 'SIGN_IN', title: '快速签到', parentId: 'MENU_PARENT', contexts: ['all']})
-        await chrome.contextMenus.create({id: 'BUG_FIX', title: '收集BUG', parentId: 'MENU_PARENT', contexts: ['all']})
+        await chrome.contextMenus.create({ id: 'SIGN_IN', title: '快速签到', parentId: 'MENU_PARENT', contexts: ['all'] })
+        await chrome.contextMenus.create({ id: 'BUG_FIX', title: '收集BUG', parentId: 'MENU_PARENT', contexts: ['all'] })
         await chrome.contextMenus.create({
             id: 'separator2',
             type: 'separator',
             parentId: 'MENU_PARENT',
             contexts: ['all']
         });
-        await chrome.contextMenus.create({id: 'LOGOUT', title: '登出', parentId: 'MENU_PARENT', contexts: ['all']})
+        await chrome.contextMenus.create({ id: 'LOGOUT', title: '登出', parentId: 'MENU_PARENT', contexts: ['all'] })
     } else {
-        await chrome.contextMenus.create({id: 'OPEN_JUEJIN', type: 'normal', title: `掘金首页`, contexts: ['all']});
+        await chrome.contextMenus.create({ id: 'OPEN_JUEJIN', type: 'normal', title: `掘金首页`, contexts: ['all'] });
     }
     resetContextMenusIng = false;
 }
 
 export const onClick = async (info, tab) => {
-    let userInfo = await getSelfInfo();
-    let {windowId} = tab;
-    let {menuItemId} = info;
+    let self = await getSelfInfoStorage();
+    let { windowId } = tab;
+    let { menuItemId } = info;
     if (menuItemId === 'OPEN_JUEJIN') { // 打开掘金
-        await chrome.tabs.create({url: `https://juejin.cn/`, selected: true, windowId})
+        await chrome.tabs.create({ url: `https://juejin.cn/`, selected: true, windowId })
     }
     if (menuItemId === 'SELF_HOME') { // 我的主页
         await chrome.tabs.create({
-            url: `https://juejin.cn/user/${userInfo.user_basic.user_id}`,
+            url: `https://juejin.cn/user/${self.user_basic.user_id}`,
             selected: true,
             windowId
         });
     }
     if (menuItemId === 'SELF_NOTIFICATION') { // 我的消息
-        await chrome.tabs.create({url: `https://juejin.cn/notification`, selected: true, windowId})
+        await chrome.tabs.create({ url: `https://juejin.cn/notification`, selected: true, windowId })
     }
     if (menuItemId === 'LOGOUT') { // 登出
         await logout();

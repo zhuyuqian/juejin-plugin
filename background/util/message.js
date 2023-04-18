@@ -1,14 +1,12 @@
-import {resetSelfInfo} from "./auth.js";
-import {getSelfInfo} from "./storage.js";
-import {getPingsStorage, removeSelfAllPings} from "./pings.js";
-import {getSpecialFocusUsers} from "./specialFocus.js";
+import { resetSelfInfo } from "./auth.js";
+import { getPingsStorage, removeSelfAllPings } from "./pings.js";
+import { getSpecialFocusUsers } from "./specialFocus.js";
 
 const onMessageSync = async (request, sender, callback) => {
-    let {to, event, data} = request;
+    let { to, event, data } = request;
     if (to !== 'background') return;
     if (event === 'get-self-info') { // 获取我的信息
-        await resetSelfInfo();
-        callback((await getSelfInfo()));
+        callback((await resetSelfInfo()));
     }
     if (event === 'dom-insert-complete') { // dom插入完毕
         if (data.key === 'REMOVE_ALL_PINGS') {
