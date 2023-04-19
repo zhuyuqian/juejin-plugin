@@ -21,23 +21,87 @@
 
 .plugin-special-focus {
     position: fixed;
-    bottom:100px;
-    right:20px;
-    background: #fff;
+    bottom: 100px;
+    right: 20px;
     width: 240px;
+}
+
+.club-hot-user {}
+
+.plugin-card {
+    background: #fff;
     font-size: 14px;
     color: #666;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-.plugin-special-focus-title {
+.plugin-card-title {
     padding: 10px;
     font-size: 16px;
     color: #333;
     font-weight: bold;
-    border-bottom: 1px solid rgba(230,230,231,.5);
+    border-bottom: 1px solid rgba(230, 230, 231, .5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.plugin-special-focus-content{
+.plugin-card-desc {
+    font-size: 12px;
+    color: #999;
+    font-weight: normal;
+}
+
+.plugin-card-content {
     padding: 10px
+}
+
+.club-user-rank .rank-warp {
+    display: flex;
+}
+
+.club-user-rank .rank-box {
+    flex: 1;
+}
+
+.club-user-rank .rank-title {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.club-user-rank .rank-index {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+.club-user-rank .rank-msg-count {
+    font-size: 12px;
+    color: #999;
+    margin-right: 20px;
+}
+
+.club-user-rank .rank-user-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.club-user-rank .rank-user-box:last-child {
+    margin-bottom: 0;
+}
+
+.club-user-rank .rank-user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.club-user-rank .rank-user-name {
+    font-size: 13px;
+    color: #666;
+    margin-left: 10px;
 }

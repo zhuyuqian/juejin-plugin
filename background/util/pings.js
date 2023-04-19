@@ -1,7 +1,7 @@
 // 更新登录人的沸点信息
 import { getStorage, setStorage } from "./storage.js";
-import { getSelfInfoStorage } from "./auth.js";
-import { getCookie, handleApiResult, sleep } from "./tool.js";
+import { getSelfInfoStorage, getUserInfo } from "./auth.js";
+import { getCookie, handleApiResult, sleep, getCurrentWeekFirstTime } from "./tool.js";
 
 
 export const setPingsStorage = async (storage) => {
@@ -94,6 +94,72 @@ export const getUserPings = async (userId) => {
     return success ? (data || []) : []
 }
 
+// 获取某个圈子下面沸点的活跃用户榜单
+// 十分钟内不重新调用接口
+export const getPinClubHotRank = async (clubId) => {
+    let nowTime = new Date().getTime();
+    let storage = await getStorage(`pinclub-hot-rank-${clubId}`);
+    if (storage && (nowTime - storage.time) < (10 * 1000 * 60)) return storage;
+    storage = { time: nowTime, rank: [] }
+    // 获取数据
+    let cookie = await getCookie();
+    let res = await fetch('https://api.juejin.cn/recommend_api/v1/short_msg/topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookie, referer: 'https://juejin.cn/' },
+        body: JSON.stringify({ topic_id: clubId, cursor: '0', id_type: 4, limit: 1000, sort_type: 500 })
+    }).then(res => res.json());
+    let { success, data } = handleApiResult(res);
+    if (!success) return storage;
+    let userMap = {};
+    let targetTime = getCurrentWeekFirstTime();
+    for (let msg of data) {
+        if (msg.msg_Info.ctime * 1000 < targetTime) break;
+        let { user_id } = msg.msg_Info;
+        userMap[user_id] ? userMap[user_id].push(msg) : userMap[user_id] = [msg]
+    }
+    let users = [];
+    for (let userId in userMap) {
+        users.push({ userId, msgs: userMap[userId] })
+    }
+    users.sort((a, b) => b.msgs.length - a.msgs.length);
+    let rank = [];
+    let userIds = [];
+    for (let user of users) {
+        if (!rank.length) {
+            userIds.push(user.userId)
+            rank.push({ msgCount: user.msgs.length, users: [user] })
+        } else {
+            let { msgCount, users } = rank[rank.length - 1];
+            if (user.msgs.length === msgCount) {
+                userIds.push(user.userId)
+                users.push(user)
+            } else {
+                if (rank.length < 3) {
+                    userIds.push(user.userId)
+                    rank.push({ msgCount: user.msgs.length, users: [user] })
+                } else {
+                    break
+                }
+            }
+        }
+    }
+    let userList = await Promise.all(userIds.map(userId => getUserInfo(userId)));
+    userMap = {};
+    for (let user of userList) {
+        userMap[user.user_id] = user;
+    }
+    rank.forEach(r => {
+        r.users.forEach(user => {
+            user.userInfo = userMap[user.userId];
+        })
+    })
+    storage.rank = rank;
+    // 存储数据
+    await setStorage(`pinclub-hot-rank-${clubId}`, storage);
+    return storage
+}
+
+// 初始化pin个相关的
 export const initPings = async () => {
     await resetSelfPings();
 }

@@ -1,5 +1,5 @@
 import { resetSelfInfo } from "./auth.js";
-import { getPingsStorage, removeSelfAllPings } from "./pings.js";
+import { getPinClubHotRank, getPingsStorage, removeSelfAllPings } from "./pings.js";
 import { getSpecialFocusUsers } from "./specialFocus.js";
 
 const onMessageSync = async (request, sender, callback) => {
@@ -14,6 +14,9 @@ const onMessageSync = async (request, sender, callback) => {
         }
         if (data.key === 'SPECIAL_FOCUS_USERS') {
             callback((await getSpecialFocusUsers()))
+        }
+        if (data.key === 'CLUB_HOT_USER') {
+            callback((await getPinClubHotRank(data.clubId)))
         }
     }
     if (event === 'remove-all-ping') { // 删除全部我的沸点

@@ -54,6 +54,13 @@ export const logout = async () => {
     await resetContextMenus();
 }
 
+// 获取用户信息
+export const getUserInfo = async (userId) => {
+    let res = await fetch(`https://api.juejin.cn/user_api/v1/user/get?user_id=${userId}`).then(res => res.json());
+    let { success, data } = handleApiResult(res);
+    return success ? data : null;
+}
+
 // 更新登录人信息
 export const resetSelfInfo = async () => {
     let cookie = await getCookie()
