@@ -15,7 +15,7 @@ const onMessageSync = async (request, sender, callback) => {
         if (data.key === 'SPECIAL_FOCUS_USERS') {
             callback((await getSpecialFocusUsers()))
         }
-        if (data.key === 'CLUB_HOT_USER') {
+        if (data.key === 'PING_CLUB_USER_RANK') {
             callback((await getPinClubHotRank(data.clubId)))
         }
     }
