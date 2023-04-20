@@ -106,3 +106,8 @@
     color: #666;
     margin-left: 10px;
 }
+
+.club-user-rank .rank-user-warp{
+    max-height: 400px;
+    overflow: auto;
+}
