@@ -1,14 +1,13 @@
-/*
-* 1、清空我的全部沸点功能
-* */
+let urlInfo = { methods: [], url: '', info: {} }; // 当前url的相关信息
+let selfInfo = null; // 登录人个人信息
+let selfPings = [] // 登录人的全部沸点
 
-let selfInfo = null;
-let urlInfo = { methods: [], url: '', info: {} };
-
+// 需要做的事情的配置
 let METHOD_MAP = {
-	REMOVE_ALL_PINGS: { // 删除我的全部沸点
+	// 删除我的全部沸点
+	REMOVE_ALL_PINGS: {
 		targetComplete: () => {
-			return !!document.querySelector('[type="pins"]');
+			return document.querySelector('.list-header');
 		},
 		create: function () {
 			if (this.el) return this.el;
@@ -16,35 +15,57 @@ let METHOD_MAP = {
 			this.el.className = 'plugin-remove-button';
 			this.el.onclick = async () => {
 				if (this.el.className.includes('disabled')) return;
-				if (confirm("删除一旦开始，将不能终止，你确定要进行该操作么？")) {
-					await sendMessageToBackground({ to: 'background', event: 'remove-all-ping' });
+				if (confirm("你确定要删除全部沸点么？")) {
+					while (selfPings.length) {
+						let removePing = selfPings.shift();
+						this.change(selfPings, removePing);
+						await sleep(0.1);
+						let { success, err_msg } = await sendMessageToBackground({
+							to: 'background',
+							event: 'remove-ping',
+							data: removePing
+						});
+						if (success) {
+							await sleep(1);
+						} else {
+							selfPings.unshift(removePing);
+							alert(err_msg);
+							break;
+						}
+					}
+					this.change(selfPings, null)
 				}
 			}
 			return this.el;
 		},
 		insert: function () {
 			if (document.querySelector('.plugin-remove-button')) return;
-			document.querySelector('[type="pins"]').insertAdjacentElement('afterbegin', this.create());
+			insertElementAfter(this.create(), this.targetComplete())
 		},
-		change: function (pingsInfo) {
+		change: function (pings, removePing) {
+			selfPings = pings;
 			if (!this.el) return;
-			let { status, list, remove } = pingsInfo;
-			if (status === 'normal' && list.length) {
-				this.el.className = `plugin-remove-button`;
-				this.el.innerHTML = '删除全部沸点';
-			} else {
+			if (removePing) { // 有正在删除的
 				this.el.className = `plugin-remove-button disabled`;
-				if (status === 'removing') this.el.innerHTML = `正在删除${remove?.count}/${list.length}(${remove?.ping?.msg_Info?.content})`;
-				if (!list.length) this.el.innerHTML = `沸点已全部清空`;
+				this.el.innerHTML = `正在删除沸点：${removePing.msg_Info.content.slice(0, 20)}...剩余${pings.length}条`;
+			} else {
+				if (pings.length) {
+					this.el.className = `plugin-remove-button`;
+					this.el.innerHTML = `删除全部沸点（${pings.length}）`;
+				} else {
+					this.el.className = `plugin-remove-button disabled`;
+					this.el.innerHTML = `沸点已全部清空`;
+				}
 			}
 		},
 		remove: function () {
 			removeElBySelector('.plugin-remove-button');
 		}
 	},
-	PING_CLUB_USER_RANK: { // 沸点圈子本周沸物
+	// 沸点圈子本周沸物
+	PING_CLUB_USER_RANK: {
 		targetComplete: () => {
-			return document.querySelector('.pin-editor') || document.querySelector('.create-pin')
+			return document.querySelector('.pin-editor') || document.querySelector('.create-pin');
 		},
 		create: function () {
 			if (this.el) return this.el;
@@ -71,7 +92,7 @@ let METHOD_MAP = {
 		},
 		insert: function () {
 			if (document.querySelector('.club-user-rank')) return;
-			insertElementAfter(this.create(), document.querySelector('.pin-editor') || document.querySelector('.create-pin'));
+			insertElementAfter(this.create(), this.targetComplete());
 		},
 		change: function (rankInfo) {
 			if (!this.el) return;
@@ -128,7 +149,8 @@ let METHOD_MAP = {
 			removeElBySelector('.club-user-rank')
 		}
 	},
-	SPECIAL_FOCUS_USERS: { // 特别关注
+	// 特别关注
+	SPECIAL_FOCUS_USERS: {
 		targetComplete: () => {
 			return document.querySelector('#juejin')
 		},
@@ -161,46 +183,24 @@ let METHOD_MAP = {
 	}
 }
 
-// 插入或移除节点到父亲节点
-const pageChange = () => {
-	let complete = true;
-	for (let methodName of urlInfo.methods) {
-		let method = METHOD_MAP[methodName];
-		if (!method.targetComplete()) {
-			complete = false;
-			break
-		}
-	}
-	if (complete) {
-		for (let methodName in METHOD_MAP) {
-			let method = METHOD_MAP[methodName];
-			if (urlInfo.methods.includes(methodName)) {
-				method.insert();
-				sendMessageToBackground({
-					to: 'background',
-					event: 'dom-insert-complete',
-					data: { key: methodName, ...urlInfo.info }
-				}).then(res => method.change(res))
-			} else {
-				method.remove();
-			}
-		}
-	} else {
-		setTimeout(() => pageChange(), 500)
-	}
-}
-
-// 在指定元素的后面插入元素
+/*
+* 在指定元素的后面插入一个元素
+* */
 function insertElementAfter(newElement, targetElement) {
-	var parent = targetElement.parentNode;
-	if (parent.lastChild == targetElement) {
-		parent.appendChild(newElement);
-	} else {
-		parent.insertBefore(newElement, targetElement.nextSibling);
-	}
+	insertElementBefore(newElement, targetElement.nextElementSibling);
 }
 
-// 通过查询器删除节点
+/*
+* 在指定元素的前面插入一个元素
+* */
+function insertElementBefore(newElement, targetElement) {
+	targetElement.parentNode.insertBefore(newElement, targetElement);
+}
+
+/*
+* 通过查询器删除节点
+* 如果有parent，则在parent中查找，否则在document中查找
+* */
 const removeElBySelector = (selector, parent) => {
 	let p = parent || document;
 	let el = p.querySelector(selector);
@@ -208,7 +208,9 @@ const removeElBySelector = (selector, parent) => {
 	el.parentNode.removeChild(el);
 }
 
-// 向后台发送信息
+/*
+* 向后台发送信息
+* */
 const sendMessageToBackground = (message) => {
 	return new Promise(resFun => {
 		chrome.runtime.sendMessage(message, res => {
@@ -218,47 +220,9 @@ const sendMessageToBackground = (message) => {
 	})
 }
 
-// 初始化登录人信息
-const initSelfInfo = async () => {
-	if (!selfInfo) {
-		selfInfo = await sendMessageToBackground({ to: 'background', event: 'get-self-info' });
-	}
-}
-
-// 初始化当前url信息
-const initUrlInfo = () => {
-	urlInfo.url = window.location.origin + window.location.pathname;
-	urlInfo.methods = ['SPECIAL_FOCUS_USERS']
-	let urlArr = urlInfo.url.split('/');
-	if (urlArr[3] === 'user') {
-		urlInfo.info = { userId: urlArr[4] }
-		if (urlArr[5] === 'pins') {
-			if (selfInfo && selfInfo.user_basic.user_id === urlInfo.info.userId) {
-				urlInfo.methods.push('REMOVE_ALL_PINGS');
-			}
-		}
-	}
-	if (urlArr.includes('myclub') || urlArr.includes('club')) {
-		urlInfo.methods.push('PING_CLUB_USER_RANK');
-		urlInfo.info = { clubId: urlArr[urlArr.length - 1] }
-	}
-}
-
-
-const initOnMessage = async () => {
-	chrome.runtime.onMessage.addListener(async (request, sender, callback) => {
-		let { from, event, data } = request;
-		if (from !== 'background') return;
-		if (event === 'page-change-complete') {
-			initUrlInfo();
-			pageChange();
-		}
-		if (event === 'ping-info-change') {
-			METHOD_MAP.REMOVE_ALL_PINGS.change(data)
-		}
-	})
-}
-
+/*
+* 格式化日期
+* */
 const formatDate = (date, fmt) => {
 	var currentDate = new Date(date);
 	var o = {
@@ -276,17 +240,94 @@ const formatDate = (date, fmt) => {
 	return fmt;
 }
 
-const init = async () => {
-	// 初始化登录人信息
-	await initSelfInfo();
-	// 初始化url信息
-	initUrlInfo();
-	// 插入节点
-	pageChange();
-	// 初始化监听函数
-	await initOnMessage();
+/*
+* 睡眠函数
+* */
+const sleep = (s) => {
+	return new Promise(res => {
+		setTimeout(res, s * 1000)
+	})
 }
 
-init()
 
+/*
+* 当页面发生变化的时候需要做的事情
+* 调用时机：刷新页面 || 页面切换
+* 1、判断所有需要的dom是否准备存在，如果不存在，那么500毫秒后重新获取
+* 2、如果全部dom都准备完成，那么开始执行配置好的insert函数（大部分为创建节点然后插入到原本的dom结构中）
+* 3、执行完成后，通知后端获取该任务对应的数据
+* 4、获取到数据之后，调用对应任务的change方法（大部分为将数据渲染到准备好的节点里面）
+* 5、如果当前页面不存在配置里面的任务，则调用对应任务的remove函数
+* */
+const pageChange = () => {
+	let complete = true;
+	for (let methodName of urlInfo.methods) {
+		let method = METHOD_MAP[methodName];
+		if (!method.targetComplete()) {
+			complete = false;
+			break;
+		}
+	}
+	// 如果需要的dom节点没有准备好，那么500毫秒后继续调用一次
+	if (!complete) return setTimeout(() => pageChange(), 500);
+	// 需要的dom都准备好了，开始执行配置好的事情
+	for (let methodName in METHOD_MAP) {
+		let method = METHOD_MAP[methodName];
+		if (urlInfo.methods.includes(methodName)) {
+			method.insert();
+			sendMessageToBackground({
+				to: 'background',
+				event: 'dom-insert-complete',
+				data: { key: methodName, ...urlInfo.info }
+			}).then(res => method.change(res))
+		} else {
+			method.remove();
+		}
+	}
+}
+
+/*
+* 初始化当前URL信息
+* url：不含任何参数的当前链接
+* methods：最终需要做的哪些事情
+* */
+const initUrlInfo = () => {
+	urlInfo.url = window.location.origin + window.location.pathname;
+	urlInfo.methods = ['SPECIAL_FOCUS_USERS']
+	let urlArr = urlInfo.url.split('/');
+	if (urlArr[3] === 'user') {
+		urlInfo.info = { userId: urlArr[4] };
+		let isSelf = !!(selfInfo && selfInfo.user_basic.user_id === urlInfo.info.userId);
+		if (urlArr[5] === 'pins' && isSelf) {
+			urlInfo.methods.push('REMOVE_ALL_PINGS');
+		}
+		if (urlArr[5] === 'praise' && isSelf) {
+			urlInfo.methods.push('CANCEL_ALL_PINGS_ZAN');
+		}
+	}
+	if (urlArr.includes('myclub') || urlArr.includes('club')) {
+		urlInfo.methods.push('PING_CLUB_USER_RANK');
+		urlInfo.info = { clubId: urlArr[urlArr.length - 1] }
+	}
+}
+
+/*
+* 从后台获取当前登录人的信息
+* */
+const initSelfInfo = async () => {
+	selfInfo = await sendMessageToBackground({ to: 'background', event: 'get-self-info' });
+}
+
+chrome.runtime.onMessage.addListener(async (request, sender, callback) => {
+	let { from, event, data } = request;
+	if (from !== 'background') return;
+	if (event === 'page-change-complete') {
+		await initSelfInfo();
+		await initUrlInfo();
+		await pageChange();
+	}
+	if (event === 'ping-info-change') {
+		METHOD_MAP.REMOVE_ALL_PINGS.change(data)
+	}
+})
 

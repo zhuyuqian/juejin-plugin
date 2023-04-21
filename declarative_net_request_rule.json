@@ -9,11 +9,6 @@
           "header": "origin",
           "operation": "set",
           "value": "https://juejin.cn"
-        },
-        {
-          "header": "referer",
-          "operation": "set",
-          "value": "https://juejin.cn/"
         }
       ]
     },
