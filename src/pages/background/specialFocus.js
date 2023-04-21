@@ -1,4 +1,4 @@
-import {getStorage, setStorage} from "./storage.js";
+import {getStorage, setStorage} from "./storage";
 
 export const getSpecialFocusUsers = async () => {
     return await getStorage('my-special-focus-users') || [];

@@ -3,29 +3,36 @@
   "description": "稀土掘金工程师社区功能增强插件",
   "version": "0.0.1",
   "manifest_version": 3,
+  "content_security_policy": {
+    "script-src": "self",
+    "object-src": "self"
+  },
+  "icons": {
+    "16": "static/img/icon.png",
+    "19": "static/img/icon.png",
+    "38": "static/img/icon.png",
+    "48": "static/img/icon.png",
+    "128": "static/img/icon.png"
+  },
   "background": {
-    "service_worker": "background/service.js",
-    "type": "module"
+    "service_worker": "background.main.js"
   },
   "content_scripts": [
     {
-      "css": [
-        "page/main.css"
-      ],
-      "js": [
-        "page/main.js"
-      ],
       "matches": [
         "https://juejin.cn/*"
-      ]
+      ],
+      "css": [],
+      "js": [
+        "content.main.js"
+      ],
+      "run_at": "document_end"
     }
   ],
-  "icons": {
-    "16": "icons/logo.png",
-    "32": "icons/logo.png",
-    "48": "icons/logo.png",
-    "128": "icons/logo.png"
-  },
+  "host_permissions": [
+    "https://*.juejin.cn/*",
+    "https://.juejin.cn/*"
+  ],
   "permissions": [
     "cookies",
     "storage",
@@ -44,9 +51,5 @@
         "path": "declarative_net_request_rule.json"
       }
     ]
-  },
-  "host_permissions": [
-    "https://*.juejin.cn/*",
-    "https://.juejin.cn/*"
-  ]
+  }
 }
