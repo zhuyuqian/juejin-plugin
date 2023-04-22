@@ -13,28 +13,6 @@ export const setSelfInfoStorage = async (selfInfo) => {
 	await setStorage("juejin-self", selfInfo);
 };
 
-// 获取未读消息数
-export const loopMessageNotReadCount = async () => {
-	if (await getSelfInfoStorage()) {
-		let res = await fetch("https://api.juejin.cn/interact_api/v1/message/count", {
-			credentials: 'include',
-		}).then(res => res.json());
-		let { success, data } = handleApiResult(res);
-		if (success) {
-			// count[1]：点赞和收藏
-			let { count, total } = data;
-			let countStorage = await getStorage("message-not-read-count");
-			// 有未读
-			if (total && total !== countStorage) {
-				sendBasicNotifications("掘金未读消息通知", `您有${total}条新消息，快去掘金查看吧`)
-			}
-			await setStorage("message-not-read-count", total);
-		}
-	}
-	await sleep(10);
-	loopMessageNotReadCount();
-};
-
 // 登出
 export const logout = async () => {
 	await fetch("https://juejin.cn/passport/web/logout/", {
@@ -119,7 +97,33 @@ export const freeLuckyDraw = async () => {
 	sendBasicNotifications('今日免费抽奖成功', `恭喜抽到：${res.data.lottery_name}`);
 }
 
+// 获取未读消息数
+export const loopMessageNotReadCount = async () => {
+	if (await getSelfInfoStorage()) {
+		let res = await fetch("https://api.juejin.cn/interact_api/v1/message/count", {
+			credentials: 'include',
+		}).then(res => res.json());
+		let { success, data } = handleApiResult(res);
+		if (success) {
+			// count[1]：点赞和收藏  count[3]：评论
+			let { count, total } = data;
+			let items = [];
+			if (count[1]) items.push(`点赞和收藏：${count[1]}条`)
+			if (count[3]) items.push(`评论：${count[3]}条`)
+			let notReadStrStorage = await getStorage("message-not-read");
+			// 有未读且详情文字不相同
+			if (total && notReadStrStorage !== JSON.stringify(items)) {
+				sendBasicNotifications(`您有${total}条掘金未读消息，以下为详细内容`, `${items.join('\n')}`);
+				await setStorage("message-not-read", JSON.stringify(items));
+			}
+		}
+	}
+	setTimeout(() => {
+		loopMessageNotReadCount();
+	}, 10 * 1000)
+};
+
 export const initAuth = async () => {
 	await resetSelfInfo();
-	loopMessageNotReadCount();
+	await loopMessageNotReadCount()
 };

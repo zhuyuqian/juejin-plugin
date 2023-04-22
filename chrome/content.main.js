@@ -13267,34 +13267,6 @@ const setSelfInfoStorage = async selfInfo => {
   await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.setStorage)("juejin-self", selfInfo);
 };
 
-// 获取未读消息数
-const loopMessageNotReadCount = async () => {
-  if (await getSelfInfoStorage()) {
-    let res = await fetch("https://api.juejin.cn/interact_api/v1/message/count", {
-      credentials: 'include'
-    }).then(res => res.json());
-    let {
-      success,
-      data
-    } = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
-    if (success) {
-      // count[1]：点赞和收藏
-      let {
-        count,
-        total
-      } = data;
-      let countStorage = await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.getStorage)("message-not-read-count");
-      // 有未读
-      if (total && total !== countStorage) {
-        (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)("掘金未读消息通知", `您有${total}条新消息，快去掘金查看吧`);
-      }
-      await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.setStorage)("message-not-read-count", total);
-    }
-  }
-  await (0,_tool__WEBPACK_IMPORTED_MODULE_1__.sleep)(10);
-  loopMessageNotReadCount();
-};
-
 // 登出
 const logout = async () => {
   await fetch("https://juejin.cn/passport/web/logout/", {
@@ -13403,9 +13375,41 @@ const freeLuckyDraw = async () => {
   if (!res.success) return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖失败', res.err_msg);
   (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖成功', `恭喜抽到：${res.data.lottery_name}`);
 };
+
+// 获取未读消息数
+const loopMessageNotReadCount = async () => {
+  if (await getSelfInfoStorage()) {
+    let res = await fetch("https://api.juejin.cn/interact_api/v1/message/count", {
+      credentials: 'include'
+    }).then(res => res.json());
+    let {
+      success,
+      data
+    } = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
+    if (success) {
+      // count[1]：点赞和收藏  count[3]：评论
+      let {
+        count,
+        total
+      } = data;
+      let items = [];
+      if (count[1]) items.push(`点赞和收藏：${count[1]}条`);
+      if (count[3]) items.push(`评论：${count[3]}条`);
+      let notReadStrStorage = await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.getStorage)("message-not-read");
+      // 有未读且详情文字不相同
+      if (total && notReadStrStorage !== JSON.stringify(items)) {
+        (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)(`您有${total}条掘金未读消息，以下为详细内容`, `${items.join('\n')}`);
+        await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.setStorage)("message-not-read", JSON.stringify(items));
+      }
+    }
+  }
+  setTimeout(() => {
+    loopMessageNotReadCount();
+  }, 10 * 1000);
+};
 const initAuth = async () => {
   await resetSelfInfo();
-  loopMessageNotReadCount();
+  await loopMessageNotReadCount();
 };
 
 /***/ }),
@@ -13569,11 +13573,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const sendBasicNotifications = (title, message) => {
-  chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_0__.uuid)(), {
-    type: 'basic',
-    title,
-    message,
-    iconUrl: _config__WEBPACK_IMPORTED_MODULE_1__["default"].iconUrl
+  chrome.notifications.getPermissionLevel(level => {
+    if (level === 'granted') {
+      chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_0__.uuid)(), {
+        type: 'basic',
+        title,
+        message,
+        iconUrl: _config__WEBPACK_IMPORTED_MODULE_1__["default"].iconUrl
+      });
+    }
   });
 };
 
