@@ -13238,6 +13238,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "bugfix": () => (/* binding */ bugfix),
+/* harmony export */   "freeLuckyDraw": () => (/* binding */ freeLuckyDraw),
 /* harmony export */   "getSelfInfoStorage": () => (/* binding */ getSelfInfoStorage),
 /* harmony export */   "getUserInfo": () => (/* binding */ getUserInfo),
 /* harmony export */   "initAuth": () => (/* binding */ initAuth),
@@ -13250,7 +13251,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _contextMenus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./contextMenus */ "./src/pages/background/contextMenus.js");
 /* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tool */ "./src/pages/background/tool.js");
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./storage */ "./src/pages/background/storage.js");
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../config */ "./src/config/index.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./message */ "./src/pages/background/message.js");
 
 
 
@@ -13285,12 +13286,7 @@ const loopMessageNotReadCount = async () => {
       let countStorage = await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.getStorage)("message-not-read-count");
       // 有未读
       if (total && total !== countStorage) {
-        chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_1__.uuid)(), {
-          type: "basic",
-          title: "掘金未读消息通知",
-          message: `您有${total}条新消息，快去掘金查看吧`,
-          iconUrl: "/icons/logo.png"
-        });
+        (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)("掘金未读消息通知", `您有${total}条新消息，快去掘金查看吧`);
       }
       await (0,_storage__WEBPACK_IMPORTED_MODULE_2__.setStorage)("message-not-read-count", total);
     }
@@ -13363,12 +13359,7 @@ const signin = async () => {
     data,
     err_msg
   } = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
-  chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_1__.uuid)(), {
-    type: "basic",
-    title: "掘金签到：" + (success ? "成功" : "失败"),
-    message: success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg,
-    iconUrl: _config__WEBPACK_IMPORTED_MODULE_3__["default"].iconUrl
-  });
+  (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)("掘金签到：" + (success ? "成功" : "失败"), success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg);
 };
 
 // 收集bug
@@ -13382,12 +13373,7 @@ const bugfix = async () => {
     data,
     err_msg
   } = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
-  chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_1__.uuid)(), {
-    type: "basic",
-    title: "掘金BugFix：" + (success ? "成功" : "失败"),
-    message: success ? `今日掘金bugfix：${data.length}` : err_msg,
-    iconUrl: _config__WEBPACK_IMPORTED_MODULE_3__["default"].iconUrl
-  });
+  (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)("掘金BugFix：" + (success ? "成功" : "失败"), success ? `今日掘金bugfix：${data.length}` : err_msg);
   if (!success) return;
   data.forEach(bug => {
     fetch("https://api.juejin.cn/user_api/v1/bugfix/collect", {
@@ -13399,6 +13385,23 @@ const bugfix = async () => {
       body: JSON.stringify(bug)
     });
   });
+};
+
+// 免费抽奖
+const freeLuckyDraw = async () => {
+  let res = await fetch('https://api.juejin.cn/growth_api/v1/lottery_config/get', {
+    credentials: 'include'
+  }).then(res => res.json());
+  res = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
+  if (!res.success) return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖失败', res.err_msg);
+  if (!res.data.free_count) return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖失败', '今日免费抽奖次数已经用完');
+  res = await fetch('https://api.juejin.cn/growth_api/v1/lottery/draw', {
+    credentials: 'include',
+    method: 'POST'
+  }).then(res => res.json());
+  res = (0,_tool__WEBPACK_IMPORTED_MODULE_1__.handleApiResult)(res);
+  if (!res.success) return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖失败', res.err_msg);
+  (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendBasicNotifications)('今日免费抽奖成功', `恭喜抽到：${res.data.lottery_name}`);
 };
 const initAuth = async () => {
   await resetSelfInfo();
@@ -13471,6 +13474,12 @@ const resetContextMenus = async () => {
       contexts: ["all"]
     });
     await chrome.contextMenus.create({
+      id: 'FREE_LUCKY_DRAW',
+      title: "免费抽奖",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await chrome.contextMenus.create({
       id: "separator2",
       type: "separator",
       parentId: "MENU_PARENT",
@@ -13536,6 +13545,36 @@ const onClick = async (info, tab) => {
     // 收集bug
     await (0,_auth__WEBPACK_IMPORTED_MODULE_0__.bugfix)();
   }
+  if (menuItemId === 'FREE_LUCKY_DRAW') {
+    // 免费抽奖
+    await (0,_auth__WEBPACK_IMPORTED_MODULE_0__.freeLuckyDraw)();
+  }
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/message.js":
+/*!*****************************************!*\
+  !*** ./src/pages/background/message.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendBasicNotifications": () => (/* binding */ sendBasicNotifications)
+/* harmony export */ });
+/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tool */ "./src/pages/background/tool.js");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../config */ "./src/config/index.ts");
+
+
+const sendBasicNotifications = (title, message) => {
+  chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_0__.uuid)(), {
+    type: 'basic',
+    title,
+    message,
+    iconUrl: _config__WEBPACK_IMPORTED_MODULE_1__["default"].iconUrl
+  });
 };
 
 /***/ }),

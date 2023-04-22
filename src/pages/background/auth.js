@@ -1,7 +1,7 @@
 import { resetContextMenus } from "./contextMenus";
-import { handleApiResult, getAllJueJinTabs, uuid, sleep } from "./tool";
+import { handleApiResult, getAllJueJinTabs, sleep } from "./tool";
 import { getStorage, setStorage } from "./storage";
-import config from "../../config";
+import { sendBasicNotifications } from "./message";
 
 // 获取个人信息缓存
 export const getSelfInfoStorage = async () => {
@@ -26,12 +26,7 @@ export const loopMessageNotReadCount = async () => {
 			let countStorage = await getStorage("message-not-read-count");
 			// 有未读
 			if (total && total !== countStorage) {
-				chrome.notifications.create(uuid(), {
-					type: "basic",
-					title: "掘金未读消息通知",
-					message: `您有${total}条新消息，快去掘金查看吧`,
-					iconUrl: "/icons/logo.png"
-				});
+				sendBasicNotifications("掘金未读消息通知", `您有${total}条新消息，快去掘金查看吧`)
 			}
 			await setStorage("message-not-read-count", total);
 		}
@@ -85,12 +80,7 @@ export const signin = async () => {
 		method: "POST"
 	}).then(res => res.json());
 	let { success, data, err_msg } = handleApiResult(res);
-	chrome.notifications.create(uuid(), {
-		type: "basic",
-		title: "掘金签到：" + (success ? "成功" : "失败"),
-		message: success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg,
-		iconUrl: config.iconUrl
-	});
+	sendBasicNotifications("掘金签到：" + (success ? "成功" : "失败"), success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg)
 };
 
 // 收集bug
@@ -100,12 +90,7 @@ export const bugfix = async () => {
 		method: "POST"
 	}).then(res => res.json());
 	let { success, data, err_msg } = handleApiResult(res);
-	chrome.notifications.create(uuid(), {
-		type: "basic",
-		title: "掘金BugFix：" + (success ? "成功" : "失败"),
-		message: success ? `今日掘金bugfix：${data.length}` : err_msg,
-		iconUrl: config.iconUrl
-	});
+	sendBasicNotifications("掘金BugFix：" + (success ? "成功" : "失败"), success ? `今日掘金bugfix：${data.length}` : err_msg)
 	if (!success) return;
 	data.forEach(bug => {
 		fetch("https://api.juejin.cn/user_api/v1/bugfix/collect", {
@@ -116,6 +101,23 @@ export const bugfix = async () => {
 		});
 	});
 };
+
+// 免费抽奖
+export const freeLuckyDraw = async () => {
+	let res = await fetch('https://api.juejin.cn/growth_api/v1/lottery_config/get', {
+		credentials: 'include',
+	}).then(res => res.json());
+	res = handleApiResult(res);
+	if (!res.success) return sendBasicNotifications('今日免费抽奖失败', res.err_msg);
+	if (!res.data.free_count) return sendBasicNotifications('今日免费抽奖失败', '今日免费抽奖次数已经用完');
+	res = await fetch('https://api.juejin.cn/growth_api/v1/lottery/draw', {
+		credentials: 'include',
+		method: 'POST'
+	}).then(res => res.json());
+	res = handleApiResult(res);
+	if (!res.success) return sendBasicNotifications('今日免费抽奖失败', res.err_msg);
+	sendBasicNotifications('今日免费抽奖成功', `恭喜抽到：${res.data.lottery_name}`);
+}
 
 export const initAuth = async () => {
 	await resetSelfInfo();
