@@ -1,16 +1,16 @@
 <template>
-	<el-card class="pin-club-user-rank" :shadow="false" v-loading="loading">
+	<el-card class="pin-club-user-rank" shadow="never" v-loading="loading">
 		<template #header>
 			<span class="title-box">{{ rankInfo.club.topic.title }}｜本周沸物</span>
-			<span class="desc-box">
-        最近更新：{{ dayjs(rankInfo.time).format("YYYY-MM-DD HH:mm:ss") }}
+			<span class="desc-box" v-if="rankInfo.time">
+        最近更新：{{ dayjs(rankInfo.time).fromNow() }}
       </span>
 		</template>
 		<div class="rank-warp">
 			<div class="rank-box" v-for="(rank,rankIndex) of rankInfo.rank">
 				<div class="rank-title">
 					<span class="title-box">榜{{ rankIndex + 1 }}</span>
-					<span class="count-box">{{ rank.msgCount }}条 / 沸物</span>
+					<span class="count-box">沸物:{{ rank.users.length }}人｜人均:{{ rank.msgCount }}条</span>
 				</div>
 				<div class="user-warp">
 					<a class="user-box" v-for="user of rank.users" :href="`https://juejin.cn/user/${user.userInfo.user_id}`" target="_blank">
@@ -24,8 +24,7 @@
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
-import dayjs from "dayjs";
-import { initUrlInfo } from "@/utils";
+import { initUrlInfo } from "@/pages/content/utils";
 import { getPinClubHotRank } from "@/pages/background/pins";
 
 let rankInfo = ref({ time: null, rank: [], club: { topic: {} } });
@@ -61,7 +60,6 @@ onMounted(async () => {
 
 			.rank-title {
 				display: flex;
-				justify-content: space-between;
 				align-items: center;
 
 				.title-box {
@@ -70,7 +68,7 @@ onMounted(async () => {
 				}
 
 				.count-box {
-					margin-right: 20px;
+					margin-left: 10px;
 					font-size: 12px;
 					color: #999;
 				}
