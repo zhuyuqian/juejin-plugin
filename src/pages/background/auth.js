@@ -27,13 +27,24 @@ export const logout = async () => {
 	await resetContextMenus();
 };
 
-// 获取用户信息
+/*
+* 获取用户信息
+* 传入用户id
+* 缓存1天
+* */
 export const getUserInfo = async (userId) => {
+	let nowTime = new Date().getTime();
+	let storage = await getStorage(`userinfo-${userId}`);
+	if (storage && (nowTime - storage.time) < (1000 * 60 * 60 * 24)) return storage.info;
+	storage = { time: nowTime, info: null }
 	let res = await fetch(`https://api.juejin.cn/user_api/v1/user/get?user_id=${userId}`, {
 		credentials: 'include',
 	}).then(res => res.json());
 	let { success, data } = handleApiResult(res);
-	return success ? data : null;
+	if (!success) return storage.info;
+	storage.info = data;
+	await setStorage(`userinfo-${userId}`, storage);
+	return storage.info;
 };
 
 // 更新登录人信息

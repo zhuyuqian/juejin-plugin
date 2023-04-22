@@ -1,7 +1,7 @@
 <template>
 	<el-card class="pin-club-user-rank" shadow="never" v-loading="loading">
 		<template #header>
-			<span class="title-box">{{ rankInfo.club.topic.title }}｜本周沸物</span>
+			<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
 			<span class="desc-box" v-if="rankInfo.time">
         最近更新：{{ dayjs(rankInfo.time).fromNow() }}
       </span>
@@ -25,14 +25,17 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { initUrlInfo } from "@/pages/content/utils";
-import { getPinClubHotRank } from "@/pages/background/pins";
+import { getPinClubHotRank, getPinClubInfo } from "@/pages/background/pins";
 
-let rankInfo = ref({ time: null, rank: [], club: { topic: {} } });
+let rankInfo = ref({ time: null, rank: [] });
+let clubInfo = ref({ topic: { title: '' } });
 let loading = ref(true);
+
 onMounted(async () => {
 	loading.value = true;
 	let urlInfo = await initUrlInfo();
 	rankInfo.value = await getPinClubHotRank(urlInfo.info.clubId);
+	clubInfo.value = await getPinClubInfo(urlInfo.info.clubId);
 	loading.value = false;
 });
 </script>
