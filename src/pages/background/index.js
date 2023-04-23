@@ -1,14 +1,20 @@
-import { initAuth } from "./auth.js";
-import { initContentMenus, onClick } from "./contextMenus.js";
-import { onUpdated } from "./tabs.js";
+import { resetSelf, loopNotReadMessageCount } from "./controller/user";
+import { contextMenusOnClick, resetContextMenus } from "./controller/contextMenus";
+import { tabOnUpdate } from "./controller/tabs";
+import { runtimeOnMessage } from "./controller/message";
 
-
-chrome.contextMenus.onClicked.addListener(onClick);
-chrome.tabs.onUpdated.addListener(onUpdated);
+// chrome.storage.local.clear();
+chrome.contextMenus.onClicked.addListener(contextMenusOnClick);
+chrome.tabs.onUpdated.addListener(tabOnUpdate);
+chrome.runtime.onMessage.addListener(runtimeOnMessage)
 
 const init = async () => {
-  await initAuth();
-  await initContentMenus();
+	// 重新获取用户信息
+	await resetSelf()
+	// 重置按钮组
+	await resetContextMenus();
+	// 开始循环获取未读消息数量
+	loopNotReadMessageCount();
 };
 
 init();

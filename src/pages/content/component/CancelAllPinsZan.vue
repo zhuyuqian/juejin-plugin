@@ -5,17 +5,16 @@
 	</el-button>
 </template>
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { initUrlInfo } from "@/pages/content/utils";
-import { getUserZanPins, cancelZanPin } from "@/pages/background/pins";
-import { sleep } from "@/pages/background/tool";
+import { ref, onMounted, computed, getCurrentInstance } from 'vue';
+import { ajax, EVENT_MAP } from "@/pages/content/api";
+import { sleep } from "@/tool";
 
+let { proxy } = getCurrentInstance();
 let loading = ref(false);
 let remove = ref(null);
 let pins = ref([]);
 let count = ref(0);
 let removeCount = ref(0);
-
 // 按钮禁用
 let buttonLoading = computed(() => {
 	return loading.value || !!remove.value;
@@ -27,21 +26,19 @@ let buttonText = computed(() => {
 	if (!pins.value.length) return "已取消全部点赞沸点";
 	return `取消全部点赞沸点（共${count.value}条）`;
 })
-
 const cancelAllPins = () => {
 	const cancel = async () => {
 		if (!pins.value.length) return;
 		while (pins.value.length) {
 			remove.value = pins.value.shift();
 			await sleep(0.1);
-			let { success, err_msg } = await cancelZanPin(remove.value);
+			let success = await ajax(EVENT_MAP.CANCEL_ZAN_PIN, remove.value);
 			if (success) {
 				removeCount.value++;
 				await sleep(1);
 			} else {
 				pins.value.unshift(remove.value);
 				removeCount.value = 0;
-				alert(err_msg);
 				break;
 			}
 		}
@@ -52,21 +49,18 @@ const cancelAllPins = () => {
 		await load();
 		cancel()
 	}
-
 	if (confirm("你确定要取消点赞全部沸点么？")) {
 		cancel();
 	}
 }
-
 const load = async () => {
 	loading.value = true;
-	let urlInfo = await initUrlInfo();
-	let res = await getUserZanPins(urlInfo.info.userId);
+	let userId = proxy.$url.info.userId;
+	let res = await ajax(EVENT_MAP.GET_USER_ZAN_PINS, userId);
 	count.value = res.count;
 	pins.value = res.pins;
 	loading.value = false;
 }
-
 onMounted(async () => {
 	await load();
 })

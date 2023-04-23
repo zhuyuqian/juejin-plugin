@@ -3,7 +3,7 @@
 		<template #header>
 			<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
 			<span class="desc-box" v-if="rankInfo.time">
-        最近更新：{{ dayjs(rankInfo.time).fromNow() }}
+        最近更新：{{ $dayjs(rankInfo.time).fromNow() }}
       </span>
 		</template>
 		<div class="rank-warp">
@@ -23,19 +23,19 @@
 	</el-card>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
-import { initUrlInfo } from "@/pages/content/utils";
-import { getPinClubHotRank, getPinClubInfo } from "@/pages/background/pins";
+import { onMounted, ref, getCurrentInstance } from "vue";
+import { ajax, EVENT_MAP } from "@/pages/content/api";
 
+let { proxy } = getCurrentInstance();
 let rankInfo = ref({ time: null, rank: [] });
 let clubInfo = ref({ topic: { title: '' } });
 let loading = ref(true);
 
 onMounted(async () => {
 	loading.value = true;
-	let urlInfo = await initUrlInfo();
-	rankInfo.value = await getPinClubHotRank(urlInfo.info.clubId);
-	clubInfo.value = await getPinClubInfo(urlInfo.info.clubId);
+	let clubId = proxy.$url.info.clubId;
+	clubInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_INFO, clubId);
+	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_WEEK_USER_RANK, clubId);
 	loading.value = false;
 });
 </script>
