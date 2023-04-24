@@ -7,14 +7,11 @@ import { runtimeOnMessage } from "./controller/message";
 chrome.contextMenus.onClicked.addListener(contextMenusOnClick);
 chrome.tabs.onUpdated.addListener(tabOnUpdate);
 chrome.runtime.onMessage.addListener(runtimeOnMessage)
-
-const init = async () => {
+chrome.runtime.onInstalled.addListener(async () => {
 	// 重新获取用户信息
 	await resetSelf()
 	// 重置按钮组
 	await resetContextMenus();
 	// 开始循环获取未读消息数量
 	loopNotReadMessageCount();
-};
-
-init();
+})

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import config from "../../config";
 import { uuid } from "../../tool";
 
 /*
@@ -33,16 +32,7 @@ export const getStorage = async (key) => {
 * @param message 内容
 * */
 export const sendBasicNotifications = (title, message) => {
-	chrome.notifications.getPermissionLevel(level => {
-		if (level === 'granted') {
-			chrome.notifications.create(uuid(), {
-				type: 'basic',
-				title,
-				message,
-				iconUrl: config.iconUrl,
-			})
-		}
-	})
+	chrome.notifications.create(uuid(), { type: 'basic', title, message, iconUrl: "static/img/icon.png" })
 }
 
 /*

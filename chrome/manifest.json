@@ -1,55 +1,53 @@
 {
-  "name": "掘金扩展增强插件",
-  "description": "稀土掘金工程师社区功能增强插件",
-  "version": "0.0.1",
-  "manifest_version": 3,
-  "content_security_policy": {
-    "script-src": "self",
-    "object-src": "self"
-  },
-  "icons": {
-    "16": "static/img/icon.png",
-    "19": "static/img/icon.png",
-    "38": "static/img/icon.png",
-    "48": "static/img/icon.png",
-    "128": "static/img/icon.png"
-  },
-  "background": {
-    "service_worker": "background.main.js"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://juejin.cn/*"
-      ],
-      "css": [],
-      "js": [
-        "content.main.js"
-      ],
-      "run_at": "document_end"
-    }
-  ],
-  "host_permissions": [
-    "https://*.juejin.cn/*",
-    "https://.juejin.cn/*"
-  ],
-  "permissions": [
-    "cookies",
-    "storage",
-    "contextMenus",
-    "tabs",
-    "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback",
-    "notifications"
-  ],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "1",
-        "enabled": true,
-        "path": "declarative_net_request_rule.json"
-      }
-    ]
-  }
+	"name": "掘金扩展增强插件",
+	"description": "稀土掘金工程师社区功能增强插件",
+	"version": "0.0.1",
+	"manifest_version": 3,
+	"content_security_policy": {
+		"script-src": "self",
+		"object-src": "self"
+	},
+	"icons": {
+		"16": "static/img/icon.png",
+		"19": "static/img/icon.png",
+		"38": "static/img/icon.png",
+		"48": "static/img/icon.png",
+		"128": "static/img/icon.png"
+	},
+	"background": {
+		"service_worker": "background.main.js"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://juejin.cn/*"
+			],
+			"css": [],
+			"js": [
+				"content.main.js"
+			],
+			"run_at": "document_end"
+		}
+	],
+	"host_permissions": [
+		"https://api.juejin.cn/*"
+	],
+	"permissions": [
+		"cookies",
+		"unlimitedStorage",
+		"storage",
+		"contextMenus",
+		"tabs",
+		"declarativeNetRequest",
+		"notifications"
+	],
+	"declarative_net_request": {
+		"rule_resources": [
+			{
+				"id": "1",
+				"enabled": true,
+				"path": "declarative_net_request_rule.json"
+			}
+		]
+	}
 }

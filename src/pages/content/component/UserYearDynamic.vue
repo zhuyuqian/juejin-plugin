@@ -109,7 +109,6 @@ const load = async (isRefresh = false) => {
 	loading.value = true;
 	let userId = proxy.$url.info.userId;
 	dynamicInfo.value = await ajax(EVENT_MAP.GET_YEAR_DYNAMIC, { userId, isRefresh });
-	console.log(dynamicInfo.value);
 	handleDynamics();
 	loading.value = false;
 }

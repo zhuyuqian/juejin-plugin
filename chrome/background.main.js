@@ -1,23 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/config/index.ts":
-/*!*****************************!*\
-  !*** ./src/config/index.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  iconUrl: "static/img/icon.png"
-});
-
-/***/ }),
-
 /***/ "./src/pages/background/api/content.js":
 /*!*********************************************!*\
   !*** ./src/pages/background/api/content.js ***!
@@ -394,9 +377,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../config */ "./src/config/index.ts");
-/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../tool */ "./src/tool/index.js");
-
+/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../tool */ "./src/tool/index.js");
 
 
 
@@ -437,15 +418,11 @@ const getStorage = async key => {
 * @param message 内容
 * */
 const sendBasicNotifications = (title, message) => {
-  chrome.notifications.getPermissionLevel(level => {
-    if (level === 'granted') {
-      chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_2__.uuid)(), {
-        type: 'basic',
-        title,
-        message,
-        iconUrl: _config__WEBPACK_IMPORTED_MODULE_1__["default"].iconUrl
-      });
-    }
+  chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_1__.uuid)(), {
+    type: 'basic',
+    title,
+    message,
+    iconUrl: "static/img/icon.png"
   });
 };
 
@@ -1444,15 +1421,14 @@ __webpack_require__.r(__webpack_exports__);
 chrome.contextMenus.onClicked.addListener(_controller_contextMenus__WEBPACK_IMPORTED_MODULE_1__.contextMenusOnClick);
 chrome.tabs.onUpdated.addListener(_controller_tabs__WEBPACK_IMPORTED_MODULE_2__.tabOnUpdate);
 chrome.runtime.onMessage.addListener(_controller_message__WEBPACK_IMPORTED_MODULE_3__.runtimeOnMessage);
-const init = async () => {
+chrome.runtime.onInstalled.addListener(async () => {
   // 重新获取用户信息
   await (0,_controller_user__WEBPACK_IMPORTED_MODULE_0__.resetSelf)();
   // 重置按钮组
   await (0,_controller_contextMenus__WEBPACK_IMPORTED_MODULE_1__.resetContextMenus)();
   // 开始循环获取未读消息数量
   (0,_controller_user__WEBPACK_IMPORTED_MODULE_0__.loopNotReadMessageCount)();
-};
-init();
+});
 })();
 
 /******/ })()
