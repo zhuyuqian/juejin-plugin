@@ -7,7 +7,8 @@ import { ajax } from "./index";
 export const removeShortMsg = (msgId) => ajax({
 	url: `https://api.juejin.cn/content_api/v1/short_msg/delete`,
 	method: 'POST',
-	data: { msg_id: msgId }
+	data: { msg_id: msgId },
+	isInclude: true,
 })
 
 /*

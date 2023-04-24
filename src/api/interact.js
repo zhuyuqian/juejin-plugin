@@ -20,5 +20,6 @@ export const diggQueryPage = ({ cursor = 0, item_type = 4, sort_type = 2, user_i
 export const cancelDigg = (itemId, itemType) => ajax({
 	url: `https://api.juejin.cn/interact_api/v1/digg/cancel`,
 	method: 'POST',
-	data: { item_id: itemId, item_type: itemType }
+	data: { item_id: itemId, item_type: itemType },
+	isInclude: true,
 })

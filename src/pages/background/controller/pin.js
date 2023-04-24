@@ -58,7 +58,7 @@ export const getPinClubInfo = async (clubId) => {
 
 /*
 * 获取圈子一周废物榜
-* 缓存10分钟
+* 缓存30分钟
 * */
 export const getPinClubWeekUserRank = async (clubId) => {
 	let storageKey = `pin-club-week-user-rank-${clubId}`;
@@ -111,6 +111,6 @@ export const getPinClubWeekUserRank = async (clubId) => {
 		});
 	});
 	storage.rank = rank;
-	await setStorage(storageKey, storage, 10);
+	await setStorage(storageKey, storage, 30);
 	return storage
 }

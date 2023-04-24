@@ -113,7 +113,7 @@ export const loopNotReadMessageCount = () => {
 			}
 			await setStorage("message-not-read", JSON.stringify(items));
 		}
-	}, 1000 * 60)
+	}, 1000 * 10)
 }
 
 /*
