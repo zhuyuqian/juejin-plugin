@@ -37,7 +37,7 @@ export const resetSelf = async () => {
 
 /*
 * 获取用户信息
-* 缓存1天
+* 缓存7天
 * */
 export const getUserInfo = async (userId) => {
 	let storageKey = `user-info-${userId}`
@@ -45,24 +45,27 @@ export const getUserInfo = async (userId) => {
 	if (storage) return storage;
 	let { success, data } = await apiGetUserInfo(userId);
 	if (!success) return null;
-	await setStorage(storageKey, data, 60 * 24);
+	await setStorage(storageKey, data, 60 * 24 * 7);
 	return data;
 }
 
 /*
 * 获取年度用户动态列表
+* @param userId 用户id
+* @param isRefresh 是否获取最新，如果为否永远获取缓存
 * */
-export const getYearDynamic = async (userId) => {
+export const getYearDynamic = async ({ userId, isRefresh }) => {
 	let storageKey = `year-dynamic-${userId}`;
-	// 先获取总数
-	let { success, data } = await getDynamic(userId, 0);
-	if (!success) return []
-	// count是动态总数
-	let { count, list } = data;
 	// 获取缓存
 	let storage = await getStorage(storageKey);
-	if (storage && storage.count === count) return storage.info;
-	storage = { count: count, info: {} };
+	if (storage && !isRefresh) return storage;
+	storage = { count: 0, time: dayjs().format('YYYY-MM-DD HH:mm:ss'), info: {} };
+	// 先获取总数
+	let { success, data } = await getDynamic(userId, 0);
+	if (!success) return storage
+	// count是动态总数
+	let { count, list } = data;
+	storage.count = count;
 	let dynamics = [...list];
 	// 每份20个
 	let cursors = new Array(Math.ceil(count / 20)).fill(null).map((item, index) => 20 * index);
@@ -89,8 +92,8 @@ export const getYearDynamic = async (userId) => {
 			storage.info[year] = { [date]: [dynamic.action] }
 		}
 	}
-	await setStorage(storageKey, storage, 60 * 24);
-	return storage.info;
+	await setStorage(storageKey, storage);
+	return storage;
 }
 
 /*

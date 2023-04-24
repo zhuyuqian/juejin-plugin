@@ -2,9 +2,16 @@
 	<el-card shadow="never" class="user-dynamic" v-loading="loading">
 		<template #header>
 			<span class="title-box">{{ year }}｜社区活跃度</span>
-			<el-select class="change-year" v-model="year" size="mini" @change="drawChart">
-				<el-option v-for="y of years" :key="y" :label="y" :value="y"/>
-			</el-select>
+			<div class="rt">
+				<el-select class="change-year" v-model="year" size="mini" @change="drawChart">
+					<el-option v-for="y of years" :key="y" :label="y" :value="y"/>
+				</el-select>
+				<el-tooltip effect="dark" placement="top" :content="`最近更新：${$dayjs(dynamicInfo.time).fromNow() }`">
+					<el-icon class="refresh-button" size="20" color="#999" @click="load(true)">
+						<Refresh/>
+					</el-icon>
+				</el-tooltip>
+			</div>
 		</template>
 		<div class="chart-warp" ref="chart"></div>
 	</el-card>
@@ -17,11 +24,11 @@ import { getDynamicActionsCount, getDynamicScoreByActions } from "@/tool";
 const { proxy } = getCurrentInstance();
 const loading = ref(false);
 const chart = ref(null);
-const years = ref([]);
-const year = ref(null);
-let yearDynamic = {}; // 返回的数据
-let chartDynamic = {}; // 画图的数据
+const years = ref([]); // 年份列表
+const year = ref(null); // 当前年份
 
+let dynamicInfo = ref({ info: {}, time: null })
+let chartDynamic = {}; // 画图的数据
 let dynamicChart = null;
 
 // 画图
@@ -38,7 +45,7 @@ const drawChart = () => {
 			formatter({ data }) {
 				let [date, score] = data;
 				let [year, month, day] = date.split('-');
-				let actionCount = getDynamicActionsCount(yearDynamic[year][`${month}-${day}`] || [])
+				let actionCount = getDynamicActionsCount(dynamicInfo.value.info[year][`${month}-${day}`] || [])
 				let actionMsgArr = [];
 				let actionNameMap = { 0: '发布文章', 1: '点赞文章', 2: '发布沸点', 3: '点赞沸点', 4: '关注用户', 5: '关注标签' }
 				for (let key in actionCount) {
@@ -80,13 +87,13 @@ const drawChart = () => {
 
 // 处理动态
 const handleDynamics = () => {
-	for (let year in yearDynamic) {
+	for (let year in dynamicInfo.value.info) {
 		years.value.push(year);
 		let start = `${year}-01-01`;
 		let end = `${Number(year) + 1}-01-01`;
 		let yearList = [];
 		while (start !== end) {
-			let actions = yearDynamic[year][proxy.$dayjs(start).format('MM-DD')] || [];
+			let actions = dynamicInfo.value.info[year][proxy.$dayjs(start).format('MM-DD')] || [];
 			let count = getDynamicScoreByActions(actions);
 			yearList.push([start, count]);
 			start = proxy.$dayjs(start).add(1, 'day').format('YYYY-MM-DD');
@@ -98,10 +105,11 @@ const handleDynamics = () => {
 }
 
 // 获取数据
-const load = async () => {
+const load = async (isRefresh = false) => {
 	loading.value = true;
 	let userId = proxy.$url.info.userId;
-	yearDynamic = await ajax(EVENT_MAP.GET_YEAR_DYNAMIC, userId);
+	dynamicInfo.value = await ajax(EVENT_MAP.GET_YEAR_DYNAMIC, { userId, isRefresh });
+	console.log(dynamicInfo.value);
 	handleDynamics();
 	loading.value = false;
 }
@@ -113,6 +121,11 @@ onMounted(() => {
 <style scoped lang="less">
 .user-dynamic {
 	margin-top: 10px;
+
+	.rt {
+		display: flex;
+		align-items: center;
+	}
 
 	/deep/ .change-year {
 		width: 120px;

@@ -1,14 +1,12 @@
 <template>
 	<el-card class="pin-club-user-rank" shadow="never" v-loading="loading">
 		<template #header>
-			<div class="title-btn-box">
-				<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
-				<el-button class="sendAPin" @click="doSendAPin">争当沸物</el-button>
-			</div>
-			
-			<span class="desc-box" v-if="rankInfo.time">
-				最近更新：{{ $dayjs(rankInfo.time).fromNow() }}
-			</span>
+			<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
+			<el-tooltip v-if="rankInfo.time" effect="dark" placement="top" :content="`最近更新：${$dayjs(rankInfo.time).fromNow() }`">
+				<el-icon class="refresh-button" size="20" color="#999" @click="load(true)">
+					<Refresh/>
+				</el-icon>
+			</el-tooltip>
 		</template>
 		<div class="rank-warp">
 			<div class="rank-box" v-for="(rank,rankIndex) of rankInfo.rank">
@@ -29,22 +27,25 @@
 <script setup>
 import { onMounted, ref, getCurrentInstance } from "vue";
 import { ajax, EVENT_MAP } from "@/pages/content/api";
-import { sendARandomPin } from "@/pages/background/controller/pin";
 
 let { proxy } = getCurrentInstance();
 let rankInfo = ref({ time: null, rank: [] });
 let clubInfo = ref({ topic: { title: '' } });
 let loading = ref(true);
 
-onMounted(async () => {
+const load = async (isRefresh = false) => {
 	loading.value = true;
 	let clubId = proxy.$url.info.clubId;
 	clubInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_INFO, clubId);
-	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_WEEK_USER_RANK, clubId);
+	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_WEEK_USER_RANK, { clubId: clubId, isRefresh });
 	loading.value = false;
+}
+
+onMounted(() => {
+	load();
 });
 
-async function doSendAPin(){
+async function doSendAPin() {
 	loading.value = true;
 	await sendARandomPin();
 	loading.value = false;
@@ -56,28 +57,10 @@ async function doSendAPin(){
 	margin-bottom: 10px;
 	margin-top: 10px;
 
-	.title-btn-box{
-		display: flex;
-		align-items: center;
-		.title-box {
-			font-size: 16px;
-			font-weight: bold;
-			color: #333;
-		}
-		.sendAPin{
-			margin-left: 10px;
-			background: #1e80ff;
-    		color: white;
-			font-size: 14px;
-			line-height: 36px;
-			height: 36px;
-		}
-	}
-	
-
-	.desc-box {
-		font-size: 12px;
-		color: #999;
+	.title-box {
+		font-size: 16px;
+		font-weight: bold;
+		color: #333;
 	}
 
 	.rank-warp {

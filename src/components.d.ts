@@ -7,8 +7,10 @@ declare module 'vue' {
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

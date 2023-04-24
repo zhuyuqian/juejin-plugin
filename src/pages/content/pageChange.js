@@ -4,6 +4,9 @@ import PinClubUserRank from "./component/PinClubUserRank.vue";
 import CancelAllPinsZan from "./component/CancelAllPinsZan.vue";
 import UserYearDynamic from "./component/UserYearDynamic.vue";
 
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+
 import { dayjs } from "../../tool";
 import { ajax, EVENT_MAP } from "./api";
 
@@ -14,6 +17,9 @@ const insertPlugin = (app) => {
 	app.config.globalProperties.$dayjs = dayjs;
 	app.config.globalProperties.$self = self;
 	app.config.globalProperties.$url = url;
+	for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+		app.component(key, component)
+	}
 }
 
 const METHOD_MAP = {

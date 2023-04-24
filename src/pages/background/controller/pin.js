@@ -59,12 +59,13 @@ export const getPinClubInfo = async (clubId) => {
 
 /*
 * 获取圈子一周废物榜
-* 缓存30分钟
+* @param clubId 圈子id
+* @param isRefresh 是否需要更新缓存
 * */
-export const getPinClubWeekUserRank = async (clubId) => {
+export const getPinClubWeekUserRank = async ({ clubId, isRefresh }) => {
 	let storageKey = `pin-club-week-user-rank-${clubId}`;
 	let storage = await getStorage(storageKey);
-	if (storage) return storage;
+	if (storage && !isRefresh) return storage;
 	storage = { time: dayjs().format('YYYY-MM-DD HH:mm:ss'), rank: [] }
 	let { success, data } = await getTopicShortMsgList({ topic_id: clubId, limit: 1000 })
 	if (!success) return storage
@@ -112,7 +113,7 @@ export const getPinClubWeekUserRank = async (clubId) => {
 		});
 	});
 	storage.rank = rank;
-	await setStorage(storageKey, storage, 30);
+	await setStorage(storageKey, storage);
 	return storage
 }
 
@@ -121,62 +122,62 @@ export const getPinClubWeekUserRank = async (clubId) => {
  * 随机发个沸点
  */
 export const sendARandomPin = async () => {
-  let todayText = dayjs(new Date()).format("YYYYMMDD");
+	let todayText = dayjs(new Date()).format("YYYYMMDD");
 
-  let todayInfosResp = await fetch(
-    `https://www.mxnzp.com/api/holiday/single/${todayText}?ignoreHoliday=false&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09`,
-    {
-      credentials: "include",
-      method: "GET",
-      crossorigin: true,
-    }
-  );
+	let todayInfosResp = await fetch(
+		`https://www.mxnzp.com/api/holiday/single/${todayText}?ignoreHoliday=false&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09`,
+		{
+			credentials: "include",
+			method: "GET",
+			crossorigin: true,
+		}
+	);
 
-  let todayInfosBodyJson = await todayInfosResp.json();
-  let todayInfoRes = todayInfosBodyJson?.data || {};
-  let weekdayTranslateMap = {1: "周一", 2: "周二", 3: "周三", 4: "周四", 5: "周五", 6: "周六", 7: "周日"};
-  let todayInfos = `今日为${weekdayTranslateMap[todayInfoRes.weekDay] + " " + todayInfoRes.typeDes}, 阴历: ${todayInfoRes.lunarCalendar}, 
+	let todayInfosBodyJson = await todayInfosResp.json();
+	let todayInfoRes = todayInfosBodyJson?.data || {};
+	let weekdayTranslateMap = { 1: "周一", 2: "周二", 3: "周三", 4: "周四", 5: "周五", 6: "周六", 7: "周日" };
+	let todayInfos = `今日为${weekdayTranslateMap[todayInfoRes.weekDay] + " " + todayInfoRes.typeDes}, 阴历: ${todayInfoRes.lunarCalendar}, 
   	宜: ${todayInfoRes.suit}, 忌: ${todayInfoRes.avoid}`;
 
-  const getWellKnownWords = () => {
-    return new Promise((resolve, reject) => {
-	  ///加个延时, 防止接口并发超了
-      setTimeout(() => {
-        fetch(
-          "https://www.mxnzp.com/api/daily_word/recommend?count=1&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09",
-          {
-            credentials: "include",
-            method: "GET",
-            crossorigin: true,
-          }
-        ).then((wellKnownWordResp) => {
-          wellKnownWordResp.json().then((wellKnownWordBodyJson) => {
-            let wellKnownWords = wellKnownWordBodyJson?.data?.[0].content || "就不给你看~~";
-            resolve(wellKnownWords);
-          });
-        });
-      }, 3000);
-    });
-  };
+	const getWellKnownWords = () => {
+		return new Promise((resolve, reject) => {
+			///加个延时, 防止接口并发超了
+			setTimeout(() => {
+				fetch(
+					"https://www.mxnzp.com/api/daily_word/recommend?count=1&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09",
+					{
+						credentials: "include",
+						method: "GET",
+						crossorigin: true,
+					}
+				).then((wellKnownWordResp) => {
+					wellKnownWordResp.json().then((wellKnownWordBodyJson) => {
+						let wellKnownWords = wellKnownWordBodyJson?.data?.[0].content || "就不给你看~~";
+						resolve(wellKnownWords);
+					});
+				});
+			}, 3000);
+		});
+	};
 
-  let wellKnownWords = await getWellKnownWords();
-  let pinContent = wellKnownWords + "\n\n" + todayInfos;
+	let wellKnownWords = await getWellKnownWords();
+	let pinContent = wellKnownWords + "\n\n" + todayInfos;
 
-  /// topic id默认指向 '摸鱼一下' 话题
-  let topicId = window.location.pathname.match(/\d+/g)?.[0] || '6824710203301167112';
-  let res = await fetch(
-    `https://api.juejin.cn/content_api/v1/short_msg/publish?aid=2608&uuid=${uuid()}&spider=0`,
-    {
-      credentials: "include",
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: pinContent,
-        sync_to_org: false,
-        topic_id: topicId,
-      }),
-    }
-  ).then((res) => res.json());
+	/// topic id默认指向 '摸鱼一下' 话题
+	let topicId = window.location.pathname.match(/\d+/g)?.[0] || '6824710203301167112';
+	let res = await fetch(
+		`https://api.juejin.cn/content_api/v1/short_msg/publish?aid=2608&uuid=${uuid()}&spider=0`,
+		{
+			credentials: "include",
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				content: pinContent,
+				sync_to_org: false,
+				topic_id: topicId,
+			}),
+		}
+	).then((res) => res.json());
 
 //   let { success, data, err_msg } = handleApiResult(res);
 //   sendBasicNotifications("发个沸点：" + (success ? "成功" : "失败"), "^_^");
