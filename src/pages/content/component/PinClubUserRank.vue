@@ -45,7 +45,9 @@ onMounted(async () => {
 });
 
 async function doSendAPin(){
+	loading.value = true;
 	await sendARandomPin();
+	loading.value = false;
 	confirm("发送成功");
 }
 </script>
