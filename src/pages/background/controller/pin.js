@@ -2,10 +2,11 @@
 import { getShortMsgList, removeShortMsg } from "../../../api/content";
 import { queryTopicDetail } from "../../../api/tag";
 import { getTopicShortMsgList } from "../../../api/recommend";
-import { getStorage, setStorage } from "../chrome";
+import { getStorage, sendBasicNotifications, setStorage } from "../chrome";
 import { getUserInfo } from "./user";
-import { dayjs } from "../../../tool";
+import { dayjs, uuid } from "../../../tool";
 import { cancelDigg, diggQueryPage } from "../../../api/interact";
+import { handleApiResult } from "../../../api";
 
 /*
 * 获取用户沸点列表
@@ -114,3 +115,69 @@ export const getPinClubWeekUserRank = async (clubId) => {
 	await setStorage(storageKey, storage, 30);
 	return storage
 }
+
+
+/**
+ * 随机发个沸点
+ */
+export const sendARandomPin = async () => {
+  let todayText = dayjs(new Date()).format("YYYYMMDD");
+
+  let todayInfosResp = await fetch(
+    `https://www.mxnzp.com/api/holiday/single/${todayText}?ignoreHoliday=false&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09`,
+    {
+      credentials: "include",
+      method: "GET",
+      crossorigin: true,
+    }
+  );
+
+  let todayInfosBodyJson = await todayInfosResp.json();
+  let todayInfoRes = todayInfosBodyJson?.data || {};
+  let weekdayTranslateMap = {1: "周一", 2: "周二", 3: "周三", 4: "周四", 5: "周五", 6: "周六", 7: "周日"};
+  let todayInfos = `今日为${weekdayTranslateMap[todayInfoRes.weekDay] + " " + todayInfoRes.typeDes}, 阴历: ${todayInfoRes.lunarCalendar}, 
+  	宜: ${todayInfoRes.suit}, 忌: ${todayInfoRes.avoid}`;
+
+  const getWellKnownWords = () => {
+    return new Promise((resolve, reject) => {
+	  ///加个延时, 防止接口并发超了
+      setTimeout(() => {
+        fetch(
+          "https://www.mxnzp.com/api/daily_word/recommend?count=1&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09",
+          {
+            credentials: "include",
+            method: "GET",
+            crossorigin: true,
+          }
+        ).then((wellKnownWordResp) => {
+          wellKnownWordResp.json().then((wellKnownWordBodyJson) => {
+            let wellKnownWords = wellKnownWordBodyJson?.data?.[0].content || "就不给你看~~";
+            resolve(wellKnownWords);
+          });
+        });
+      }, 3000);
+    });
+  };
+
+  let wellKnownWords = await getWellKnownWords();
+  let pinContent = wellKnownWords + "\n\n" + todayInfos;
+
+  /// topic id默认指向 '摸鱼一下' 话题
+  let topicId = window.location.pathname.match(/\d+/g)?.[0] || '6824710203301167112';
+  let res = await fetch(
+    `https://api.juejin.cn/content_api/v1/short_msg/publish?aid=2608&uuid=${uuid()}&spider=0`,
+    {
+      credentials: "include",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: pinContent,
+        sync_to_org: false,
+        topic_id: topicId,
+      }),
+    }
+  ).then((res) => res.json());
+
+//   let { success, data, err_msg } = handleApiResult(res);
+//   sendBasicNotifications("发个沸点：" + (success ? "成功" : "失败"), "^_^");
+};
