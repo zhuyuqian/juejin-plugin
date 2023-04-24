@@ -1,7 +1,15 @@
 // 消息相关
 
 import { getSelfStorage, getYearDynamic } from "./user";
-import { getPinClubInfo, getUserPins, removePin, getPinClubWeekUserRank, getUserZanPins, cancelZanPin } from "./pin";
+import {
+	getPinClubInfo,
+	getUserPins,
+	removePin,
+	getPinClubWeekUserRank,
+	getUserZanPins,
+	cancelZanPin,
+	getRandomText
+} from "./pin";
 
 // 事件处理map
 const eventHandleMap = {
@@ -12,7 +20,8 @@ const eventHandleMap = {
 	'get-pin-club-week-user-rank': (data) => getPinClubWeekUserRank(data), //获取圈子一周废物榜
 	'get-user-zan-pins': (data) => getUserZanPins(data), // 获取用户点赞列表
 	'cancel-zan-pin': (data) => cancelZanPin(data), // 取消沸点点赞
-	'get-year-dynamic': (data) => getYearDynamic(data)
+	'get-year-dynamic': (data) => getYearDynamic(data), // 获取年度动态
+	'get-random-text': () => getRandomText()
 }
 
 const handleOnMessage = async (event, data, callback) => {

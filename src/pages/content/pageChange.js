@@ -9,6 +9,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import { dayjs } from "../../tool";
 import { ajax, EVENT_MAP } from "./api";
+import RandomPin from "./component/RandomPin.vue";
 
 let self = null;
 let url = { methods: [], url: "", info: {} };
@@ -78,6 +79,20 @@ const METHOD_MAP = {
 			this.app?.unmount();
 			$(`#USER_YEAR_DYNAMIC`).remove();
 		}
+	},
+	// 生成随机沸点
+	RANDOM_PIN: {
+		target: () => document.querySelector('.jcode-picker'),
+		insert() {
+			$(`<div id="RANDOM_PIN"><div>`).insertAfter(this.target());
+			this.app = createApp(RandomPin);
+			insertPlugin(this.app);
+			this.app.mount("#RANDOM_PIN");
+		},
+		remove() {
+			this.app?.unmount();
+			$(`#RANDOM_PIN`).remove();
+		}
 	}
 };
 
@@ -134,6 +149,10 @@ const initUrlInfo = async () => {
 			url.methods.push("CANCEL_ALL_PINS_ZAN");
 		}
 	}
+	if (urlArr[3] === 'pins') {
+		url.methods.push("RANDOM_PIN");
+	}
+	// 首页我的圈子 || 推荐圈子 || 圈子页
 	if (urlArr.includes("myclub") || urlArr.includes("club")) {
 		url.methods.push("PING_CLUB_USER_RANK");
 		url.info = { clubId: urlArr[urlArr.length - 1] };

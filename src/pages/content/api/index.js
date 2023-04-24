@@ -9,5 +9,6 @@ export const EVENT_MAP = {
 	GET_PIN_CLUB_WEEK_USER_RANK: 'get-pin-club-week-user-rank',
 	GET_USER_ZAN_PINS: 'get-user-zan-pins',
 	CANCEL_ZAN_PIN: 'cancel-zan-pin',
-	GET_YEAR_DYNAMIC: 'get-year-dynamic'
+	GET_YEAR_DYNAMIC: 'get-year-dynamic',
+	GET_RANDOM_TEXT: 'get-random-text'
 }

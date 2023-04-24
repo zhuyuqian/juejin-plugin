@@ -82,7 +82,6 @@ export const sendMessageToTab = (tabId, info) => {
 * @param menu 按钮信息
 * */
 export const createContextMenu = (menu) => {
-	console.log(menu);
 	return chrome.contextMenus.create(menu);
 }
 

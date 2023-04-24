@@ -7,10 +7,10 @@ import {
 	getNotCollectBug, getSelfInfo,
 	logout as apiLogout,
 	getUserInfo as apiGetUserInfo, getDynamic,
-} from "../../../api/user";
+} from "../api/user";
 import { getStorage, queryTabs, sendBasicNotifications, setStorage, updateTab } from "../chrome";
 import { resetContextMenus } from "./contextMenus";
-import { getNotReadMessageCount } from "../../../api/message";
+import { getNotReadMessageCount } from "../api/message";
 import { dayjs } from "../../../tool";
 
 /*
