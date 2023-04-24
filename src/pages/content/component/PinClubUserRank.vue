@@ -12,13 +12,15 @@
 			<div class="rank-box" v-for="(rank,rankIndex) of rankInfo.rank">
 				<div class="rank-title">
 					<span class="title-box">榜{{ rankIndex + 1 }}</span>
-					<span class="count-box">沸物:{{ rank.users.length }}人｜人均:{{ rank.msgCount }}条</span>
+					<span class="count-box">沸物:{{ rank.users.length >= 10 ? '10+' : rank.users.length }}人｜人均:{{ rank.msgCount }}条</span>
 				</div>
 				<div class="user-warp">
-					<a class="user-box" v-for="user of rank.users" :href="`https://juejin.cn/user/${user.userInfo.user_id}`" target="_blank">
-						<el-avatar shape="square" :size="30" :src="user.userInfo.avatar_large"/>
-						<span class="user-name">{{ user.userInfo.user_name }}</span>
-					</a>
+					<template v-for="user of rank.users">
+						<a class="user-box" v-if="user.userInfo" :href="`https://juejin.cn/user/${user.userInfo.user_id}`" target="_blank">
+							<el-avatar shape="square" :size="30" :src="user.userInfo.avatar_large"/>
+							<span class="user-name">{{ user.userInfo.user_name }}</span>
+						</a>
+					</template>
 				</div>
 			</div>
 		</div>

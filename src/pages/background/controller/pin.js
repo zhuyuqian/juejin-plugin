@@ -89,6 +89,8 @@ export const getPinClubWeekUserRank = async ({ clubId, isRefresh }) => {
 		} else {
 			let { msgCount, users } = rank[rank.length - 1];
 			if (user.msgs.length === msgCount) {
+				// 最多10个
+				if (users.length >= 10) continue
 				userIds.push(user.userId);
 				users.push(user);
 			} else {
@@ -101,10 +103,10 @@ export const getPinClubWeekUserRank = async ({ clubId, isRefresh }) => {
 			}
 		}
 	}
-	let userList = await Promise.all(userIds.map(userId => getUserInfo(userId)));
+	let userList = await Promise.all(userIds.map(userId => getUserInfo(userId))).catch(e => []);
 	userMap = {};
 	for (let user of userList) {
-		userMap[user.user_id] = user;
+		if (user) userMap[user.user_id] = user;
 	}
 	rank.forEach(r => {
 		r.users.forEach(user => {
