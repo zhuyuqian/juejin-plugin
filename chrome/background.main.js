@@ -738,10 +738,7 @@ const getUserPins = async userId => {
 * 删除沸点
 * */
 const removePin = async pin => {
-  let {
-    success
-  } = await (0,_api_content__WEBPACK_IMPORTED_MODULE_0__.removeShortMsg)(pin.msg_id);
-  return success;
+  return await (0,_api_content__WEBPACK_IMPORTED_MODULE_0__.removeShortMsg)(pin.msg_id);
 };
 
 /*

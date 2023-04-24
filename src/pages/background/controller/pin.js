@@ -22,8 +22,7 @@ export const getUserPins = async (userId) => {
 * 删除沸点
 * */
 export const removePin = async (pin) => {
-	let { success } = await removeShortMsg(pin.msg_id);
-	return success
+	return await removeShortMsg(pin.msg_id);
 }
 
 /*
