@@ -3,7 +3,7 @@
 		<template #header>
 			<div class="title-btn-box">
 				<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
-				<el-button class="sendAPin" @click="sendARandomPin">争当沸物</el-button>
+				<el-button class="sendAPin" @click="doSendAPin">争当沸物</el-button>
 			</div>
 			
 			<span class="desc-box" v-if="rankInfo.time">
@@ -43,6 +43,11 @@ onMounted(async () => {
 	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_WEEK_USER_RANK, clubId);
 	loading.value = false;
 });
+
+async function doSendAPin(){
+	await sendARandomPin();
+	confirm("发送成功");
+}
 </script>
 <style scoped lang="less">
 .pin-club-user-rank {

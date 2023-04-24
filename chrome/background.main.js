@@ -1,2 +1,1431 @@
-(()=>{var t={484:function(t){t.exports=function(){"use strict";var t=6e4,e=36e5,n="millisecond",r="second",i="minute",a="hour",s="day",u="week",o="month",c="quarter",l="year",d="date",h="Invalid Date",f=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,m=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,p={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_"),ordinal:function(t){var e=["th","st","nd","rd"],n=t%100;return"["+t+(e[(n-20)%10]||e[n]||e[0])+"]"}},_=function(t,e,n){var r=String(t);return!r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},y={s:_,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return(e<=0?"+":"-")+_(r,2,"0")+":"+_(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return-t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,o),a=n-i<0,s=e.clone().add(r+(a?-1:1),o);return+(-(r+(n-i)/(a?i-s:s-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return{M:o,y:l,w:u,d:s,D:d,h:a,m:i,s:r,ms:n,Q:c}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},g="en",w={};w[g]=p;var $=function(t){return t instanceof S},v=function t(e,n,r){var i;if(!e)return g;if("string"==typeof e){var a=e.toLowerCase();w[a]&&(i=a),n&&(w[a]=n,i=a);var s=e.split("-");if(!i&&s.length>1)return t(s[0])}else{var u=e.name;w[u]=e,i=u}return!r&&i&&(g=i),i||!r&&g},M=function(t,e){if($(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new S(n)},Y=y;Y.l=v,Y.i=$,Y.w=function(t,e){return M(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var S=function(){function p(t){this.$L=v(t.locale,null,!0),this.parse(t)}var _=p.prototype;return _.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(Y.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(f);if(r){var i=r[2]-1||0,a=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,a)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,a)}}return new Date(e)}(t),this.$x=t.x||{},this.init()},_.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds()},_.$utils=function(){return Y},_.isValid=function(){return!(this.$d.toString()===h)},_.isSame=function(t,e){var n=M(t);return this.startOf(e)<=n&&n<=this.endOf(e)},_.isAfter=function(t,e){return M(t)<this.startOf(e)},_.isBefore=function(t,e){return this.endOf(e)<M(t)},_.$g=function(t,e,n){return Y.u(t)?this[e]:this.set(n,t)},_.unix=function(){return Math.floor(this.valueOf()/1e3)},_.valueOf=function(){return this.$d.getTime()},_.startOf=function(t,e){var n=this,c=!!Y.u(e)||e,h=Y.p(t),f=function(t,e){var r=Y.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return c?r:r.endOf(s)},m=function(t,e){return Y.w(n.toDate()[t].apply(n.toDate("s"),(c?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},p=this.$W,_=this.$M,y=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case l:return c?f(1,0):f(31,11);case o:return c?f(1,_):f(0,_+1);case u:var w=this.$locale().weekStart||0,$=(p<w?p+7:p)-w;return f(c?y-$:y+(6-$),_);case s:case d:return m(g+"Hours",0);case a:return m(g+"Minutes",1);case i:return m(g+"Seconds",2);case r:return m(g+"Milliseconds",3);default:return this.clone()}},_.endOf=function(t){return this.startOf(t,!1)},_.$set=function(t,e){var u,c=Y.p(t),h="set"+(this.$u?"UTC":""),f=(u={},u[s]=h+"Date",u[d]=h+"Date",u[o]=h+"Month",u[l]=h+"FullYear",u[a]=h+"Hours",u[i]=h+"Minutes",u[r]=h+"Seconds",u[n]=h+"Milliseconds",u)[c],m=c===s?this.$D+(e-this.$W):e;if(c===o||c===l){var p=this.clone().set(d,1);p.$d[f](m),p.init(),this.$d=p.set(d,Math.min(this.$D,p.daysInMonth())).$d}else f&&this.$d[f](m);return this.init(),this},_.set=function(t,e){return this.clone().$set(t,e)},_.get=function(t){return this[Y.p(t)]()},_.add=function(n,c){var d,h=this;n=Number(n);var f=Y.p(c),m=function(t){var e=M(h);return Y.w(e.date(e.date()+Math.round(t*n)),h)};if(f===o)return this.set(o,this.$M+n);if(f===l)return this.set(l,this.$y+n);if(f===s)return m(1);if(f===u)return m(7);var p=(d={},d[i]=t,d[a]=e,d[r]=1e3,d)[f]||1,_=this.$d.getTime()+n*p;return Y.w(_,this)},_.subtract=function(t,e){return this.add(-1*t,e)},_.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||h;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=Y.z(this),a=this.$H,s=this.$m,u=this.$M,o=n.weekdays,c=n.months,l=function(t,n,i,a){return t&&(t[n]||t(e,r))||i[n].slice(0,a)},d=function(t){return Y.s(a%12||12,t,"0")},f=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},p={YY:String(this.$y).slice(-2),YYYY:this.$y,M:u+1,MM:Y.s(u+1,2,"0"),MMM:l(n.monthsShort,u,c,3),MMMM:l(c,u),D:this.$D,DD:Y.s(this.$D,2,"0"),d:String(this.$W),dd:l(n.weekdaysMin,this.$W,o,2),ddd:l(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(a),HH:Y.s(a,2,"0"),h:d(1),hh:d(2),a:f(a,s,!0),A:f(a,s,!1),m:String(s),mm:Y.s(s,2,"0"),s:String(this.$s),ss:Y.s(this.$s,2,"0"),SSS:Y.s(this.$ms,3,"0"),Z:i};return r.replace(m,(function(t,e){return e||p[t]||i.replace(":","")}))},_.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},_.diff=function(n,d,h){var f,m=Y.p(d),p=M(n),_=(p.utcOffset()-this.utcOffset())*t,y=this-p,g=Y.m(this,p);return g=(f={},f[l]=g/12,f[o]=g,f[c]=g/3,f[u]=(y-_)/6048e5,f[s]=(y-_)/864e5,f[a]=y/e,f[i]=y/t,f[r]=y/1e3,f)[m]||y,h?g:Y.a(g)},_.daysInMonth=function(){return this.endOf(o).$D},_.$locale=function(){return w[this.$L]},_.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=v(t,e,!0);return r&&(n.$L=r),n},_.clone=function(){return Y.w(this.$d,this)},_.toDate=function(){return new Date(this.valueOf())},_.toJSON=function(){return this.isValid()?this.toISOString():null},_.toISOString=function(){return this.$d.toISOString()},_.toString=function(){return this.$d.toUTCString()},p}(),D=S.prototype;return M.prototype=D,[["$ms",n],["$s",r],["$m",i],["$H",a],["$W",s],["$M",o],["$y",l],["$D",d]].forEach((function(t){D[t[1]]=function(e){return this.$g(e,t[0],t[1])}})),M.extend=function(t,e){return t.$i||(t(e,S,M),t.$i=!0),M},M.locale=v,M.isDayjs=$,M.unix=function(t){return M(1e3*t)},M.en=w[g],M.Ls=w,M.p={},M}()},852:function(t,e,n){t.exports=function(t){"use strict";var e=function(t){return t&&"object"==typeof t&&"default"in t?t:{default:t}}(t),n={name:"zh-cn",weekdays:"星期日_星期一_星期二_星期三_星期四_星期五_星期六".split("_"),weekdaysShort:"周日_周一_周二_周三_周四_周五_周六".split("_"),weekdaysMin:"日_一_二_三_四_五_六".split("_"),months:"一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月".split("_"),monthsShort:"1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),ordinal:function(t,e){return"W"===e?t+"周":t+"日"},weekStart:1,yearStart:4,formats:{LT:"HH:mm",LTS:"HH:mm:ss",L:"YYYY/MM/DD",LL:"YYYY年M月D日",LLL:"YYYY年M月D日Ah点mm分",LLLL:"YYYY年M月D日ddddAh点mm分",l:"YYYY/M/D",ll:"YYYY年M月D日",lll:"YYYY年M月D日 HH:mm",llll:"YYYY年M月D日dddd HH:mm"},relativeTime:{future:"%s内",past:"%s前",s:"几秒",m:"1 分钟",mm:"%d 分钟",h:"1 小时",hh:"%d 小时",d:"1 天",dd:"%d 天",M:"1 个月",MM:"%d 个月",y:"1 年",yy:"%d 年"},meridiem:function(t,e){var n=100*t+e;return n<600?"凌晨":n<900?"早上":n<1100?"上午":n<1300?"中午":n<1800?"下午":"晚上"}};return e.default.locale(n,null,!0),n}(n(484))},110:function(t){t.exports=function(){"use strict";return function(t,e,n){t=t||{};var r=e.prototype,i={future:"in %s",past:"%s ago",s:"a few seconds",m:"a minute",mm:"%d minutes",h:"an hour",hh:"%d hours",d:"a day",dd:"%d days",M:"a month",MM:"%d months",y:"a year",yy:"%d years"};function a(t,e,n,i){return r.fromToBase(t,e,n,i)}n.en.relativeTime=i,r.fromToBase=function(e,r,a,s,u){for(var o,c,l,d=a.$locale().relativeTime||i,h=t.thresholds||[{l:"s",r:44,d:"second"},{l:"m",r:89},{l:"mm",r:44,d:"minute"},{l:"h",r:89},{l:"hh",r:21,d:"hour"},{l:"d",r:35},{l:"dd",r:25,d:"day"},{l:"M",r:45},{l:"MM",r:10,d:"month"},{l:"y",r:17},{l:"yy",d:"year"}],f=h.length,m=0;m<f;m+=1){var p=h[m];p.d&&(o=s?n(e).diff(a,p.d,!0):a.diff(e,p.d,!0));var _=(t.rounding||Math.round)(Math.abs(o));if(l=o>0,_<=p.r||!p.r){_<=1&&m>0&&(p=h[m-1]);var y=d[p.l];u&&(_=u(""+_)),c="string"==typeof y?y.replace("%d",_):y(_,r,p.l,l);break}}if(r)return c;var g=l?d.future:d.past;return"function"==typeof g?g(c):g.replace("%s",c)},r.to=function(t,e){return a(t,e,this,!0)},r.from=function(t,e){return a(t,e,this)};var s=function(t){return t.$u?n.utc():n()};r.toNow=function(t){return this.to(s(this),t)},r.fromNow=function(t){return this.from(s(this),t)}}}()},833:function(t){t.exports=function(){"use strict";return function(t,e){e.prototype.weekday=function(t){var e=this.$locale().weekStart||0,n=this.$W,r=(n<e?n+7:n)-e;return this.$utils().u(t)?r:this.subtract(r,"day").add(t,"day")}}}()}},e={};function n(r){var i=e[r];if(void 0!==i)return i.exports;var a=e[r]={exports:{}};return t[r].call(a.exports,a,a.exports,n),a.exports}n.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return n.d(e,{a:e}),e},n.d=(t,e)=>{for(var r in e)n.o(e,r)&&!n.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},n.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e),(()=>{"use strict";const t=async({url:t,method:n="GET",data:r,headers:i={"Content-Type":"application/json"}})=>{let a=await fetch(t,{method:n,body:JSON.stringify(r),credentials:"include",headers:i}).then((t=>t.json()));return e(a)},e=t=>Object.assign({},t,{success:0===t.err_no}),r=(e,n)=>t({url:`https://api.juejin.cn/user_api/v1/user/dynamic?user_id=${e}&cursor=${n}`});var i=n(484),a=n.n(i);var s=n(833),u=n.n(s),o=n(110),c=n.n(o);n(852),a().extend(u()),a().extend(c()),a().locale("zh-cn");const l=a(),d=async(t,e,n)=>{let r=a()().format("YYYY-MM-DD HH:mm:ss"),i={[t]:{value:e,setTime:r,overdueTime:void 0!==n?a()(r).add(n,"minute").format("YYYY-MM-DD HH:mm:ss"):null}};await chrome.storage.local.set(i)},h=async t=>{let e=(await chrome.storage.local.get())[t];return e?e.overdueTime&&!a()().isBefore(e.overdueTime)?null:e.value:null},f=(t,e)=>{chrome.notifications.getPermissionLevel((n=>{"granted"===n&&chrome.notifications.create((()=>{for(var t=[],e="0123456789abcdef",n=0;n<36;n++)t[n]=e.substr(Math.floor(16*Math.random()),1);return t[14]="4",t[19]=e.substr(3&t[19]|8,1),t[8]=t[13]=t[18]=t[23]="-",t.join("")})(),{type:"basic",title:t,message:e,iconUrl:"static/img/icon.png"})}))},m=t=>chrome.tabs.create(t),p=(t,e)=>chrome.tabs.update(t,e),_=t=>(console.log(t),chrome.contextMenus.create(t));let y=!1;const g=async()=>{if(y)return;y=!0,await chrome.contextMenus.removeAll();let t=await w();t?(await _({id:"MENU_PARENT",title:`${t.user_basic.user_name}的掘金`,contexts:["all"]}),await _({id:"SELF_HOME",title:"我的主页",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"SELF_NOTIFICATION",title:"我的消息",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"separator1",type:"separator",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"SIGN_IN",title:"快速签到",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"BUG_FIX",title:"收集BUG",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"FREE_LUCKY_DRAW",title:"免费抽奖",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"separator2",type:"separator",parentId:"MENU_PARENT",contexts:["all"]}),await _({id:"LOGOUT",title:"登出",parentId:"MENU_PARENT",contexts:["all"]})):await _({id:"OPEN_JUEJIN",type:"normal",title:"掘金首页",contexts:["all"]}),y=!1},w=async()=>await h("self-info"),$=async t=>{await d("self-info",t)},v=async()=>{let{success:e,data:n}=await t({url:"https://api.juejin.cn/user_api/v1/user/get_info_pack",method:"POST",data:{pack_req:{user_counter:!0,user_growth_info:!0,user:!0}}});return e?(await $(n),n):$(null)},M=({userId:e,cursor:n=0,sortType:r=4,limit:i=999})=>t({url:"https://api.juejin.cn/content_api/v1/short_msg/query_list",method:"POST",data:{user_id:e,cursor:n.toString(),sort_type:r,limit:i}}),Y=async e=>{let n=`pin-club-week-user-rank-${e}`,r=await h(n);if(r)return r;r={time:l().format("YYYY-MM-DD HH:mm:ss"),rank:[]};let{success:i,data:a}=await(({topic_id:e,cursor:n=0,id_type:r=4,limit:i=10,sort_type:a=500})=>t({url:"https://api.juejin.cn/recommend_api/v1/short_msg/topic",method:"POST",data:{topic_id:e,cursor:n.toString(),id_type:r,limit:i,sort_type:a}}))({topic_id:e,limit:1e3});if(!i)return r;let s={},u=l().startOf("week").valueOf();for(let t of a){if(1e3*t.msg_Info.ctime<u)break;let{user_id:e}=t.msg_Info;s[e]?s[e].push(t):s[e]=[t]}let o=[];for(let t in s)o.push({userId:t,msgs:s[t]});o.sort(((t,e)=>e.msgs.length-t.msgs.length));let c=[],f=[];for(let t of o)if(c.length){let{msgCount:e,users:n}=c[c.length-1];if(t.msgs.length===e)f.push(t.userId),n.push(t);else{if(!(c.length<3))break;f.push(t.userId),c.push({msgCount:t.msgs.length,users:[t]})}}else f.push(t.userId),c.push({msgCount:t.msgs.length,users:[t]});let m=await Promise.all(f.map((e=>(async e=>{let n=`user-info-${e}`,r=await h(n);if(r)return r;let{success:i,data:a}=await(e=>t({url:`https://api.juejin.cn/user_api/v1/user/get?user_id=${e}`}))(e);return i?(await d(n,a,1440),a):null})(e))));s={};for(let t of m)s[t.user_id]=t;return c.forEach((t=>{t.users.forEach((t=>{t.userInfo=s[t.userId]}))})),r.rank=c,await d(n,r,10),r},S={"get-self-info":()=>w(),"get-user-pins":t=>(async t=>{let e=await M({userId:t,limit:1});return e.success?(e=await M({userId:t,limit:e.count}),e.success?e.data:[]):[]})(t),"remove-pin":e=>(async e=>{let{success:n}=await(r=e.msg_id,t({url:"https://api.juejin.cn/content_api/v1/short_msg/delete",method:"POST",data:{msg_id:r}}));var r;return n})(e),"get-pin-club-info":e=>(async e=>{let n=`pin-club-info-${e}`,r=await h(n);if(r)return r;let{success:i,data:a}=await(s=e,t({url:"https://api.juejin.cn/tag_api/v1/query_topic_detail",method:"POST",data:{topic_id:s}}));var s;return i?(await d(n,a,10080),a):null})(e),"get-pin-club-week-user-rank":t=>Y(t),"get-user-zan-pins":e=>(async e=>{let{success:n,data:r,count:i}=await(({cursor:e=0,item_type:n=4,sort_type:r=2,user_id:i})=>t({url:"https://api.juejin.cn/interact_api/v1/digg/query_page",method:"POST",data:{cursor:e.toString(),item_type:n,sort_type:r,user_id:i}}))({user_id:e,item_type:4});return n?{pins:r,count:i}:{pins:[],count:0}})(e),"cancel-zan-pin":e=>(async e=>{let{success:n}=await(r=e.msg_id,t({url:"https://api.juejin.cn/interact_api/v1/digg/cancel",method:"POST",data:{item_id:r,item_type:4}}));var r;return n})(e),"get-year-dynamic":t=>(async t=>{let e=`year-dynamic-${t}`,{success:n,data:i}=await r(t,0);if(!n)return[];let{count:a,list:s}=i,u=await h(e);if(u&&u.count===a)return u.info;u={count:a,info:{}};let o=[...s],c=new Array(Math.ceil(a/20)).fill(null).map(((t,e)=>20*e));c.shift(),(await Promise.all(c.map((e=>r(t,e))))).forEach((t=>{t.success&&o.push(...t.data.list)}));for(let t of o){let e=l(1e3*t.time).format("YYYY"),n=l(1e3*t.time).format("MM-DD");u.info[e]?u.info[e][n]?u.info[e][n].push(t.action):u.info[e][n]=[t.action]:u.info[e]={[n]:[t.action]}}return await d(e,u,1440),u.info})(t)};chrome.contextMenus.onClicked.addListener((async(e,n)=>{let r=await w(),{menuItemId:i}=e,{windowId:a}=n;"OPEN_JUEJIN"===i&&m({url:"https://juejin.cn/",selected:!0,windowId:a}),"SELF_HOME"===i&&await m({url:`https://juejin.cn/user/${r.user_basic.user_id}`,selected:!0,windowId:a}),"SELF_NOTIFICATION"===i&&await m({url:"https://juejin.cn/notification",selected:!0,windowId:a}),"LOGOUT"===i&&await(async()=>{t({url:"https://juejin.cn/passport/web/logout/"});let e=await((t={})=>chrome.tabs.query(t))({url:"https://juejin.cn/*"});await $(null),await g();for(let t of e)p(t.id,{url:t.url})})(),"SIGN_IN"===i&&await(async()=>{let{success:e,data:n,err_msg:r}=await t({url:"https://api.juejin.cn/growth_api/v1/check_in",method:"POST"});f("掘金签到："+(e?"成功":"失败"),e?`本次新增矿石：${n.incr_point}，当前矿石：${n.sum_point}`:r)})(),"BUG_FIX"===i&&await(async()=>{let{success:e,data:n,err_msg:r}=await t({url:"https://api.juejin.cn/user_api/v1/bugfix/not_collect",method:"POST",headers:{}});f("掘金BugFix："+(e?"成功":"失败"),e?`今日掘金bugfix：${n.length}`:r),e&&n.forEach((e=>(e=>t({url:"https://api.juejin.cn/user_api/v1/bugfix/collect",method:"POST",data:e}))(e)))})(),"FREE_LUCKY_DRAW"===i&&await(async()=>{let e=await t({url:"https://api.juejin.cn/growth_api/v1/lottery_config/get"});return e.success?e.data.free_count?(e=await t({url:"https://api.juejin.cn/growth_api/v1/lottery/draw",method:"POST"}),e.success?void f("今日免费抽奖成功",`恭喜抽到：${e.data.lottery_name}`):f("今日免费抽奖失败",e.err_msg)):f("今日免费抽奖失败","今日免费抽奖次数已经用完"):f("今日免费抽奖失败",e.err_msg)})()})),chrome.tabs.onUpdated.addListener((async(t,e,n)=>{if("complete"!==e.status)return;let r=n.url.includes("juejin.cn");r&&await v(),await g(),r&&((t,e)=>{chrome.tabs.sendMessage(t,Object.assign({event:"page-change-complete"},{from:"background"}))})(t)})),chrome.runtime.onMessage.addListener(((t,e,n)=>{let{to:r,event:i,data:a}=t;if("background"===r)return(async(t,e,n)=>{n(await S[t](e))})(i,a,n),!0})),(async()=>{await v(),await g(),setInterval((async()=>{if(await w()){let{success:e,data:n}=await t({url:"https://api.juejin.cn/interact_api/v1/message/count"});if(!e)return;let{count:r,total:i}=n,a=[];r[1]&&a.push(`点赞和收藏：${r[1]}条`),r[3]&&a.push(`评论：${r[3]}条`);let s=await h("message-not-read");i&&s!==JSON.stringify(a)&&f(`您有${i}条掘金未读消息，以下为详细内容`,`${a.join("\n")}`),await d("message-not-read",JSON.stringify(a))}}),6e4)})()})()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/api/content.js":
+/*!****************************!*\
+  !*** ./src/api/content.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getShortMsgList": () => (/* binding */ getShortMsgList),
+/* harmony export */   "removeShortMsg": () => (/* binding */ removeShortMsg)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+// 内容相关
+
+
+/*
+* 删除沸点
+* */
+const removeShortMsg = msgId => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/content_api/v1/short_msg/delete`,
+  method: 'POST',
+  data: {
+    msg_id: msgId
+  }
+});
+
+/*
+* 获取用户沸点列表
+* */
+const getShortMsgList = ({
+  userId,
+  cursor = 0,
+  sortType = 4,
+  limit = 999
+}) => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/content_api/v1/short_msg/query_list`,
+  method: 'POST',
+  data: {
+    user_id: userId,
+    cursor: cursor.toString(),
+    sort_type: sortType,
+    limit: limit
+  }
+});
+
+/***/ }),
+
+/***/ "./src/api/index.js":
+/*!**************************!*\
+  !*** ./src/api/index.js ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ajax": () => (/* binding */ ajax),
+/* harmony export */   "handleApiResult": () => (/* binding */ handleApiResult)
+/* harmony export */ });
+const ajax = async ({
+  url,
+  method = 'GET',
+  data,
+  headers = {
+    "Content-Type": "application/json"
+  }
+}) => {
+  let res = await fetch(url, {
+    method,
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers
+  }).then(res => res.json());
+  return handleApiResult(res);
+};
+const handleApiResult = apiRes => {
+  return Object.assign({}, apiRes, {
+    success: apiRes.err_no === 0
+  });
+};
+
+/***/ }),
+
+/***/ "./src/api/interact.js":
+/*!*****************************!*\
+  !*** ./src/api/interact.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "cancelDigg": () => (/* binding */ cancelDigg),
+/* harmony export */   "diggQueryPage": () => (/* binding */ diggQueryPage)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+
+
+/*
+* 获取点赞列表
+* @param item_type 4：沸点
+* @param sort_type 2：时间倒序
+* */
+const diggQueryPage = ({
+  cursor = 0,
+  item_type = 4,
+  sort_type = 2,
+  user_id
+}) => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/interact_api/v1/digg/query_page`,
+  method: 'POST',
+  data: {
+    cursor: cursor.toString(),
+    item_type,
+    sort_type,
+    user_id
+  }
+});
+
+/*
+* 取消点赞
+* @param itemId id
+* @param itemType 4：沸点
+* */
+const cancelDigg = (itemId, itemType) => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/interact_api/v1/digg/cancel`,
+  method: 'POST',
+  data: {
+    item_id: itemId,
+    item_type: itemType
+  }
+});
+
+/***/ }),
+
+/***/ "./src/api/message.js":
+/*!****************************!*\
+  !*** ./src/api/message.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getNotReadMessageCount": () => (/* binding */ getNotReadMessageCount)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+// 消息相关
+
+const getNotReadMessageCount = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/interact_api/v1/message/count`
+});
+
+/***/ }),
+
+/***/ "./src/api/recommend.js":
+/*!******************************!*\
+  !*** ./src/api/recommend.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTopicShortMsgList": () => (/* binding */ getTopicShortMsgList)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+
+const getTopicShortMsgList = ({
+  topic_id,
+  cursor = 0,
+  id_type = 4,
+  limit = 10,
+  sort_type = 500
+}) => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/recommend_api/v1/short_msg/topic`,
+  method: "POST",
+  data: {
+    topic_id,
+    cursor: cursor.toString(),
+    id_type,
+    limit,
+    sort_type
+  }
+});
+
+/***/ }),
+
+/***/ "./src/api/tag.js":
+/*!************************!*\
+  !*** ./src/api/tag.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "queryTopicDetail": () => (/* binding */ queryTopicDetail)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+
+
+/*
+* 获取沸点圈子详情
+* */
+
+const queryTopicDetail = topicId => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/tag_api/v1/query_topic_detail`,
+  method: 'POST',
+  data: {
+    topic_id: topicId
+  }
+});
+
+/***/ }),
+
+/***/ "./src/api/user.js":
+/*!*************************!*\
+  !*** ./src/api/user.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "checkIn": () => (/* binding */ checkIn),
+/* harmony export */   "collectBug": () => (/* binding */ collectBug),
+/* harmony export */   "drawLottery": () => (/* binding */ drawLottery),
+/* harmony export */   "getDynamic": () => (/* binding */ getDynamic),
+/* harmony export */   "getLotteryConfig": () => (/* binding */ getLotteryConfig),
+/* harmony export */   "getNotCollectBug": () => (/* binding */ getNotCollectBug),
+/* harmony export */   "getSelfInfo": () => (/* binding */ getSelfInfo),
+/* harmony export */   "getUserInfo": () => (/* binding */ getUserInfo),
+/* harmony export */   "logout": () => (/* binding */ logout)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./src/api/index.js");
+// 用户相关
+
+
+/*
+* 用户登出
+* */
+const logout = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: 'https://juejin.cn/passport/web/logout/'
+});
+
+/*
+* 登录人获取自己的信息
+* */
+const getSelfInfo = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/user_api/v1/user/get_info_pack`,
+  method: 'POST',
+  data: {
+    pack_req: {
+      user_counter: true,
+      user_growth_info: true,
+      user: true
+    }
+  }
+});
+
+/*
+* 获取用户信息
+* @param userId 用户id
+* */
+const getUserInfo = userId => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/user_api/v1/user/get?user_id=${userId}`
+});
+
+/*
+* 用户签到
+* */
+const checkIn = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: 'https://api.juejin.cn/growth_api/v1/check_in',
+  method: 'POST'
+});
+
+/*
+* 获取未收集的bug
+* */
+const getNotCollectBug = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/user_api/v1/bugfix/not_collect`,
+  method: 'POST',
+  headers: {}
+});
+
+/*
+* 收集bug
+* @param bug bug对象
+* */
+const collectBug = bug => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/user_api/v1/bugfix/collect`,
+  method: 'POST',
+  data: bug
+});
+
+/*
+* 获取今日免费抽奖次数
+* */
+const getLotteryConfig = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/growth_api/v1/lottery_config/get`
+});
+
+/*
+* 抽奖
+* */
+const drawLottery = () => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/growth_api/v1/lottery/draw`,
+  method: 'POST'
+});
+
+/*
+* 获取用户动态
+* @param userId 用户id
+* @param cursor 偏移数
+* */
+const getDynamic = (userId, cursor) => (0,_index__WEBPACK_IMPORTED_MODULE_0__.ajax)({
+  url: `https://api.juejin.cn/user_api/v1/user/dynamic?user_id=${userId}&cursor=${cursor}`
+});
+
+/***/ }),
+
+/***/ "./src/config/index.ts":
+/*!*****************************!*\
+  !*** ./src/config/index.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  iconUrl: "static/img/icon.png"
+});
+
+/***/ }),
+
+/***/ "./src/pages/background/chrome.js":
+/*!****************************************!*\
+  !*** ./src/pages/background/chrome.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createContextMenu": () => (/* binding */ createContextMenu),
+/* harmony export */   "createTab": () => (/* binding */ createTab),
+/* harmony export */   "getStorage": () => (/* binding */ getStorage),
+/* harmony export */   "queryTabs": () => (/* binding */ queryTabs),
+/* harmony export */   "removeAllContextMenus": () => (/* binding */ removeAllContextMenus),
+/* harmony export */   "sendBasicNotifications": () => (/* binding */ sendBasicNotifications),
+/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab),
+/* harmony export */   "setStorage": () => (/* binding */ setStorage),
+/* harmony export */   "updateTab": () => (/* binding */ updateTab)
+/* harmony export */ });
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../config */ "./src/config/index.ts");
+/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../tool */ "./src/tool/index.js");
+
+
+
+
+/*
+* 设置缓存
+* @param key 名称
+* @param value 数据
+* @param minute 缓存多少分钟，如果没有则永久缓存
+* */
+const setStorage = async (key, value, minute) => {
+  let setTime = dayjs__WEBPACK_IMPORTED_MODULE_0___default()().format('YYYY-MM-DD HH:mm:ss');
+  let overdueTime = minute !== undefined ? dayjs__WEBPACK_IMPORTED_MODULE_0___default()(setTime).add(minute, 'minute').format('YYYY-MM-DD HH:mm:ss') : null;
+  let storage = {
+    [key]: {
+      value,
+      setTime,
+      overdueTime
+    }
+  };
+  await chrome.storage.local.set(storage);
+};
+
+/*
+* 获取缓存
+* @param key 名称
+* */
+const getStorage = async key => {
+  let storage = (await chrome.storage.local.get())[key];
+  if (!storage) return null;
+  // 如果结束时间存在 && 当前时间不在结束之间之前
+  if (storage.overdueTime && !dayjs__WEBPACK_IMPORTED_MODULE_0___default()().isBefore(storage.overdueTime)) return null;
+  return storage.value;
+};
+
+/*
+* 发送桌面通知
+* @param title 标题
+* @param message 内容
+* */
+const sendBasicNotifications = (title, message) => {
+  chrome.notifications.getPermissionLevel(level => {
+    if (level === 'granted') {
+      chrome.notifications.create((0,_tool__WEBPACK_IMPORTED_MODULE_2__.uuid)(), {
+        type: 'basic',
+        title,
+        message,
+        iconUrl: _config__WEBPACK_IMPORTED_MODULE_1__["default"].iconUrl
+      });
+    }
+  });
+};
+
+/*
+* 创建tab
+* @param tab 标签信息
+* */
+const createTab = tab => {
+  return chrome.tabs.create(tab);
+};
+
+/*
+* 查询tabs
+* @param search 需要查询的条件
+* */
+const queryTabs = (search = {}) => {
+  return chrome.tabs.query(search);
+};
+
+/*
+* 修改tab
+* @param tabId 标签id
+* @param tab 标签信息
+* */
+const updateTab = (tabId, tab) => {
+  return chrome.tabs.update(tabId, tab);
+};
+
+/*
+* 给标签页发信息
+* */
+const sendMessageToTab = (tabId, info) => {
+  return chrome.tabs.sendMessage(tabId, Object.assign(info, {
+    from: 'background'
+  }));
+};
+
+/*
+* 创建菜单
+* @param menu 按钮信息
+* */
+const createContextMenu = menu => {
+  console.log(menu);
+  return chrome.contextMenus.create(menu);
+};
+
+/*
+* 删除全部菜单
+* */
+const removeAllContextMenus = () => {
+  return chrome.contextMenus.removeAll();
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/controller/contextMenus.js":
+/*!*********************************************************!*\
+  !*** ./src/pages/background/controller/contextMenus.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "contextMenusOnClick": () => (/* binding */ contextMenusOnClick),
+/* harmony export */   "resetContextMenus": () => (/* binding */ resetContextMenus)
+/* harmony export */ });
+/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./user */ "./src/pages/background/controller/user.js");
+/* harmony import */ var _chrome__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../chrome */ "./src/pages/background/chrome.js");
+
+
+let resetContextMenusIng = false;
+
+/*
+* 重置所有右键菜单
+* */
+const resetContextMenus = async () => {
+  if (resetContextMenusIng) return;
+  resetContextMenusIng = true;
+  // 移除所有菜单
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.removeAllContextMenus)();
+  // 获取用户信息
+  let user = await (0,_user__WEBPACK_IMPORTED_MODULE_0__.getSelfStorage)();
+  // 已登录
+  if (user) {
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "MENU_PARENT",
+      title: `${user.user_basic.user_name}的掘金`,
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "SELF_HOME",
+      title: "我的主页",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "SELF_NOTIFICATION",
+      title: "我的消息",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "separator1",
+      type: "separator",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "SIGN_IN",
+      title: "快速签到",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "BUG_FIX",
+      title: "收集BUG",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: 'FREE_LUCKY_DRAW',
+      title: "免费抽奖",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "separator2",
+      type: "separator",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "LOGOUT",
+      title: "登出",
+      parentId: "MENU_PARENT",
+      contexts: ["all"]
+    });
+  } else {
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createContextMenu)({
+      id: "OPEN_JUEJIN",
+      type: "normal",
+      title: `掘金首页`,
+      contexts: ["all"]
+    });
+  }
+  resetContextMenusIng = false;
+};
+
+/*
+*  菜单被点击
+* */
+const contextMenusOnClick = async (info, tab) => {
+  let user = await (0,_user__WEBPACK_IMPORTED_MODULE_0__.getSelfStorage)();
+  let {
+    menuItemId
+  } = info;
+  let {
+    windowId
+  } = tab;
+  if (menuItemId === "OPEN_JUEJIN") {
+    // 打开掘金
+    (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createTab)({
+      url: `https://juejin.cn/`,
+      selected: true,
+      windowId
+    });
+  }
+  if (menuItemId === "SELF_HOME") {
+    // 我的主页
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createTab)({
+      url: `https://juejin.cn/user/${user.user_basic.user_id}`,
+      selected: true,
+      windowId
+    });
+  }
+  if (menuItemId === "SELF_NOTIFICATION") {
+    // 我的消息
+    await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.createTab)({
+      url: `https://juejin.cn/notification`,
+      selected: true,
+      windowId
+    });
+  }
+  if (menuItemId === "LOGOUT") {
+    // 登出
+    await (0,_user__WEBPACK_IMPORTED_MODULE_0__.logout)();
+  }
+  if (menuItemId === "SIGN_IN") {
+    // 签到
+    await (0,_user__WEBPACK_IMPORTED_MODULE_0__.signin)();
+  }
+  if (menuItemId === "BUG_FIX") {
+    // fixbug
+    await (0,_user__WEBPACK_IMPORTED_MODULE_0__.bugfix)();
+  }
+  if (menuItemId === 'FREE_LUCKY_DRAW') {
+    // 免费抽奖
+    await (0,_user__WEBPACK_IMPORTED_MODULE_0__.freeLucky)();
+  }
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/controller/message.js":
+/*!****************************************************!*\
+  !*** ./src/pages/background/controller/message.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "runtimeOnMessage": () => (/* binding */ runtimeOnMessage)
+/* harmony export */ });
+/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./user */ "./src/pages/background/controller/user.js");
+/* harmony import */ var _pin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pin */ "./src/pages/background/controller/pin.js");
+// 消息相关
+
+
+
+
+// 事件处理map
+const eventHandleMap = {
+  'get-self-info': () => (0,_user__WEBPACK_IMPORTED_MODULE_0__.getSelfStorage)(),
+  // 获取个人信息
+  'get-user-pins': userId => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getUserPins)(userId),
+  // 获取用户沸点列表
+  'remove-pin': pin => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.removePin)(pin),
+  // 删除沸点
+  'get-pin-club-info': clubId => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getPinClubInfo)(clubId),
+  // 获取沸点圈子详情
+  'get-pin-club-week-user-rank': clubId => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getPinClubWeekUserRank)(clubId),
+  //获取圈子一周废物榜
+  'get-user-zan-pins': userId => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getUserZanPins)(userId),
+  // 获取用户点赞列表
+  'cancel-zan-pin': pin => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.cancelZanPin)(pin),
+  // 取消沸点点赞
+  'get-year-dynamic': userId => (0,_user__WEBPACK_IMPORTED_MODULE_0__.getYearDynamic)(userId)
+};
+const handleOnMessage = async (event, data, callback) => {
+  callback(await eventHandleMap[event](data));
+};
+
+/*
+* 当页面发来了消息
+* */
+const runtimeOnMessage = (request, sender, sendResponse) => {
+  let {
+    to,
+    event,
+    data
+  } = request;
+  if (to !== 'background') return;
+  handleOnMessage(event, data, sendResponse);
+  return true;
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/controller/pin.js":
+/*!************************************************!*\
+  !*** ./src/pages/background/controller/pin.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "cancelZanPin": () => (/* binding */ cancelZanPin),
+/* harmony export */   "getPinClubInfo": () => (/* binding */ getPinClubInfo),
+/* harmony export */   "getPinClubWeekUserRank": () => (/* binding */ getPinClubWeekUserRank),
+/* harmony export */   "getUserPins": () => (/* binding */ getUserPins),
+/* harmony export */   "getUserZanPins": () => (/* binding */ getUserZanPins),
+/* harmony export */   "removePin": () => (/* binding */ removePin),
+/* harmony export */   "sendARandomPin": () => (/* binding */ sendARandomPin)
+/* harmony export */ });
+/* harmony import */ var _api_content__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../api/content */ "./src/api/content.js");
+/* harmony import */ var _api_tag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../api/tag */ "./src/api/tag.js");
+/* harmony import */ var _api_recommend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../api/recommend */ "./src/api/recommend.js");
+/* harmony import */ var _chrome__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../chrome */ "./src/pages/background/chrome.js");
+/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./user */ "./src/pages/background/controller/user.js");
+/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../tool */ "./src/tool/index.js");
+/* harmony import */ var _api_interact__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../api/interact */ "./src/api/interact.js");
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../api */ "./src/api/index.js");
+// 沸点相关
+
+
+
+
+
+
+
+
+
+/*
+* 获取用户沸点列表
+* */
+const getUserPins = async userId => {
+  // 先获取数量
+  let res = await (0,_api_content__WEBPACK_IMPORTED_MODULE_0__.getShortMsgList)({
+    userId,
+    limit: 1
+  });
+  if (!res.success) return [];
+  res = await (0,_api_content__WEBPACK_IMPORTED_MODULE_0__.getShortMsgList)({
+    userId,
+    limit: res.count
+  });
+  return res.success ? res.data : [];
+};
+
+/*
+* 删除沸点
+* */
+const removePin = async pin => {
+  let {
+    success
+  } = await (0,_api_content__WEBPACK_IMPORTED_MODULE_0__.removeShortMsg)(pin.msg_id);
+  return success;
+};
+
+/*
+* 获取用户点赞列表
+* */
+const getUserZanPins = async userId => {
+  let {
+    success,
+    data,
+    count
+  } = await (0,_api_interact__WEBPACK_IMPORTED_MODULE_6__.diggQueryPage)({
+    user_id: userId,
+    item_type: 4
+  });
+  return success ? {
+    pins: data,
+    count: count
+  } : {
+    pins: [],
+    count: 0
+  };
+};
+
+/*
+* 取消点赞
+* */
+const cancelZanPin = async pin => {
+  let {
+    success
+  } = await (0,_api_interact__WEBPACK_IMPORTED_MODULE_6__.cancelDigg)(pin.msg_id, 4);
+  return success;
+};
+
+/*
+* 获取圈子详情
+* 缓存7天
+* */
+const getPinClubInfo = async clubId => {
+  let storageKey = `pin-club-info-${clubId}`;
+  let storage = await (0,_chrome__WEBPACK_IMPORTED_MODULE_3__.getStorage)(storageKey);
+  if (storage) return storage;
+  let {
+    success,
+    data
+  } = await (0,_api_tag__WEBPACK_IMPORTED_MODULE_1__.queryTopicDetail)(clubId);
+  if (!success) return null;
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_3__.setStorage)(storageKey, data, 60 * 24 * 7);
+  return data;
+};
+
+/*
+* 获取圈子一周废物榜
+* 缓存10分钟
+* */
+const getPinClubWeekUserRank = async clubId => {
+  let storageKey = `pin-club-week-user-rank-${clubId}`;
+  let storage = await (0,_chrome__WEBPACK_IMPORTED_MODULE_3__.getStorage)(storageKey);
+  if (storage) return storage;
+  storage = {
+    time: (0,_tool__WEBPACK_IMPORTED_MODULE_5__.dayjs)().format('YYYY-MM-DD HH:mm:ss'),
+    rank: []
+  };
+  let {
+    success,
+    data
+  } = await (0,_api_recommend__WEBPACK_IMPORTED_MODULE_2__.getTopicShortMsgList)({
+    topic_id: clubId,
+    limit: 1000
+  });
+  if (!success) return storage;
+  let userMap = {};
+  let targetTime = (0,_tool__WEBPACK_IMPORTED_MODULE_5__.dayjs)().startOf('week').valueOf();
+  for (let msg of data) {
+    if (msg.msg_Info.ctime * 1000 < targetTime) break;
+    let {
+      user_id
+    } = msg.msg_Info;
+    userMap[user_id] ? userMap[user_id].push(msg) : userMap[user_id] = [msg];
+  }
+  let users = [];
+  for (let userId in userMap) {
+    users.push({
+      userId,
+      msgs: userMap[userId]
+    });
+  }
+  users.sort((a, b) => b.msgs.length - a.msgs.length);
+  let rank = [];
+  let userIds = [];
+  for (let user of users) {
+    if (!rank.length) {
+      userIds.push(user.userId);
+      rank.push({
+        msgCount: user.msgs.length,
+        users: [user]
+      });
+    } else {
+      let {
+        msgCount,
+        users
+      } = rank[rank.length - 1];
+      if (user.msgs.length === msgCount) {
+        userIds.push(user.userId);
+        users.push(user);
+      } else {
+        if (rank.length < 3) {
+          userIds.push(user.userId);
+          rank.push({
+            msgCount: user.msgs.length,
+            users: [user]
+          });
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  let userList = await Promise.all(userIds.map(userId => (0,_user__WEBPACK_IMPORTED_MODULE_4__.getUserInfo)(userId)));
+  userMap = {};
+  for (let user of userList) {
+    userMap[user.user_id] = user;
+  }
+  rank.forEach(r => {
+    r.users.forEach(user => {
+      user.userInfo = userMap[user.userId];
+    });
+  });
+  storage.rank = rank;
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_3__.setStorage)(storageKey, storage, 10);
+  return storage;
+};
+
+/**
+ * 随机发个沸点
+ */
+const sendARandomPin = async () => {
+  let todayText = (0,_tool__WEBPACK_IMPORTED_MODULE_5__.dayjs)(new Date()).format("YYYYMMDD");
+  let todayInfosResp = await fetch(`https://www.mxnzp.com/api/holiday/single/${todayText}?ignoreHoliday=false&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09`, {
+    credentials: "include",
+    method: "GET",
+    crossorigin: true
+  });
+  let todayInfosBodyJson = await todayInfosResp.json();
+  let todayInfoRes = todayInfosBodyJson?.data || {};
+  let weekdayTranslateMap = {
+    1: "周一",
+    2: "周二",
+    3: "周三",
+    4: "周四",
+    5: "周五",
+    6: "周六",
+    7: "周日"
+  };
+  let todayInfos = `今日为${weekdayTranslateMap[todayInfoRes.weekDay] + " " + todayInfoRes.typeDes}, 阴历: ${todayInfoRes.lunarCalendar}, 
+  	宜: ${todayInfoRes.suit}, 忌: ${todayInfoRes.avoid}`;
+  const getWellKnownWords = () => {
+    return new Promise((resolve, reject) => {
+      ///加个延时, 防止接口并发超了
+      setTimeout(() => {
+        fetch("https://www.mxnzp.com/api/daily_word/recommend?count=1&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09", {
+          credentials: "include",
+          method: "GET",
+          crossorigin: true
+        }).then(wellKnownWordResp => {
+          wellKnownWordResp.json().then(wellKnownWordBodyJson => {
+            let wellKnownWords = wellKnownWordBodyJson?.data?.[0].content || "就不给你看~~";
+            resolve(wellKnownWords);
+          });
+        });
+      }, 3000);
+    });
+  };
+  let wellKnownWords = await getWellKnownWords();
+  let pinContent = wellKnownWords + "\n\n" + todayInfos;
+
+  /// topic id默认指向 '摸鱼一下' 话题
+  let topicId = window.location.pathname.match(/\d+/g)?.[0] || '6824710203301167112';
+  let res = await fetch(`https://api.juejin.cn/content_api/v1/short_msg/publish?aid=2608&uuid=${(0,_tool__WEBPACK_IMPORTED_MODULE_5__.uuid)()}&spider=0`, {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      content: pinContent,
+      sync_to_org: false,
+      topic_id: topicId
+    })
+  }).then(res => res.json());
+
+  //   let { success, data, err_msg } = handleApiResult(res);
+  //   sendBasicNotifications("发个沸点：" + (success ? "成功" : "失败"), "^_^");
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/controller/tabs.js":
+/*!*************************************************!*\
+  !*** ./src/pages/background/controller/tabs.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "tabOnUpdate": () => (/* binding */ tabOnUpdate)
+/* harmony export */ });
+/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./user */ "./src/pages/background/controller/user.js");
+/* harmony import */ var _contextMenus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./contextMenus */ "./src/pages/background/controller/contextMenus.js");
+/* harmony import */ var _chrome__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../chrome */ "./src/pages/background/chrome.js");
+
+
+
+/*
+* 当标签页发生变化
+* */
+
+const tabOnUpdate = async (tabId, changeInfo, tab) => {
+  // 是否完毕
+  if (changeInfo.status !== "complete") return;
+  // 是否是掘金的标签页
+  let isJueJin = tab.url.includes('juejin.cn');
+  if (isJueJin) await (0,_user__WEBPACK_IMPORTED_MODULE_0__.resetSelf)();
+  await (0,_contextMenus__WEBPACK_IMPORTED_MODULE_1__.resetContextMenus)();
+  if (isJueJin) (0,_chrome__WEBPACK_IMPORTED_MODULE_2__.sendMessageToTab)(tabId, {
+    event: "page-change-complete"
+  });
+};
+
+/***/ }),
+
+/***/ "./src/pages/background/controller/user.js":
+/*!*************************************************!*\
+  !*** ./src/pages/background/controller/user.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "bugfix": () => (/* binding */ bugfix),
+/* harmony export */   "freeLucky": () => (/* binding */ freeLucky),
+/* harmony export */   "getSelfStorage": () => (/* binding */ getSelfStorage),
+/* harmony export */   "getUserInfo": () => (/* binding */ getUserInfo),
+/* harmony export */   "getYearDynamic": () => (/* binding */ getYearDynamic),
+/* harmony export */   "logout": () => (/* binding */ logout),
+/* harmony export */   "loopNotReadMessageCount": () => (/* binding */ loopNotReadMessageCount),
+/* harmony export */   "resetSelf": () => (/* binding */ resetSelf),
+/* harmony export */   "setSelfStorage": () => (/* binding */ setSelfStorage),
+/* harmony export */   "signin": () => (/* binding */ signin)
+/* harmony export */ });
+/* harmony import */ var _api_user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../api/user */ "./src/api/user.js");
+/* harmony import */ var _chrome__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../chrome */ "./src/pages/background/chrome.js");
+/* harmony import */ var _contextMenus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./contextMenus */ "./src/pages/background/controller/contextMenus.js");
+/* harmony import */ var _api_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../api/message */ "./src/api/message.js");
+/* harmony import */ var _tool__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../tool */ "./src/tool/index.js");
+// 用户相关
+
+
+
+
+
+
+/*
+* 获取登录用户缓存
+* */
+const getSelfStorage = async () => {
+  return await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.getStorage)('self-info');
+};
+
+/*
+* 设置登录用户缓存
+* */
+const setSelfStorage = async storage => {
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.setStorage)('self-info', storage);
+};
+
+/*重置用户信息*/
+const resetSelf = async () => {
+  let {
+    success,
+    data
+  } = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getSelfInfo)();
+  if (!success) return setSelfStorage(null);
+  await setSelfStorage(data);
+  return data;
+};
+
+/*
+* 获取用户信息
+* 缓存1天
+* */
+const getUserInfo = async userId => {
+  let storageKey = `user-info-${userId}`;
+  let storage = await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.getStorage)(storageKey);
+  if (storage) return storage;
+  let {
+    success,
+    data
+  } = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getUserInfo)(userId);
+  if (!success) return null;
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.setStorage)(storageKey, data, 60 * 24);
+  return data;
+};
+
+/*
+* 获取年度用户动态列表
+* */
+const getYearDynamic = async userId => {
+  let storageKey = `year-dynamic-${userId}`;
+  // 先获取总数
+  let {
+    success,
+    data
+  } = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getDynamic)(userId, 0);
+  if (!success) return [];
+  // count是动态总数
+  let {
+    count,
+    list
+  } = data;
+  // 获取缓存
+  let storage = await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.getStorage)(storageKey);
+  if (storage && storage.count === count) return storage.info;
+  storage = {
+    count: count,
+    info: {}
+  };
+  let dynamics = [...list];
+  // 每份20个
+  let cursors = new Array(Math.ceil(count / 20)).fill(null).map((item, index) => 20 * index);
+  // 第一个已经获取过，移除
+  cursors.shift();
+  // 开始并发请求
+  let dynamicsRes = await Promise.all(cursors.map(cursor => (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getDynamic)(userId, cursor)));
+  dynamicsRes.forEach(dynamicRes => {
+    if (dynamicRes.success) {
+      dynamics.push(...dynamicRes.data.list);
+    }
+  });
+  // 开始处理数据
+  for (let dynamic of dynamics) {
+    let year = (0,_tool__WEBPACK_IMPORTED_MODULE_4__.dayjs)(dynamic.time * 1000).format('YYYY');
+    let date = (0,_tool__WEBPACK_IMPORTED_MODULE_4__.dayjs)(dynamic.time * 1000).format('MM-DD');
+    if (storage.info[year]) {
+      if (storage.info[year][date]) {
+        storage.info[year][date].push(dynamic.action);
+      } else {
+        storage.info[year][date] = [dynamic.action];
+      }
+    } else {
+      storage.info[year] = {
+        [date]: [dynamic.action]
+      };
+    }
+  }
+  await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.setStorage)(storageKey, storage, 60 * 24);
+  return storage.info;
+};
+
+/*
+* 开始循环获取未读消息数
+* */
+const loopNotReadMessageCount = () => {
+  setInterval(async () => {
+    if (await getSelfStorage()) {
+      let {
+        success,
+        data
+      } = await (0,_api_message__WEBPACK_IMPORTED_MODULE_3__.getNotReadMessageCount)();
+      if (!success) return;
+      // count[1]：点赞和收藏  count[3]：评论
+      let {
+        count,
+        total
+      } = data;
+      let items = [];
+      if (count[1]) items.push(`点赞和收藏：${count[1]}条`);
+      if (count[3]) items.push(`评论：${count[3]}条`);
+      let notReadStrStorage = await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.getStorage)("message-not-read");
+      // 有未读且详情文字不相同
+      if (total && notReadStrStorage !== JSON.stringify(items)) {
+        (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)(`您有${total}条掘金未读消息，以下为详细内容`, `${items.join('\n')}`);
+      }
+      await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.setStorage)("message-not-read", JSON.stringify(items));
+    }
+  }, 1000 * 60);
+};
+
+/*
+* 用户登出
+* 登出后刷新所有相关页面
+* */
+const logout = async () => {
+  (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.logout)();
+  // 获取所有掘金相关页面
+  let tabs = await (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.queryTabs)({
+    url: 'https://juejin.cn/*'
+  });
+  // 将登录用户缓存清空
+  await setSelfStorage(null);
+  // 重置菜单
+  await (0,_contextMenus__WEBPACK_IMPORTED_MODULE_2__.resetContextMenus)();
+  // 刷新页面
+  for (let tab of tabs) {
+    (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.updateTab)(tab.id, {
+      url: tab.url
+    });
+  }
+};
+
+/*
+* 用户签到
+* */
+const signin = async () => {
+  let {
+    success,
+    data,
+    err_msg
+  } = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.checkIn)();
+  (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)("掘金签到：" + (success ? "成功" : "失败"), success ? `本次新增矿石：${data.incr_point}，当前矿石：${data.sum_point}` : err_msg);
+};
+
+/*
+* 修复bug
+* */
+const bugfix = async () => {
+  // 获取未修复bug
+  let {
+    success,
+    data,
+    err_msg
+  } = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getNotCollectBug)();
+  (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)("掘金BugFix：" + (success ? "成功" : "失败"), success ? `今日掘金bugfix：${data.length}` : err_msg);
+  if (!success) return;
+  // 开始修复bug
+  data.forEach(bug => (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.collectBug)(bug));
+};
+
+/*
+* 抽奖
+* */
+const freeLucky = async () => {
+  // 获取今日免费抽奖次数
+  let res = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.getLotteryConfig)();
+  if (!res.success) return (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)('今日免费抽奖失败', res.err_msg);
+  if (!res.data.free_count) return (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)('今日免费抽奖失败', '今日免费抽奖次数已经用完');
+  // 开始抽奖
+  res = await (0,_api_user__WEBPACK_IMPORTED_MODULE_0__.drawLottery)();
+  if (!res.success) return (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)('今日免费抽奖失败', res.err_msg);
+  (0,_chrome__WEBPACK_IMPORTED_MODULE_1__.sendBasicNotifications)('今日免费抽奖成功', `恭喜抽到：${res.data.lottery_name}`);
+};
+
+/***/ }),
+
+/***/ "./src/tool/index.js":
+/*!***************************!*\
+  !*** ./src/tool/index.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "dayjs": () => (/* binding */ dayjs),
+/* harmony export */   "getDynamicActionsCount": () => (/* binding */ getDynamicActionsCount),
+/* harmony export */   "getDynamicScoreByActions": () => (/* binding */ getDynamicScoreByActions),
+/* harmony export */   "sleep": () => (/* binding */ sleep),
+/* harmony export */   "uuid": () => (/* binding */ uuid)
+/* harmony export */ });
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var dayjs_plugin_weekday__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs/plugin/weekday */ "./node_modules/dayjs/plugin/weekday.js");
+/* harmony import */ var dayjs_plugin_weekday__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_weekday__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var dayjs_plugin_relativeTime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dayjs/plugin/relativeTime */ "./node_modules/dayjs/plugin/relativeTime.js");
+/* harmony import */ var dayjs_plugin_relativeTime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_relativeTime__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var dayjs_locale_zh_cn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dayjs/locale/zh-cn */ "./node_modules/dayjs/locale/zh-cn.js");
+/* harmony import */ var dayjs_locale_zh_cn__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(dayjs_locale_zh_cn__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+dayjs__WEBPACK_IMPORTED_MODULE_0___default().extend((dayjs_plugin_weekday__WEBPACK_IMPORTED_MODULE_1___default()));
+dayjs__WEBPACK_IMPORTED_MODULE_0___default().extend((dayjs_plugin_relativeTime__WEBPACK_IMPORTED_MODULE_2___default()));
+dayjs__WEBPACK_IMPORTED_MODULE_0___default().locale('zh-cn');
+const dayjs = (dayjs__WEBPACK_IMPORTED_MODULE_0___default());
+
+/*
+* 获取uuid
+* */
+const uuid = () => {
+  var s = [];
+  var hexDigits = "0123456789abcdef";
+  for (var i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr(s[19] & 0x3 | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23] = "-";
+  var uuid = s.join("");
+  return uuid;
+};
+
+/*
+* 睡眠函数
+* */
+const sleep = x => {
+  return new Promise(res => {
+    setTimeout(() => {
+      res();
+    }, x * 1000);
+  });
+};
+
+/*
+* 获取掘金动态分数计算
+* 0：发布文章
+* 1：点赞文章
+* 2：发布沸点
+* 3：点赞沸点
+* 4、关注用户
+* 5、关注标签
+* */
+const getDynamicScoreByActions = actions => {
+  if (!actions.length) return 0;
+  let score = 0;
+  actions.forEach(action => {
+    if (action === 0) score += 70;
+    if (action === 1) score += 20;
+    if (action === 2) score += 10;
+    if (action === 3) score += 5;
+    if (action === 4) score += 10;
+  });
+  // 活跃度等级
+  // Lv0 —— 活跃度 0
+  // Lv1 —— 活跃度 [1, 20)
+  // Lv2 —— 活跃度 [20, 60)
+  // Lv3 —— 活跃度 [60, 80)
+  // Lv4 —— 活跃度 [80, 100)
+  return Math.min(score, 100);
+};
+const getDynamicActionsCount = actions => {
+  if (!actions.length) return {};
+  let count = {};
+  actions.forEach(action => {
+    count[action] ? count[action]++ : count[action] = 1;
+  });
+  return count;
+};
+
+/***/ }),
+
+/***/ "./node_modules/dayjs/dayjs.min.js":
+/*!*****************************************!*\
+  !*** ./node_modules/dayjs/dayjs.min.js ***!
+  \*****************************************/
+/***/ (function(module) {
+
+!function(t,e){ true?module.exports=e():0}(this,(function(){"use strict";var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",l="Invalid Date",$=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_"),ordinal:function(t){var e=["th","st","nd","rd"],n=t%100;return"["+t+(e[(n-20)%10]||e[n]||e[0])+"]"}},m=function(t,e,n){var r=String(t);return!r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},v={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return(e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return-t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return+(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return{M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},g="en",D={};D[g]=M;var p=function(t){return t instanceof _},S=function t(e,n,r){var i;if(!e)return g;if("string"==typeof e){var s=e.toLowerCase();D[s]&&(i=s),n&&(D[s]=n,i=s);var u=e.split("-");if(!i&&u.length>1)return t(u[0])}else{var a=e.name;D[a]=e,i=a}return!r&&i&&(g=i),i||!r&&g},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=v;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t)}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match($);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init()},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds()},m.$utils=function(){return O},m.isValid=function(){return!(this.$d.toString()===l)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),l=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},$=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,v="set"+(this.$u?"UTC":"");switch(h){case c:return r?l(1,0):l(31,11);case f:return r?l(1,M):l(0,M+1);case o:var g=this.$locale().weekStart||0,D=(y<g?y+7:y)-g;return l(r?m-D:m+(6-D),M);case a:case d:return $(v+"Hours",0);case u:return $(v+"Minutes",1);case s:return $(v+"Seconds",2);case i:return $(v+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),l=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],$=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[l]($),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d}else l&&this.$d[l]($);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,l=this;r=Number(r);var $=O.p(h),y=function(t){var e=w(l);return O.w(e.date(e.date()+Math.round(t*r)),l)};if($===f)return this.set(f,this.$M+r);if($===c)return this.set(c,this.$y+r);if($===a)return y(1);if($===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[$]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this,n=this.$locale();if(!this.isValid())return n.invalidDate||l;var r=t||"YYYY-MM-DDTHH:mm:ssZ",i=O.z(this),s=this.$H,u=this.$m,a=this.$M,o=n.weekdays,f=n.months,h=function(t,n,i,s){return t&&(t[n]||t(e,r))||i[n].slice(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=n.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},$={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(n.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(n.weekdaysMin,this.$W,o,2),ddd:h(n.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:i};return r.replace(y,(function(t,e){return e||$[t]||i.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,l){var $,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,v=this-M,g=O.m(this,M);return g=($={},$[c]=g/12,$[f]=g,$[h]=g/3,$[o]=(v-m)/6048e5,$[a]=(v-m)/864e5,$[u]=v/n,$[s]=v/e,$[i]=v/t,$)[y]||v,l?g:O.a(g)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return D[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),T=_.prototype;return w.prototype=T,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){T[t[1]]=function(e){return this.$g(e,t[0],t[1])}})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=D[g],w.Ls=D,w.p={},w}));
+
+/***/ }),
+
+/***/ "./node_modules/dayjs/locale/zh-cn.js":
+/*!********************************************!*\
+  !*** ./node_modules/dayjs/locale/zh-cn.js ***!
+  \********************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+!function(e,_){ true?module.exports=_(__webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js")):0}(this,(function(e){"use strict";function _(e){return e&&"object"==typeof e&&"default"in e?e:{default:e}}var t=_(e),d={name:"zh-cn",weekdays:"星期日_星期一_星期二_星期三_星期四_星期五_星期六".split("_"),weekdaysShort:"周日_周一_周二_周三_周四_周五_周六".split("_"),weekdaysMin:"日_一_二_三_四_五_六".split("_"),months:"一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月".split("_"),monthsShort:"1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),ordinal:function(e,_){return"W"===_?e+"周":e+"日"},weekStart:1,yearStart:4,formats:{LT:"HH:mm",LTS:"HH:mm:ss",L:"YYYY/MM/DD",LL:"YYYY年M月D日",LLL:"YYYY年M月D日Ah点mm分",LLLL:"YYYY年M月D日ddddAh点mm分",l:"YYYY/M/D",ll:"YYYY年M月D日",lll:"YYYY年M月D日 HH:mm",llll:"YYYY年M月D日dddd HH:mm"},relativeTime:{future:"%s内",past:"%s前",s:"几秒",m:"1 分钟",mm:"%d 分钟",h:"1 小时",hh:"%d 小时",d:"1 天",dd:"%d 天",M:"1 个月",MM:"%d 个月",y:"1 年",yy:"%d 年"},meridiem:function(e,_){var t=100*e+_;return t<600?"凌晨":t<900?"早上":t<1100?"上午":t<1300?"中午":t<1800?"下午":"晚上"}};return t.default.locale(d,null,!0),d}));
+
+/***/ }),
+
+/***/ "./node_modules/dayjs/plugin/relativeTime.js":
+/*!***************************************************!*\
+  !*** ./node_modules/dayjs/plugin/relativeTime.js ***!
+  \***************************************************/
+/***/ (function(module) {
+
+!function(r,e){ true?module.exports=e():0}(this,(function(){"use strict";return function(r,e,t){r=r||{};var n=e.prototype,o={future:"in %s",past:"%s ago",s:"a few seconds",m:"a minute",mm:"%d minutes",h:"an hour",hh:"%d hours",d:"a day",dd:"%d days",M:"a month",MM:"%d months",y:"a year",yy:"%d years"};function i(r,e,t,o){return n.fromToBase(r,e,t,o)}t.en.relativeTime=o,n.fromToBase=function(e,n,i,d,u){for(var f,a,s,l=i.$locale().relativeTime||o,h=r.thresholds||[{l:"s",r:44,d:"second"},{l:"m",r:89},{l:"mm",r:44,d:"minute"},{l:"h",r:89},{l:"hh",r:21,d:"hour"},{l:"d",r:35},{l:"dd",r:25,d:"day"},{l:"M",r:45},{l:"MM",r:10,d:"month"},{l:"y",r:17},{l:"yy",d:"year"}],m=h.length,c=0;c<m;c+=1){var y=h[c];y.d&&(f=d?t(e).diff(i,y.d,!0):i.diff(e,y.d,!0));var p=(r.rounding||Math.round)(Math.abs(f));if(s=f>0,p<=y.r||!y.r){p<=1&&c>0&&(y=h[c-1]);var v=l[y.l];u&&(p=u(""+p)),a="string"==typeof v?v.replace("%d",p):v(p,n,y.l,s);break}}if(n)return a;var M=s?l.future:l.past;return"function"==typeof M?M(a):M.replace("%s",a)},n.to=function(r,e){return i(r,e,this,!0)},n.from=function(r,e){return i(r,e,this)};var d=function(r){return r.$u?t.utc():t()};n.toNow=function(r){return this.to(d(this),r)},n.fromNow=function(r){return this.from(d(this),r)}}}));
+
+/***/ }),
+
+/***/ "./node_modules/dayjs/plugin/weekday.js":
+/*!**********************************************!*\
+  !*** ./node_modules/dayjs/plugin/weekday.js ***!
+  \**********************************************/
+/***/ (function(module) {
+
+!function(e,t){ true?module.exports=t():0}(this,(function(){"use strict";return function(e,t){t.prototype.weekday=function(e){var t=this.$locale().weekStart||0,i=this.$W,n=(i<t?i+7:i)-t;return this.$utils().u(e)?n:this.subtract(n,"day").add(e,"day")}}}));
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!***************************************!*\
+  !*** ./src/pages/background/index.js ***!
+  \***************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _controller_user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller/user */ "./src/pages/background/controller/user.js");
+/* harmony import */ var _controller_contextMenus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./controller/contextMenus */ "./src/pages/background/controller/contextMenus.js");
+/* harmony import */ var _controller_tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./controller/tabs */ "./src/pages/background/controller/tabs.js");
+/* harmony import */ var _controller_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./controller/message */ "./src/pages/background/controller/message.js");
+
+
+
+
+
+// chrome.storage.local.clear();
+chrome.contextMenus.onClicked.addListener(_controller_contextMenus__WEBPACK_IMPORTED_MODULE_1__.contextMenusOnClick);
+chrome.tabs.onUpdated.addListener(_controller_tabs__WEBPACK_IMPORTED_MODULE_2__.tabOnUpdate);
+chrome.runtime.onMessage.addListener(_controller_message__WEBPACK_IMPORTED_MODULE_3__.runtimeOnMessage);
+const init = async () => {
+  // 重新获取用户信息
+  await (0,_controller_user__WEBPACK_IMPORTED_MODULE_0__.resetSelf)();
+  // 重置按钮组
+  await (0,_controller_contextMenus__WEBPACK_IMPORTED_MODULE_1__.resetContextMenus)();
+  // 开始循环获取未读消息数量
+  (0,_controller_user__WEBPACK_IMPORTED_MODULE_0__.loopNotReadMessageCount)();
+};
+init();
+})();
+
+/******/ })()
+;
 //# sourceMappingURL=background.main.js.map
