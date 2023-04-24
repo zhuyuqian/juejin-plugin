@@ -1,9 +1,16 @@
-export const ajax = async ({ url, method = 'GET', data, headers = { "Content-Type": "application/json" } }) => {
+export const ajax = async ({
+														 url,
+														 method = 'GET',
+														 data,
+														 isInclude = false,
+														 headers = { "Content-Type": "application/json" }
+													 }) => {
+	let credentials = isInclude ? 'include' : 'omit'
 	let res = await fetch(url, {
 		method,
-		body: JSON.stringify(data),
-		credentials: 'include',
+		credentials,
 		headers,
+		body: JSON.stringify(data),
 	}).then(res => res.json())
 	return handleApiResult(res);
 }

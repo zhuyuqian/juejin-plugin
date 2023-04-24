@@ -5,7 +5,8 @@ import { ajax } from "./index";
 * 用户登出
 * */
 export const logout = () => ajax({
-	url: 'https://juejin.cn/passport/web/logout/'
+	url: 'https://juejin.cn/passport/web/logout/',
+	isInclude: true
 })
 
 /*
@@ -14,7 +15,8 @@ export const logout = () => ajax({
 export const getSelfInfo = () => ajax({
 	url: `https://api.juejin.cn/user_api/v1/user/get_info_pack`,
 	method: 'POST',
-	data: { pack_req: { user_counter: true, user_growth_info: true, user: true } }
+	data: { pack_req: { user_counter: true, user_growth_info: true, user: true } },
+	isInclude: true
 })
 
 /*
@@ -30,7 +32,8 @@ export const getUserInfo = (userId) => ajax({
 * */
 export const checkIn = () => ajax({
 	url: 'https://api.juejin.cn/growth_api/v1/check_in',
-	method: 'POST'
+	method: 'POST',
+	isInclude: true
 })
 
 /*
@@ -39,7 +42,8 @@ export const checkIn = () => ajax({
 export const getNotCollectBug = () => ajax({
 	url: `https://api.juejin.cn/user_api/v1/bugfix/not_collect`,
 	method: 'POST',
-	headers: {}
+	headers: {},
+	isInclude: true,
 })
 
 /*
@@ -49,7 +53,8 @@ export const getNotCollectBug = () => ajax({
 export const collectBug = (bug) => ajax({
 	url: `https://api.juejin.cn/user_api/v1/bugfix/collect`,
 	method: 'POST',
-	data: bug
+	data: bug,
+	isInclude: true,
 })
 
 /*
@@ -57,6 +62,7 @@ export const collectBug = (bug) => ajax({
 * */
 export const getLotteryConfig = () => ajax({
 	url: `https://api.juejin.cn/growth_api/v1/lottery_config/get`,
+	isInclude: true,
 })
 
 /*
@@ -64,7 +70,8 @@ export const getLotteryConfig = () => ajax({
 * */
 export const drawLottery = () => ajax({
 	url: `https://api.juejin.cn/growth_api/v1/lottery/draw`,
-	method: 'POST'
+	method: 'POST',
+	isInclude: true,
 })
 
 
