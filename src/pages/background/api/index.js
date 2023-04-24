@@ -11,7 +11,9 @@ export const ajax = async ({
 		credentials,
 		headers,
 		body: JSON.stringify(data),
-	}).then(res => res.json())
+	})
+	.then(res => res.json())
+	.catch(e => ({ err_no: 1, err_msg: '接口出错' }))
 	return handleApiResult(res);
 }
 

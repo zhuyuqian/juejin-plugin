@@ -71,6 +71,8 @@ export const getYearDynamic = async ({ userId, isRefresh }) => {
 	let cursors = new Array(Math.ceil(count / 20)).fill(null).map((item, index) => 20 * index);
 	// 第一个已经获取过，移除
 	cursors.shift();
+	// 取出前30个
+	cursors = cursors.splice(0, 20);
 	// 开始并发请求
 	let dynamicsRes = await Promise.all(cursors.map(cursor => getDynamic(userId, cursor)));
 	dynamicsRes.forEach(dynamicRes => {
