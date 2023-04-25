@@ -87,6 +87,7 @@ const drawChart = () => {
 
 // 处理动态
 const handleDynamics = () => {
+	years.value = [];
 	for (let year in dynamicInfo.value.info) {
 		years.value.push(year);
 		let start = `${year}-01-01`;
