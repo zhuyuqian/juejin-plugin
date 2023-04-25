@@ -3,6 +3,7 @@ import RemoveAllPins from "./component/RemoveAllPins.vue";
 import PinClubUserRank from "./component/PinClubUserRank.vue";
 import CancelAllPinsZan from "./component/CancelAllPinsZan.vue";
 import UserYearDynamic from "./component/UserYearDynamic.vue";
+import LotteryAllIn from "./component/LotteryAllIn.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -93,6 +94,20 @@ const METHOD_MAP = {
 			this.app?.unmount();
 			$(`#RANDOM_PIN`).remove();
 		}
+	},
+	// 梭哈抽奖
+	LOTTERY_ALL_IN: {
+		target: () => document.querySelector('.current_value'),
+		insert() {
+			$(`<div id="LOTTERY_ALL_IN"><div>`).insertAfter(this.target());
+			this.app = createApp(LotteryAllIn);
+			insertPlugin(this.app);
+			this.app.mount("#LOTTERY_ALL_IN");
+		},
+		remove() {
+			this.app?.unmount();
+			$(`#LOTTERY_ALL_IN`).remove();
+		}
 	}
 };
 
@@ -138,17 +153,25 @@ const initUrlInfo = async () => {
 	url.url = window.location.origin + window.location.pathname;
 	url.methods = ["SPECIAL_FOCUS_USERS"];
 	let urlArr = url.url.split("/");
-	if (urlArr[3] === "user") {
-		url.info = { userId: urlArr[4] };
-		url.methods.push('USER_YEAR_DYNAMIC')
-		let isSelf = !!(self && self.user_basic.user_id === url.info.userId);
-		if (urlArr[5] === "pins" && isSelf) {
-			url.methods.push("REMOVE_ALL_PINGS");
-		}
-		if (urlArr[5] === "praise" && isSelf) {
-			url.methods.push("CANCEL_ALL_PINS_ZAN");
+	// 个人主页
+	if (urlArr[3] === 'user') {
+		// 幸运抽奖
+		if (urlArr[4] === 'center' && urlArr[5] === 'lottery') {
+			url.methods.push('LOTTERY_ALL_IN');
+		} else {
+			// 个人页
+			url.info = { userId: urlArr[4] };
+			url.methods.push('USER_YEAR_DYNAMIC');
+			let isSelf = !!(self && self.user_basic.user_id === url.info.userId);
+			if (urlArr[5] === "pins" && isSelf) {
+				url.methods.push("REMOVE_ALL_PINGS");
+			}
+			if (urlArr[5] === "praise" && isSelf) {
+				url.methods.push("CANCEL_ALL_PINS_ZAN");
+			}
 		}
 	}
+	// 网站主页的沸点页面
 	if (urlArr[3] === 'pins') {
 		url.methods.push("RANDOM_PIN");
 	}
