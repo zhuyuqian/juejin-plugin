@@ -1,7 +1,7 @@
 <template>
 	<el-card class="pin-club-user-rank" shadow="never" v-loading="loading">
 		<template #header>
-			<span class="title-box">{{ clubInfo.topic.title }}｜本周沸物</span>
+			<span class="title-box">{{ clubInfo.topic.title }}｜今日沸物</span>
 			<el-tooltip v-if="rankInfo.time" effect="dark" placement="top" :content="`最近更新：${$dayjs(rankInfo.time).fromNow() }`">
 				<el-icon class="refresh-button" size="20" color="#999" @click="load(true)">
 					<Refresh/>
@@ -12,11 +12,11 @@
 			<div class="rank-box" v-for="(rank,rankIndex) of rankInfo.rank">
 				<div class="rank-title">
 					<span class="title-box">榜{{ rankIndex + 1 }}</span>
-					<span class="count-box">沸物:{{ rank.users.length >= 10 ? '10+' : rank.users.length }}人｜人均:{{ rank.msgCount }}条</span>
+					<span class="count-box">沸物:{{ rank.users.length }}人｜人均:{{ rank.msgCount }}条</span>
 				</div>
 				<div class="user-warp">
 					<template v-for="user of rank.users">
-						<a class="user-box" v-if="user.userInfo" :href="`https://juejin.cn/user/${user.userInfo.user_id}`" target="_blank">
+						<a class="user-box" :href="`https://juejin.cn/user/${user.userInfo.user_id}`" target="_blank">
 							<el-avatar shape="square" :size="30" :src="user.userInfo.avatar_large"/>
 							<span class="user-name">{{ user.userInfo.user_name }}</span>
 						</a>
@@ -39,7 +39,7 @@ const load = async (isRefresh = false) => {
 	loading.value = true;
 	let clubId = proxy.$url.info.clubId;
 	clubInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_INFO, clubId);
-	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_WEEK_USER_RANK, { clubId: clubId, isRefresh });
+	rankInfo.value = await ajax(EVENT_MAP.GET_PIN_CLUB_DAY_USER_RANK, { clubId: clubId, isRefresh });
 	loading.value = false;
 }
 

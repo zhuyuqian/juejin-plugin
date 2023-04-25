@@ -15,6 +15,7 @@
     "echarts": "^5.4.2",
     "element-plus": "^2.1.0",
     "git-cz": "^4.9.0",
+    "js-base64": "^3.7.5",
     "vue": "^3.2.31"
   },
   "devDependencies": {

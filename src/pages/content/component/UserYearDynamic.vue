@@ -3,7 +3,7 @@
 		<template #header>
 			<span class="title-box">{{ year }}｜社区活跃度</span>
 			<div class="rt">
-				<el-select class="change-year" v-model="year" size="mini" @change="drawChart">
+				<el-select class="change-year" v-model="year" size="small" @change="drawChart">
 					<el-option v-for="y of years" :key="y" :label="y" :value="y"/>
 				</el-select>
 				<el-tooltip effect="dark" placement="top" :content="`最近更新：${$dayjs(dynamicInfo.time).fromNow() }`">

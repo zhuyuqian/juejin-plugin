@@ -56,64 +56,63 @@ export const getPinClubInfo = async (clubId) => {
 }
 
 /*
-* 获取圈子一周废物榜
+* 获取圈子当日废物榜
 * @param clubId 圈子id
 * @param isRefresh 是否需要更新缓存
 * */
-export const getPinClubWeekUserRank = async ({ clubId, isRefresh }) => {
-	let storageKey = `pin-club-week-user-rank-${clubId}`;
+export const getPinClubDayUserRank = async ({ clubId, isRefresh }) => {
+	let storageKey = `pin-club-day-user-rank-${clubId}`;
 	let storage = await getStorage(storageKey);
 	if (storage && !isRefresh) return storage;
-	storage = { time: dayjs().format('YYYY-MM-DD HH:mm:ss'), rank: [] }
-	let { success, data } = await getTopicShortMsgList({ topic_id: clubId, limit: 1000 })
-	if (!success) return storage
-	let userMap = {};
-	let targetTime = dayjs().startOf('week').valueOf();
-	for (let msg of data) {
-		if (msg.msg_Info.ctime * 1000 < targetTime) break;
+	storage = { time: dayjs().format('YYYY-MM-DD HH:mm:ss'), rank: [] };
+	let topicList = [];
+	for (let i = 0; i < 10; i++) {
+		let { success, data } = await getTopicShortMsgList({ topic_id: clubId, limit: 100, cursor: 100 * i })
+		await sleep(0.5)
+		if (!success) break;
+		let next = true;
+		for (let msg of data) {
+			if (msg.msg_Info.ctime * 1000 < dayjs().startOf('day').valueOf()) {
+				next = false;
+				break;
+			} else {
+				topicList.push(msg)
+			}
+		}
+		if (!next) break;
+	}
+	let userMsgMap = {};
+	let userInfoMap = {};
+	for (let msg of topicList) {
 		let { user_id } = msg.msg_Info;
-		userMap[user_id] ? userMap[user_id].push(msg) : userMap[user_id] = [msg];
+		userMsgMap[user_id] ? userMsgMap[user_id].push(msg) : userMsgMap[user_id] = [msg];
+		userInfoMap[user_id] = msg.author_user_info;
 	}
 	let users = [];
-	for (let userId in userMap) {
-		users.push({ userId, msgs: userMap[userId] });
+	for (let userId in userMsgMap) {
+		users.push({ userId, userInfo: userInfoMap[userId], msgCount: userMsgMap[userId].length });
 	}
-	users.sort((a, b) => b.msgs.length - a.msgs.length);
+	users.sort((a, b) => b.msgCount - a.msgCount);
 	let rank = [];
-	let userIds = [];
 	for (let user of users) {
 		if (!rank.length) {
-			userIds.push(user.userId);
-			rank.push({ msgCount: user.msgs.length, users: [user] });
+			rank.push({ msgCount: user.msgCount, users: [user] });
 		} else {
 			let { msgCount, users } = rank[rank.length - 1];
-			if (user.msgs.length === msgCount) {
-				// 最多10个
-				if (users.length >= 10) continue
-				userIds.push(user.userId);
+			if (user.msgCount === msgCount) {
 				users.push(user);
 			} else {
 				if (rank.length < 3) {
-					userIds.push(user.userId);
-					rank.push({ msgCount: user.msgs.length, users: [user] });
+					rank.push({ msgCount: user.msgCount, users: [user] });
 				} else {
 					break;
 				}
 			}
 		}
 	}
-	let userList = await Promise.all(userIds.map(userId => getUserInfo(userId))).catch(e => []);
-	userMap = {};
-	for (let user of userList) {
-		if (user) userMap[user.user_id] = user;
-	}
-	rank.forEach(r => {
-		r.users.forEach(user => {
-			user.userInfo = userMap[user.userId];
-		});
-	});
 	storage.rank = rank;
-	await setStorage(storageKey, storage);
+	let endTime = (dayjs().endOf('day').valueOf() - dayjs().valueOf()) / 1000 / 60;
+	await setStorage(storageKey, storage, endTime);
 	return storage
 }
 
