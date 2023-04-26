@@ -425,10 +425,6 @@ html[data-theme="dark"] {
 			}
 		}
 
-		.pin-list {
-			background-color: var(--plugin-background-color) !important;
-		}
-
 		.sidebar {
 			.userbox {
 				background-color: var(--plugin-card-background) !important;
@@ -532,6 +528,12 @@ html[data-theme="dark"] {
 
 			.nav-item {
 				color: var(--plugin-link-color);
+
+				&.active, &:hover {
+					.title {
+						color: var(--plugin-primary-color) !important;
+					}
+				}
 			}
 		}
 
@@ -561,6 +563,12 @@ html[data-theme="dark"] {
 
 						.others {
 							border-bottom-color: var(--plugin-border-color);
+
+							.comment {
+								background: var(--plugin-background-color);
+								color: var(--plugin-text-color);
+								border-color: var(--plugin-border-color);
+							}
 						}
 					}
 
@@ -707,6 +715,10 @@ html[data-theme="dark"] {
 						.content-box {
 
 							.content {
+								span[data-node="theme"] {
+									color: var(--plugin-text-color) !important;
+								}
+
 								color: var(--plugin-title-color);
 							}
 						}
@@ -724,6 +736,190 @@ html[data-theme="dark"] {
 					}
 				}
 			}
+		}
+	}
+
+	// 用户页
+	.user-view {
+		.user-info-block {
+			background-color: var(--plugin-card-background);
+
+			.setting-btn {
+				background-color: transparent;
+			}
+		}
+
+		.badge-wall {
+			background-color: var(--plugin-card-background);
+
+			.badge-wrap {
+				border-top-color: var(--plugin-border-color);
+			}
+		}
+
+		.list-block {
+			.list-header {
+				background-color: var(--plugin-card-background);
+				border-bottom-color: var(--plugin-border-color);
+
+				.nav-item {
+					.item-title {
+						color: var(--plugin-title-color);
+					}
+
+					&.active, &:hover {
+						.item-title {
+							color: var(--plugin-primary-color);
+						}
+					}
+				}
+
+				.search-icon-container {
+					background-image: none;
+				}
+
+				.search-input {
+					input {
+						background: var(--plugin-background-color);
+						color: var(--plugin-title-color);
+						border-color: var(--plugin-border-color);
+					}
+				}
+
+				.list-buttons {
+					.list-button {
+						background: transparent;
+						color: var(--plugin-text-color);
+
+						&:hover {
+							color: var(--plugin-title-color) !important;
+						}
+
+						&.active {
+							background: var(--plugin-hover-background);
+							color: var(--plugin-title-color) !important;
+						}
+					}
+				}
+			}
+
+			.empty-box {
+				background: var(--plugin-card-background);
+				color: var(--plugin-text-color);
+			}
+		}
+
+		.search-list-box {
+			background: var(--plugin-card-background);
+		}
+
+		.concern-list-box {
+			background-color: var(--plugin-card-background);
+		}
+
+		.collection-list {
+			background-color: var(--plugin-card-background);
+
+			.item {
+				background-color: var(--plugin-card-background);
+			}
+		}
+
+		.sub-header {
+			border-bottom-color: var(--plugin-border-color);
+			background-color: var(--plugin-card-background);
+
+			.sub-header-title {
+				color: var(--plugin-title-color);
+			}
+
+			.sub-type-box {
+				.sub-type {
+					color: var(--plugin-link-color);
+
+					&.active, &:hover {
+						color: var(--plugin-primary-color) !important;
+					}
+				}
+			}
+		}
+
+		.stat-block {
+			background: var(--plugin-card-background);
+
+			.block-title {
+				color: var(--plugin-title-color);
+				border-bottom-color: var(--plugin-border-color);
+			}
+
+			.block-body {
+				.stat-item {
+					color: var(--plugin-title-color);
+
+					.content {
+						color: var(--plugin-title-color);
+					}
+				}
+			}
+		}
+
+		.follow-block {
+			background: var(--plugin-card-background);
+
+			.follow-item {
+				color: var(--plugin-title-color) !important;
+			}
+
+			&:after {
+				background-color: var(--plugin-border-color);
+			}
+		}
+
+		.more-block {
+			.more-item {
+				border-top-color: var(--plugin-border-color);
+				border-bottom-color: var(--plugin-border-color);
+
+				.item-title {
+					color: var(--plugin-title-color);
+				}
+
+				.item-count {
+					color: var(--plugin-title-color);
+				}
+			}
+		}
+	}
+
+	// 专栏列表
+	.column-container {
+		background-color: var(--plugin-card-background);
+
+		.column-link {
+			.column-wrap {
+				.column-right {
+					border-bottom-color: var(--plugin-border-color);
+
+					.content {
+						color: var(--plugin-text-color);
+					}
+
+					.infos {
+						color: var(--plugin-text-color);
+					}
+				}
+
+				&:hover {
+					background-color: var(--plugin-hover-background);
+				}
+			}
+		}
+	}
+
+	// 标签列表
+	.tag-list {
+		.item {
+			border-bottom-color: var(--plugin-border-color);
 		}
 	}
 
@@ -773,6 +969,11 @@ html[data-theme="dark"] {
 				}
 			}
 		}
+	}
+
+	// 沸点列表
+	.pin-list {
+		background-color: var(--plugin-background-color);
 	}
 
 	// 单个沸点
@@ -1251,12 +1452,6 @@ html[data-theme="dark"] {
 		}
 	}
 
-
-	// 分割线
-	.divide {
-		background: var(--plugin-border-color) !important;
-	}
-
 	// 私信表情弹窗
 	.emoji-popover {
 		.cYLuAZ {
@@ -1266,6 +1461,37 @@ html[data-theme="dark"] {
 		.arco-popover-arrow {
 			background-color: var(--plugin-background-color);
 			border-color: var(--plugin-border-color);
+		}
+	}
+
+	// 分割线
+	.divide {
+		background: var(--plugin-border-color) !important;
+	}
+
+	// 下拉
+	.byte-dropdown {
+		.byte-icon {
+			color: var(--plugin-link-color);
+			border-radius: 2px;
+			background-color: transparent !important;
+
+			&:hover {
+				background-color: transparent !important;
+			}
+		}
+
+		.byte-dropdown-menu {
+			background-color: var(--plugin-background-color);
+			border: 1px solid var(--plugin-border-color);
+
+			.byte-dropdown-item {
+				color: var(--plugin-text-color) !important;;
+
+				&:hover {
+					background-color: var(--plugin-hover-background) !important;
+				}
+			}
 		}
 	}
 }
