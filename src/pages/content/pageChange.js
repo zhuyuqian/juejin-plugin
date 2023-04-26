@@ -4,6 +4,7 @@ import PinClubUserRank from "./component/PinClubUserRank.vue";
 import CancelAllPinsZan from "./component/CancelAllPinsZan.vue";
 import UserYearDynamic from "./component/UserYearDynamic.vue";
 import LotteryAllIn from "./component/LotteryAllIn.vue";
+import ChangeTheme from "./component/ChangeTheme.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -25,6 +26,20 @@ const insertPlugin = (app) => {
 }
 
 const METHOD_MAP = {
+	// 切换主题
+	CHANGE_THEME: {
+		target: () => document.querySelector(".search-add"),
+		insert() {
+			$(`<div id="CHANGE_THEME"><div>`).insertAfter(this.target());
+			this.app = createApp(ChangeTheme);
+			insertPlugin(this.app)
+			this.app.mount("#CHANGE_THEME");
+		},
+		remove() {
+			this.app?.unmount();
+			$(`#CHANGE_THEME`).remove();
+		}
+	},
 	// 删除我的全部沸点
 	REMOVE_ALL_PINGS: {
 		target: () => document.querySelector(".list-header"),
@@ -151,7 +166,7 @@ export const pageChange = async () => {
 const initUrlInfo = async () => {
 	self = await ajax(EVENT_MAP.GET_SELF_INFO);
 	url.url = window.location.origin + window.location.pathname;
-	url.methods = ["SPECIAL_FOCUS_USERS"];
+	url.methods = ["CHANGE_THEME"];
 	let urlArr = url.url.split("/");
 	// 个人主页
 	if (urlArr[3] === 'user') {
