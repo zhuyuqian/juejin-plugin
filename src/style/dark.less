@@ -687,6 +687,191 @@ html[data-theme="dark"] {
 		}
 	}
 
+	// 消息页
+	.notification-view {
+		.view-nav {
+			background-color: var(--plugin-card-background) !important;
+
+			&:before {
+				background-color: var(--plugin-card-background) !important;
+			}
+
+			.nav-item {
+				color: var(--plugin-link-color);
+			}
+		}
+
+		.notification-list {
+			.item {
+				.notification {
+					background: var(--plugin-card-background);
+
+					.right {
+						.top {
+							.content {
+								.comment {
+									background: var(--plugin-background-color);
+									border-color: var(--plugin-border-color);
+									color: var(--plugin-title-color);
+								}
+							}
+						}
+
+						.bottom {
+							color: var(--plugin-text-color);
+						}
+					}
+
+					.user-notification {
+						background: var(--plugin-card-background);
+
+						.others {
+							border-bottom-color: var(--plugin-border-color);
+						}
+					}
+
+					.profile {
+						.name {
+							color: var(--plugin-title-color);
+						}
+
+						.title {
+							color: var(--plugin-text-color);
+
+							.title-article {
+								color: var(--plugin-title-color);
+
+								&:hover {
+									color: var(--plugin-primary-color);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.chat-view {
+			// 左边
+			.conversation-container {
+				border-right-color: var(--plugin-border-color);
+
+				.bhdLno {
+					background: var(--plugin-card-background);
+
+					.gnwqMi {
+						background: var(--plugin-card-background);
+
+						.search-input {
+							background: var(--plugin-background-color);
+							color: var(--plugin-title-color);
+						}
+					}
+
+					.message-item {
+						&:hover, &.active {
+							background: var(--plugin-hover-background);
+						}
+
+						.username {
+							.name-text {
+								color: var(--plugin-title-color);
+							}
+						}
+
+						.preview {
+							color: var(--plugin-text-color);
+						}
+					}
+				}
+			}
+
+			// 聊天窗口
+			.irPtrP {
+				.gbgfMs {
+					background: var(--plugin-card-background);
+					border-bottom-color: var(--plugin-border-color);
+
+					.chat-info {
+						.name {
+							color: var(--plugin-title-color);
+						}
+					}
+
+					.operate-menu {
+						.dXWCyY {
+							background: var(--plugin-card-background);
+							border-color: var(--plugin-border-color);
+
+							.dropdown-list {
+								.item {
+									color: var(--plugin-title-color);
+
+									&:hover {
+										background: var(--plugin-hover-background);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				.chat-content {
+					background: var(--plugin-card-background);
+
+					.first-need-hint {
+						color: var(--plugin-text-color);
+					}
+
+					.input_container {
+						.dWjUC {
+							border-top-color: var(--plugin-border-color);
+
+							.toolbar-im {
+
+							}
+
+							.text-area {
+								color: var(--plugin-title-color);
+								background-color: var(--plugin-card-background);
+							}
+
+							.input-footer {
+								color: var(--plugin-text-color);
+							}
+						}
+					}
+				}
+			}
+
+			.message-list {
+				.message-item {
+					.iDhzRL {
+						color: var(--plugin-text-color);
+					}
+
+					.content_body {
+						background-color: var(--plugin-background-color);
+						color: var(--plugin-title-color);
+					}
+
+					.is-first-reply {
+						color: var(--plugin-text-color);
+					}
+				}
+			}
+
+			// 空
+			.empty {
+				background: var(--plugin-card-background);
+
+				.empty-label {
+					color: var(--plugin-text-color);
+				}
+			}
+		}
+	}
+
 	// 文章列表
 	.entry-list {
 		background-color: var(--plugin-card-background) !important;
@@ -1009,5 +1194,17 @@ html[data-theme="dark"] {
 	// 分割线
 	.divide {
 		background: var(--plugin-border-color) !important;
+	}
+
+	// 私信表情弹窗
+	.emoji-popover {
+		.cYLuAZ {
+			background: var(--plugin-background-color);
+		}
+
+		.arco-popover-arrow {
+			background-color: var(--plugin-background-color);
+			border-color: var(--plugin-border-color);
+		}
 	}
 }
