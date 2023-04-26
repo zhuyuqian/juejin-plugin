@@ -62,7 +62,7 @@ async function doSendAPin() {
 	.title-box {
 		font-size: 16px;
 		font-weight: bold;
-		color: var(--el-text-color-primary);
+		color: var(--plugin-title-color);
 	}
 
 	.rank-warp {
@@ -77,13 +77,13 @@ async function doSendAPin() {
 
 				.title-box {
 					font-size: 14px;
-					color: var(--el-text-color-primary);
+					color: var(--plugin-title-color);
 				}
 
 				.count-box {
 					margin-left: 10px;
 					font-size: 12px;
-					color: var(--el-text-color-secondary);
+					color: var(--plugin-text-color);
 				}
 			}
 
@@ -104,12 +104,12 @@ async function doSendAPin() {
 					.user-name {
 						margin-left: 6px;
 						font-size: 13px;
-						color: var(--el-text-color-primary);
+						color: var(--plugin-title-color);
 					}
 
 					&:hover {
 						.user-name {
-							color: var(--el-color-primary);
+							color: var(--plugin-primary-color);
 						}
 					}
 				}
