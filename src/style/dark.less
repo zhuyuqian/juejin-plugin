@@ -8,7 +8,7 @@ html[data-theme="dark"] {
 	--plugin-title-color: #e8eaed;
 	--plugin-text-color: #868c91;
 	--plugin-card-background: #282a2d;
-	--plugin-hover-background: #3f4042;
+	--plugin-hover-background: #404142;
 
 	background: var(--plugin-background-color) !important;
 
@@ -224,7 +224,7 @@ html[data-theme="dark"] {
 			}
 		}
 
-		.entry-list-container {
+		.entry-list-container, .tag-entry-list-box {
 			background-color: var(--plugin-card-background) !important;
 
 			.list-header {
@@ -247,50 +247,6 @@ html[data-theme="dark"] {
 				}
 			}
 
-			.entry-list-wrap {
-				.entry-list {
-					background-color: var(--plugin-card-background) !important;
-
-					.item {
-						.advertisement {
-
-							.main {
-								border-bottom-color: var(--plugin-border-color);
-
-								.info-box {
-									.title {
-										color: var(--plugin-title-color) !important;
-									}
-								}
-							}
-						}
-
-						.entry {
-							background-color: var(--plugin-card-background) !important;
-
-							.content-wrapper {
-								border-bottom-color: var(--plugin-border-color) !important;
-
-								.content-main {
-									.title-row {
-										.title {
-											color: var(--plugin-title-color) !important;
-										}
-									}
-								}
-							}
-						}
-
-						.meta-container {
-							.user-message {
-								.userbox, .user-popover {
-									color: var(--plugin-text-color);
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 
 		.index-aside {
@@ -340,6 +296,86 @@ html[data-theme="dark"] {
 								background-color: var(--plugin-hover-background) !important;
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+
+	// 标签页
+	.tag-view {
+		.tag-info-box {
+			background-color: var(--plugin-card-background) !important;
+			border-bottom-color: var(--plugin-border-color) !important;
+
+			.tag-info {
+				.title {
+					color: var(--plugin-title-color) !important;
+				}
+
+				.tag-meta {
+					color: var(--plugin-text-color) !important;
+				}
+			}
+		}
+
+		.tag-entry-list-box {
+			.list-header {
+				.nav-list {
+					.nav-item {
+						&.active {
+							a {
+								color: var(--plugin-primary-color) !important;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// 文章列表
+	.entry-list {
+		background-color: var(--plugin-card-background) !important;
+
+		.item {
+			.advertisement {
+
+				.main {
+					border-bottom-color: var(--plugin-border-color);
+
+					.info-box {
+						.title {
+							color: var(--plugin-title-color) !important;
+						}
+					}
+				}
+			}
+
+			.entry {
+				background-color: var(--plugin-card-background) !important;
+
+				.content-wrapper {
+					border-bottom-color: var(--plugin-border-color) !important;
+
+					.content-main {
+						.title-row {
+							.title {
+								color: var(--plugin-title-color) !important;
+							}
+						}
+					}
+				}
+
+				&:hover {
+					background-color: var(--plugin-hover-background) !important;
+				}
+			}
+
+			.meta-container {
+				.user-message {
+					.userbox, .user-popover {
+						color: var(--plugin-text-color);
 					}
 				}
 			}
