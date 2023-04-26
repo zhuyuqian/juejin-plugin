@@ -891,6 +891,29 @@ html[data-theme="dark"] {
 		}
 	}
 
+	// 圈子广场
+	.topic-view {
+		.my-topic, .topic-square {
+			background-color: var(--plugin-card-background);
+
+			.categories {
+				.more-categories {
+					background-color: var(--plugin-hover-background);
+					color: var(--plugin-text-color);
+				}
+			}
+		}
+	}
+
+	// 人气圈子
+	.hot-topic {
+		background-color: var(--plugin-card-background);
+
+		.topic-title {
+			color: var(--plugin-title-color) !important;
+		}
+	}
+
 	// 专栏列表
 	.column-container {
 		background-color: var(--plugin-card-background);
@@ -1272,6 +1295,15 @@ html[data-theme="dark"] {
 		}
 	}
 
+	// 单个标签
+	.topic-item {
+		.content {
+			a {
+				color: var(--plugin-title-color) !important;
+			}
+		}
+	}
+
 	// 表情输入
 	.emoji-container {
 		.emoji-box {
@@ -1446,6 +1478,7 @@ html[data-theme="dark"] {
 	// 用户名 | 名称 ｜ 标题
 	.username, .name, .title {
 		color: var(--plugin-title-color) !important;
+		border-bottom-color: var(--plugin-border-color) !important;
 
 		.name-text {
 			color: var(--plugin-title-color);
@@ -1491,6 +1524,20 @@ html[data-theme="dark"] {
 				&:hover {
 					background-color: var(--plugin-hover-background) !important;
 				}
+			}
+		}
+	}
+
+	// 输入框
+	.byte-input {
+
+		.byte-input__input {
+			border-color: var(--plugin-border-color);
+			background-color: var(--plugin-background-color) !important;
+			color: var(--plugin-title-color) !important;
+
+			&:hover {
+				border-color: var(--plugin-border-color);
 			}
 		}
 	}
