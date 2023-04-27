@@ -12,6 +12,10 @@ html[data-theme="dark"] {
 
 	background: var(--plugin-background-color) !important;
 
+	//* {
+	//	border-color: var(--plugin-border-color) !important;
+	//}
+
 	a {
 		color: var(--plugin-link-color) !important;
 	}
@@ -140,6 +144,10 @@ html[data-theme="dark"] {
 												color: var(--plugin-link-color) !important;
 											}
 										}
+									}
+
+									.progress-bar {
+										background: var(--plugin-hover-background);
 									}
 
 									.actions-count-list {
@@ -474,7 +482,7 @@ html[data-theme="dark"] {
 			}
 
 			.list_box {
-				background-color: var(--plugin-card-background) !important;
+				background-color: var(--plugin-card-background);
 
 				.title {
 					color: var(--plugin-title-color) !important;
@@ -485,7 +493,11 @@ html[data-theme="dark"] {
 					.hot_item {
 						.hot_content {
 							.content {
-								color: var(--plugin-title-color) !important;
+								span {
+									color: var(--plugin-title-color) !important;
+								}
+
+								color: var(--plugin-title-color);
 							}
 
 							.count {
@@ -792,11 +804,12 @@ html[data-theme="dark"] {
 				}
 
 				.pin-list {
+					background-color: var(--plugin-card-background);
+
 					.item {
 						.content-box {
-
 							.content {
-								span[data-node="theme"] {
+								span {
 									color: var(--plugin-text-color) !important;
 								}
 
@@ -805,10 +818,13 @@ html[data-theme="dark"] {
 						}
 
 						&:hover {
-							background-color: var(--plugin-card-background);
+							background-color: var(--plugin-hover-background);
+
+							* {
+								background-color: transparent;
+							}
 
 							.content-box {
-
 								.content {
 									color: var(--plugin-primary-color);
 								}
@@ -972,7 +988,74 @@ html[data-theme="dark"] {
 		}
 	}
 
-	// 圈子广场
+	// 课程页
+	.courses-home-view {
+		.common-nav-header {
+			background-color: var(--plugin-background-color);
+
+			.course-content, .section, .recommend-box {
+				background-color: var(--plugin-card-background);
+
+				.course-header {
+					background-color: var(--plugin-card-background);
+
+					&:after {
+						background: var(--plugin-border-color);
+					}
+				}
+
+				.books-search-view {
+					.books-search {
+						background: var(--plugin-card-background);
+						border-bottom-color: var(--plugin-border-color);
+
+						.input-content {
+							background: var(--plugin-background-color);
+							border-bottom-color: var(--plugin-border-color);
+
+							.search-input {
+								background: transparent;
+							}
+						}
+					}
+				}
+			}
+
+			.books-view {
+				.books-filter-header {
+					background: var(--plugin-card-background);
+				}
+			}
+		}
+
+		.announcement-content {
+			span {
+				color: var(--plugin-title-color) !important;
+			}
+		}
+
+		.recommend-box {
+			.recommend-left {
+				.recommend-desc {
+					.sub-title {
+						color: var(--plugin-text-color);
+					}
+				}
+			}
+		}
+
+		.section {
+			.slogan {
+				border-bottom-color: var(--plugin-border-color) !important;
+
+				.desc {
+					color: var(--plugin-text-color) !important;
+				}
+			}
+		}
+	}
+
+	// 圈子广场页面
 	.topic-view {
 		.my-topic, .topic-square {
 			background-color: var(--plugin-card-background);
@@ -1082,7 +1165,7 @@ html[data-theme="dark"] {
 
 	// 单个沸点
 	.pin {
-		background-color: var(--plugin-card-background) !important;
+		background-color: var(--plugin-card-background);
 
 		.pin-header-row {
 			.account-group {
@@ -1188,6 +1271,33 @@ html[data-theme="dark"] {
 
 			.desc {
 				color: var(--plugin-title-color) !important;
+			}
+		}
+	}
+
+	// 单个书籍
+	.book-card-item {
+		background-color: var(--plugin-card-background);
+
+		.book-info {
+			.title-box {
+				color: var(--plugin-title-color);
+			}
+
+			.desc {
+				color: var(--plugin-text-color);
+			}
+
+			.author {
+				.author-desc {
+					color: var(--plugin-text-color);
+				}
+			}
+
+			.other {
+				.messages {
+					color: var(--plugin-text-color);
+				}
 			}
 		}
 	}
@@ -1587,6 +1697,11 @@ html[data-theme="dark"] {
 		background: var(--plugin-border-color) !important;
 	}
 
+	// 关注按钮
+	.follow-btn {
+		background-color: transparent;
+	}
+
 	// 下拉
 	.byte-dropdown {
 		.byte-icon {
@@ -1640,5 +1755,11 @@ html[data-theme="dark"] {
 				}
 			}
 		}
+	}
+
+	// 选择
+	.byte-checkbox__checkbox {
+		background-color: transparent !important;
+		border-color: var(--plugin-border-color) !important;
 	}
 }
