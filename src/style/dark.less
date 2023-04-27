@@ -50,7 +50,7 @@ html[data-theme="dark"] {
 						.search-add {
 							.search-add-ul {
 								.nav-item {
-									color: var(--plugin-text-color) !important;
+									color: var(--plugin-text-color);
 
 									.search-form {
 										border-color: var(--plugin-border-color) !important;
@@ -78,6 +78,27 @@ html[data-theme="dark"] {
 												div:hover {
 													background-color: var(--plugin-hover-background) !important;
 													color: var(--plugin-white-color) !important;
+												}
+											}
+										}
+									}
+
+									.add-group {
+										.more {
+											.more-list {
+												background: var(--plugin-card-background);
+												border-color: var(--plugin-border-color);
+
+												.menu {
+													.item {
+														&:hover {
+															background-color: var(--plugin-hover-background);
+														}
+													}
+												}
+
+												.divider {
+													background-color: var(--plugin-border-color);
 												}
 											}
 										}
