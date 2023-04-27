@@ -1,0 +1,19 @@
+[
+	{
+		"id": 12,
+		"priority": 1,
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "origin",
+					"operation": "set",
+					"value": "https://juejin.cn"
+				}
+			]
+		},
+		"condition": {
+			"urlFilter": "||api.juejin.cn"
+		}
+	}
+]
