@@ -45,13 +45,14 @@ function pasteHtmlAtCaret(html) {
 
 const getRandomText = async () => {
 	loading.value = true
-	let { success, data } = await ajax(EVENT_MAP.GET_RANDOM_TEXT);
+	let { success, data } = await ajax(EVENT_MAP.GET_RANDOM_TEXT, $('.new_topic').text().trim());
 	loading.value = false
 	if (!success) return;
 	let editor = document.querySelector('.rich-editor');
 	editor.click();
 	nextTick(() => {
-		pasteHtmlAtCaret(data);
+		editor.innerHTML = data;
+		// pasteHtmlAtCaret(data);
 		editor.dispatchEvent(inputEvt);
 	})
 }

@@ -74,4 +74,25 @@ export const getDynamicActionsCount = actions => {
 	return count;
 }
 
+/**
+ * 生成指定范围的随机整数
+ * @param min
+ * @param max
+ * @param type
+ * @returns int
+ */
+export const getRandInt = (min, max, type) => {
+	type = type || 3;
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	switch (type) {
+		case 1: //得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max  [min,max)
+			return Math.floor(Math.random() * (max - min)) + min;
+		case 2: //得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max [min,max]
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		case 3: //得到一个两数之间的随机整数， (min,max)
+			return Math.floor(Math.random() * (max - min - 1)) + min + 1;
+	}
+}
+
 

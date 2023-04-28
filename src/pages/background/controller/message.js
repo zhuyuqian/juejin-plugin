@@ -21,7 +21,7 @@ const eventHandleMap = {
 	'get-user-zan-pins': (data) => getUserZanPins(data), // 获取用户点赞列表
 	'cancel-zan-pin': (data) => cancelZanPin(data), // 取消沸点点赞
 	'get-year-dynamic': (data) => getYearDynamic(data), // 获取年度动态
-	'get-random-text': () => getRandomText()
+	'get-random-text': (data) => getRandomText(data)
 }
 
 const handleOnMessage = async (event, data, callback) => {

@@ -671,7 +671,7 @@ const eventHandleMap = {
   // 取消沸点点赞
   'get-year-dynamic': data => (0,_user__WEBPACK_IMPORTED_MODULE_0__.getYearDynamic)(data),
   // 获取年度动态
-  'get-random-text': () => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getRandomText)()
+  'get-random-text': data => (0,_pin__WEBPACK_IMPORTED_MODULE_1__.getRandomText)(data)
 };
 const handleOnMessage = async (event, data, callback) => {
   callback(await eventHandleMap[event](data));
@@ -890,41 +890,76 @@ const getPinClubDayUserRank = async ({
 /*
 * 获取随机文本
 * */
-const getRandomText = async () => {
-  let res = await fetch(`https://www.mxnzp.com/api/holiday/single/${(0,_tool__WEBPACK_IMPORTED_MODULE_5__.dayjs)().format('YYYYMMDD')}?ignoreHoliday=false&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09`, {
-    credentials: "include",
-    method: "GET",
-    crossorigin: true
-  }).then(res => res.json());
-  if (res.code !== 1) return {
-    success: false,
-    data: '',
-    err_msg: res.msg
-  };
-  let weekdayTranslateMap = {
-    1: "周一",
-    2: "周二",
-    3: "周三",
-    4: "周四",
-    5: "周五",
-    6: "周六",
-    7: "周日"
-  };
-  let todayInfo = res.data;
-  let todayStr = `${todayInfo.date}｜${weekdayTranslateMap[todayInfo.weekDay]}｜${todayInfo.typeDes}｜阴历: ${todayInfo.lunarCalendar}\n宜: ${todayInfo.suit}\n忌: ${todayInfo.avoid}`;
-  await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
-  res = await fetch('https://www.mxnzp.com/api/daily_word/recommend?count=1&app_id=nhhhdemgpmhixsnv&app_secret=Y296dDlVdVVhRnhucmJmUnhvRVY2UT09', {
-    credentials: "include",
-    method: "GET",
-    crossorigin: true
-  }).then(res => res.json());
-  if (res.code !== 1) return {
-    success: false,
-    data: '',
-    err_msg: res.msg
-  };
-  let textStr = res.data?.[0].content || "就不给你看~~";
-  let resStr = textStr + '\n\n' + todayStr;
+const getRandomText = async clubName => {
+  const appId = 'nhhhdemgpmhixsnv';
+  const appSecret = 'Y296dDlVdVVhRnhucmJmUnhvRVY2UT09';
+  let resStr = '';
+  try {
+    if (clubName.includes('搞笑')) {
+      // 获取每日搞笑段子
+      let {
+        data: jokeInfo
+      } = await fetch(`https://www.mxnzp.com/api/jokes/list?page=${(0,_tool__WEBPACK_IMPORTED_MODULE_5__.getRandInt)(1, 8715)}&app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+      if (jokeInfo && jokeInfo.list.length) {
+        resStr += `${jokeInfo.list[(0,_tool__WEBPACK_IMPORTED_MODULE_5__.getRandInt)(0, jokeInfo.list.length - 1)].content}`;
+      }
+    } else if (clubName.includes('今日新鲜事')) {
+      // 今日新鲜事
+      // 先获取列表
+      await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
+      let {
+        data: typeList
+      } = await fetch(`https://www.mxnzp.com/api/news/types?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+      if (typeList && typeList.length) {
+        let currentType = typeList[(0,_tool__WEBPACK_IMPORTED_MODULE_5__.getRandInt)(0, typeList.length - 1)];
+        await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
+        // 获取详情
+        let {
+          data: newList
+        } = await fetch(`https://www.mxnzp.com/api/news/list?typeId=${currentType.typeId}&page=1&app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+        if (newList && newList.length) {
+          let currentNew = newList[(0,_tool__WEBPACK_IMPORTED_MODULE_5__.getRandInt)(0, newList.length - 1)];
+          resStr += `${currentType.typeName}｜${currentNew.title}`;
+        }
+      }
+    } else {
+      // 其他
+      await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
+      let {
+        data: contentList
+      } = await fetch(`https://www.mxnzp.com/api/daily_word/recommend?count=20&app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+      if (contentList && contentList.length) {
+        resStr += `${contentList[(0, contentList.length - 1)].content}`;
+      }
+    }
+
+    // 获取ip信息
+    await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
+    let {
+      data: ipInfo
+    } = await fetch(`https://www.mxnzp.com/api/ip/self?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+    if (ipInfo) {
+      let {
+        province,
+        city
+      } = ipInfo;
+      await (0,_tool__WEBPACK_IMPORTED_MODULE_5__.sleep)(1);
+      // 获取天气信息
+      let {
+        data: weatherInfo
+      } = await fetch(` https://www.mxnzp.com/api/weather/current/${city}?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json());
+      if (weatherInfo) {
+        resStr += `\n\n${weatherInfo.address}｜${weatherInfo.temp}｜${weatherInfo.weather}｜风向${weatherInfo.windDirection}｜风力${weatherInfo.windPower}｜湿度${weatherInfo.humidity}`;
+      }
+    }
+    // 获取当日万年历
+    // await sleep(1);
+    // let { data: dayInfo } = await fetch(
+    // 	`https://www.mxnzp.com/api/holiday/single/${dayjs().format('YYYYMMDD')}?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json())
+    // if (dayInfo) {
+    // 	resStr += `\n${dayInfo.date}｜${dayInfo.yearTips}年｜${dayInfo.typeDes}｜农历${dayInfo.lunarCalendar}｜${dayInfo.solarTerms}`;
+    // }
+  } catch (e) {}
   return {
     success: true,
     data: resStr,
@@ -1214,6 +1249,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "dayjs": () => (/* binding */ dayjs),
 /* harmony export */   "getDynamicActionsCount": () => (/* binding */ getDynamicActionsCount),
 /* harmony export */   "getDynamicScoreByActions": () => (/* binding */ getDynamicScoreByActions),
+/* harmony export */   "getRandInt": () => (/* binding */ getRandInt),
 /* harmony export */   "sleep": () => (/* binding */ sleep),
 /* harmony export */   "uuid": () => (/* binding */ uuid)
 /* harmony export */ });
@@ -1295,6 +1331,30 @@ const getDynamicActionsCount = actions => {
     count[action] ? count[action]++ : count[action] = 1;
   });
   return count;
+};
+
+/**
+ * 生成指定范围的随机整数
+ * @param min
+ * @param max
+ * @param type
+ * @returns int
+ */
+const getRandInt = (min, max, type) => {
+  type = type || 3;
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  switch (type) {
+    case 1:
+      //得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max  [min,max)
+      return Math.floor(Math.random() * (max - min)) + min;
+    case 2:
+      //得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max [min,max]
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    case 3:
+      //得到一个两数之间的随机整数， (min,max)
+      return Math.floor(Math.random() * (max - min - 1)) + min + 1;
+  }
 };
 
 /***/ }),
