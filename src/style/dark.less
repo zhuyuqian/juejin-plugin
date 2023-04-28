@@ -1699,7 +1699,46 @@ html[data-theme="dark"] {
 
 	// 关注按钮
 	.follow-btn {
-		background-color: transparent;
+		background-color: transparent !important;
+		border: 1px solid var(--plugin-primary-color);
+		color: var(--plugin-primary-color);
+
+		&.active {
+			background-color: var(--plugin-primary-color) !important;
+		}
+	}
+
+	// 鼠标移入用户弹出
+	.popover-content {
+		border: 1px solid var(--plugin-border-color);
+		background: var(--plugin-card-background);
+
+		.meta-row {
+			.meta-list {
+				.item {
+					.count {
+						color: var(--plugin-title-color);
+					}
+
+					.title {
+						color: var(--plugin-text-color);
+					}
+				}
+
+				.divider {
+					background-color: var(--plugin-border-color);
+				}
+			}
+		}
+
+		.container {
+			border-top-color: var(--plugin-border-color);
+
+			.triangle {
+				border-color: var(--plugin-border-color);
+				background: var(--plugin-card-background);
+			}
+		}
 	}
 
 	// 下拉
