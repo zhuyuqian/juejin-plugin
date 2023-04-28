@@ -1708,6 +1708,38 @@ html[data-theme="dark"] {
 		}
 	}
 
+	// 下拉选择圈子
+	.new-topic-picker {
+		.wrapper {
+			border-top-color: var(--plugin-border-color);
+
+			.types {
+				border-right-color: var(--plugin-border-color);
+				background-color: var(--plugin-card-background);
+
+				.item {
+					background-color: var(--plugin-card-background);
+					color: var(--plugin-text-color);
+
+					&.active, &:hover {
+						background-color: var(--plugin-hover-background);
+						color: var(--plugin-title-color);
+					}
+				}
+			}
+
+			.contents {
+				border-bottom-color: var(--plugin-border-color);
+
+				.topic-item {
+					&:hover {
+						background-color: var(--plugin-hover-background);
+					}
+				}
+			}
+		}
+	}
+
 	// 鼠标移入用户弹出
 	.popover-content {
 		border: 1px solid var(--plugin-border-color);
@@ -1769,14 +1801,17 @@ html[data-theme="dark"] {
 
 	// 输入框
 	.byte-input {
-
 		.byte-input__input {
-			border-color: var(--plugin-border-color);
-			background-color: var(--plugin-background-color) !important;
+			border-color: var(--plugin-border-color) !important;
+			background: var(--plugin-background-color) !important;
 			color: var(--plugin-title-color) !important;
 
 			&:hover {
-				border-color: var(--plugin-border-color);
+				border-color: var(--plugin-border-color) !important;
+			}
+
+			&:focus {
+				border-color: var(--plugin-primary-color) !important;
 			}
 		}
 	}
@@ -1800,5 +1835,15 @@ html[data-theme="dark"] {
 	.byte-checkbox__checkbox {
 		background-color: transparent !important;
 		border-color: var(--plugin-border-color) !important;
+	}
+
+	// 弹窗
+	.byte-popover {
+		background-color: var(--plugin-background-color);
+		box-shadow: 0 2px 8px 0 rgba(32, 33, 35, 0.28);
+
+		.popper__arrow {
+			border-color: var(--plugin-border-color) var(--plugin-border-color) transparent transparent;
+		}
 	}
 }
