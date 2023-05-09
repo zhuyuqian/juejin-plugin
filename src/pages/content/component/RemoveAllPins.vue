@@ -2,7 +2,7 @@
 	<el-button class="remove-all-pins" type="primary" @click="openListVisible">
 		批量删除沸点
 	</el-button>
-	<el-dialog v-model="listVisible" title="我发布的沸点" width="50%" custom-class="plugin-dialog"
+	<el-dialog v-model="listVisible" title="我发布的沸点" width="50%" class="plugin-dialog"
 						 :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false">
 		<el-table :data="pins" border style="width: 100%" size="small" height="50vh" v-loading="loading"
 							@selection-change="selectRemovePins">

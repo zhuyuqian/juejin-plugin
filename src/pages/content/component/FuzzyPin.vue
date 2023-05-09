@@ -1,6 +1,6 @@
 <template>
 	<span class="plugin-pin-button" @click="visible=true">屏蔽<br/>沸点</span>
-	<el-dialog v-model="visible" title="屏蔽沸点" width="500px" custom-class="plugin-dialog"
+	<el-dialog v-model="visible" title="屏蔽沸点" width="500px" class="plugin-dialog"
 						 :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false">
 		<el-form label-position="top">
 			<el-form-item label="指定用户ID">
