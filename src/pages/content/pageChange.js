@@ -5,6 +5,7 @@ import CancelAllPinsZan from "./component/CancelAllPinsZan.vue";
 import UserYearDynamic from "./component/UserYearDynamic.vue";
 import LotteryAllIn from "./component/LotteryAllIn.vue";
 import ChangeTheme from "./component/ChangeTheme.vue";
+import FuzzyPin from "./component/FuzzyPin.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -38,6 +39,20 @@ const METHOD_MAP = {
 		remove() {
 			this.app?.unmount();
 			$(`#CHANGE_THEME`).remove();
+		}
+	},
+	// 模糊沸点
+	FUZZY_PIN: {
+		target: () => document.querySelector("#juejin"),
+		insert() {
+			$(`<div id="FUZZY_PIN"><div>`).insertAfter(this.target());
+			this.app = createApp(FuzzyPin);
+			insertPlugin(this.app)
+			this.app.mount("#FUZZY_PIN");
+		},
+		remove() {
+			this.app?.unmount();
+			$(`#FUZZY_PIN`).remove();
 		}
 	},
 	// 删除我的全部沸点
@@ -166,7 +181,7 @@ export const pageChange = async () => {
 const initUrlInfo = async () => {
 	self = await ajax(EVENT_MAP.GET_SELF_INFO);
 	url.url = window.location.origin + window.location.pathname;
-	url.methods = ["CHANGE_THEME"];
+	url.methods = ["CHANGE_THEME", "FUZZY_PIN"];
 	let urlArr = url.url.split("/");
 	// 个人主页
 	if (urlArr[3] === 'user') {
