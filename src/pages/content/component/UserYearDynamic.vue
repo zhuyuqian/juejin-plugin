@@ -1,3 +1,4 @@
+<!--社区活跃度 | 暂时废弃-->
 <template>
 	<el-card shadow="never" class="user-dynamic" v-loading="loading">
 		<template #header>

@@ -1,4 +1,4 @@
-<!--梭哈抽奖-->
+<!--梭哈抽奖｜未做功能-->
 <template>
 	<span class="soha-button" @click="soha">梭哈</span>
 </template>

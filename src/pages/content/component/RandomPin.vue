@@ -1,4 +1,4 @@
-<!--生成随机沸点内容-->
+<!--生成随机沸点-->
 <template>
 	<el-button type="primary" @click="getRandomText()" :loading="loading">生成沸点</el-button>
 </template>

@@ -1,3 +1,4 @@
+<!--屏蔽沸点-->
 <template>
 	<span class="plugin-pin-button" @click="visible=true">屏蔽<br/>沸点</span>
 	<el-dialog v-model="visible" title="屏蔽沸点" width="500px" class="plugin-dialog"

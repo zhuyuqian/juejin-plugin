@@ -1,3 +1,4 @@
+<!--删除我的全部沸点-->
 <template>
 	<el-button class="remove-all-pins" type="primary" @click="openListVisible">
 		批量删除沸点

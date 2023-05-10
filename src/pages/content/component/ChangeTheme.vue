@@ -1,3 +1,4 @@
+<!--切换主题-->
 <template>
 	<el-switch v-model="isDark" inline-prompt active-text="黑" inactive-text="白" @change="changeTheme"/>
 </template>

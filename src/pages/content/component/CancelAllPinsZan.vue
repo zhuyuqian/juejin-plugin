@@ -1,3 +1,4 @@
+<!--取消我的赞-->
 <template>
 	<el-button class="cancel-all-pins-zan" type="primary"
 						 :loading="buttonLoading" :disabled="!pins.length || !count" @click="cancelAllPins">

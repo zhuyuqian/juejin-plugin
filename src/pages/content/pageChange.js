@@ -41,7 +41,7 @@ const METHOD_MAP = {
 			$(`#CHANGE_THEME`).remove();
 		}
 	},
-	// 模糊沸点
+	// 屏蔽沸点
 	FUZZY_PIN: {
 		target: () => document.querySelector("#juejin"),
 		insert() {
@@ -69,7 +69,7 @@ const METHOD_MAP = {
 			$(`#REMOVE_ALL_PINGS`).remove();
 		}
 	},
-	// 沸点圈子本周沸物
+	// 沸点圈子今日沸物
 	PING_CLUB_USER_RANK: {
 		target: () => document.querySelector(".pin-editor") || document.querySelector(".create-pin"),
 		insert() {
@@ -97,20 +97,6 @@ const METHOD_MAP = {
 			$(`#CANCEL_ALL_PINS_ZAN`).remove();
 		}
 	},
-	// 用户年度动态
-	USER_YEAR_DYNAMIC: {
-		target: () => document.querySelector('.badge-wall'),
-		insert() {
-			$(`<div id="USER_YEAR_DYNAMIC"><div>`).insertAfter(this.target());
-			this.app = createApp(UserYearDynamic);
-			insertPlugin(this.app);
-			this.app.mount("#USER_YEAR_DYNAMIC");
-		},
-		remove() {
-			this.app?.unmount();
-			$(`#USER_YEAR_DYNAMIC`).remove();
-		}
-	},
 	// 生成随机沸点
 	RANDOM_PIN: {
 		target: () => document.querySelector('.jcode-picker'),
@@ -125,7 +111,7 @@ const METHOD_MAP = {
 			$(`#RANDOM_PIN`).remove();
 		}
 	},
-	// 梭哈抽奖
+	// 梭哈抽奖｜未做功能
 	LOTTERY_ALL_IN: {
 		target: () => document.querySelector('.current_value'),
 		insert() {
@@ -138,17 +124,29 @@ const METHOD_MAP = {
 			this.app?.unmount();
 			$(`#LOTTERY_ALL_IN`).remove();
 		}
-	}
+	},
+	// 社区活跃度 | 暂时废弃
+	USER_YEAR_DYNAMIC: {
+		target: () => document.querySelector('.badge-wall'),
+		insert() {
+			$(`<div id="USER_YEAR_DYNAMIC"><div>`).insertAfter(this.target());
+			this.app = createApp(UserYearDynamic);
+			insertPlugin(this.app);
+			this.app.mount("#USER_YEAR_DYNAMIC");
+		},
+		remove() {
+			this.app?.unmount();
+			$(`#USER_YEAR_DYNAMIC`).remove();
+		}
+	},
 };
 
 /*
 * 当页面发生变化的时候需要做的事情
 * 调用时机：刷新页面 || 页面切换
 * 1、判断所有需要的dom是否准备存在，如果不存在，那么500毫秒后重新获取
-* 2、如果全部dom都准备完成，那么开始执行配置好的insert函数（大部分为创建节点然后插入到原本的dom结构中）
-* 3、执行完成后，通知后端获取该任务对应的数据
-* 4、获取到数据之后，调用对应任务的change方法（大部分为将数据渲染到准备好的节点里面）
-* 5、如果当前页面不存在配置里面的任务，则调用对应任务的remove函数
+* 2、dom准备完毕，先移除之前的组件
+* 3、执行配置好的insert函数（大部分为创建节点然后插入到dom结构中）
 * */
 export const pageChange = async () => {
 	await initUrlInfo();
@@ -191,7 +189,6 @@ const initUrlInfo = async () => {
 		} else {
 			// 个人页
 			url.info = { userId: urlArr[4] };
-			url.methods.push('USER_YEAR_DYNAMIC');
 			let isSelf = !!(self && self.user_basic.user_id === url.info.userId);
 			if (urlArr[5] === "pins" && isSelf) {
 				url.methods.push("REMOVE_ALL_PINGS");
