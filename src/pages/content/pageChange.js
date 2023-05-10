@@ -45,14 +45,16 @@ const METHOD_MAP = {
 	FUZZY_PIN: {
 		target: () => document.querySelector("#juejin"),
 		insert() {
-			$(`<div id="FUZZY_PIN"><div>`).insertAfter(this.target());
-			this.app = createApp(FuzzyPin);
-			insertPlugin(this.app)
-			this.app.mount("#FUZZY_PIN");
+			if (!this.app) {
+				$(`<div id="FUZZY_PIN"><div>`).insertAfter(this.target());
+				this.app = createApp(FuzzyPin);
+				insertPlugin(this.app)
+				this.app.mount("#FUZZY_PIN");
+			}
 		},
 		remove() {
-			this.app?.unmount();
-			$(`#FUZZY_PIN`).remove();
+			// this.app?.unmount();
+			// $(`#FUZZY_PIN`).remove();
 		}
 	},
 	// 删除我的全部沸点

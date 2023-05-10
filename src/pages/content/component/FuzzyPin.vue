@@ -1,6 +1,6 @@
 <!--屏蔽沸点-->
 <template>
-	<span class="plugin-pin-button" @click="visible=true">屏蔽<br/>沸点</span>
+	<span class="plugin-pin-button" @click="visible=true">屏<br/>蔽<br/>沸<br/>点</span>
 	<el-dialog v-model="visible" title="屏蔽沸点" width="500px" class="plugin-dialog"
 						 :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false">
 		<el-form label-position="top">
@@ -239,20 +239,20 @@ onUnmounted(() => {
 <style lang="less">
 .plugin-pin-button {
 	position: fixed;
-	right: 20px;
-	bottom: 150px;
-	width: 50px;
-	height: 50px;
-	text-align: center;
-	border-radius: 50%;
-	background-color: var(--plugin-hover-background);
-	color: var(--plugin-text-color);
-	padding-top: 8px;
-	box-sizing: border-box;
+	left: 0;
+	top: 100px;
+	width: 40px;
+	padding: 16px 0;
 	cursor: pointer;
+	font-size: 12px;
+	text-align: center;
+	box-sizing: border-box;
+	border-radius: 0 4px 4px 0;
+	background-color: var(--plugin-card-background);
+	color: var(--plugin-title-color);
 
 	&:hover {
-		color: var(--plugin-title-color);
+		color: var(--plugin-primary-color);
 	}
 }
 
