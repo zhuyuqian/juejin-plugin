@@ -18,7 +18,7 @@ const mode: "production" | "development" =
 	(process.env.MODE as any) ?? "development";
 
 const config: Configuration = {
-	devtool: "source-map",	// 启用sourceMap
+	// devtool: "source-map",	// 启用sourceMap
 	mode,
 	entry: {
 		"background": resolve("src", "pages/background"),

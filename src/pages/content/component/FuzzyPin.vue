@@ -235,7 +235,7 @@ onUnmounted(() => {
 	unBind();
 })
 </script>
-<style scoped lang="less">
+<style lang="less">
 .plugin-pin-button {
 	position: fixed;
 	right: 20px;
@@ -254,37 +254,36 @@ onUnmounted(() => {
 		color: var(--plugin-title-color);
 	}
 }
-</style>
-<style>
+
 .pin[data-pin-hidden='1'] {
 	height: 200px;
 	overflow: hidden;
+}
 
-	.plugin-pin-shadow {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 1;
-		background-color: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(10px);
-		display: flex;
-		flex-direction: column;
-		align-content: center;
-		text-align: center;
+.plugin-pin-shadow {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	background-color: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(10px);
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	text-align: center;
 
-		.plugin-pin-shadow-text {
-			margin-top: 90px;
-			font-size: 26px;
-			color: var(--plugin-text-color);
-		}
+	.plugin-pin-shadow-text {
+		margin-top: 90px;
+		font-size: 26px;
+		color: var(--plugin-text-color);
+	}
 
-		.plugin-pin-shadow-desc {
-			margin-top: 4px;
-			font-size: 12px;
-			color: var(--plugin-text-color);
-		}
+	.plugin-pin-shadow-desc {
+		margin-top: 4px;
+		font-size: 12px;
+		color: var(--plugin-text-color);
 	}
 }
 </style>
