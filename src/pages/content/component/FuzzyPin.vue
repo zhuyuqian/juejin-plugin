@@ -21,59 +21,219 @@
 	</el-dialog>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
 
 let visible = ref(false);
 
 const hiddenUserIds = ref(JSON.parse(localStorage.getItem('pluginHiddenUserIds') || '[]'));
 const hiddenKeywords = ref(JSON.parse(localStorage.getItem('pluginHiddenKeywords') || '[]'));
 
+// 保存屏蔽内容
 const save = () => {
 	localStorage.setItem('pluginHiddenUserIds', JSON.stringify(hiddenUserIds.value));
 	localStorage.setItem('pluginHiddenKeywords', JSON.stringify(hiddenKeywords.value));
 	visible.value = false;
-	handle();
+	handleDomChange();
 }
 
-const handle = () => {
-	end();
-	let pins = $('.pin');
+// 获取命中的关键字
+const getTargetKeywordStr = content => {
+	let targets = hiddenKeywords.value.filter(keyword => content.includes(keyword));
+	return targets.length ? targets.join(';') : '';
+}
+
+// 处理上级回复
+const handleParentReplys = () => {
+	let replys = [];
+	for (let reply of $('.sub-comment .parent-wrapper .parent-content')) {
+		if (!$(reply).attr('data-pin-hidden')) {
+			replys.push(reply)
+		}
+	}
+	for (let reply of replys) {
+		let replyContent = reply.innerText;
+		// 需要替换的文本内容
+		let hitContent = '';
+		// 命中内容
+		let hitKeyword = getTargetKeywordStr(replyContent);
+		if (hitKeyword) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+
+		if (hitContent) {
+			// 给节点标记一个属性
+			$(reply).attr('data-pin-hidden', 1);
+			reply.innerText = hitContent;
+		}
+	}
+}
+
+// 处理回复
+const handleReplys = () => {
+	let replys = [];
+	for (let reply of $('.sub-comment')) {
+		if ($(reply).attr('data-jj-helper-comment-id') && !$(reply).attr('data-pin-hidden')) {
+			replys.push(reply)
+		}
+	}
+	for (let reply of replys) {
+		// 回复的用户
+		let replyUserId = $(reply.querySelector('.user-link')).attr('href').split('/user/')[1];
+		// 回复的内容
+		let replyDom = reply.querySelector('.content-wrapper .content');
+
+		let replyContent = replyDom.innerText;
+		// 需要替换的文本内容
+		let hitContent = '';
+		// 命中用户
+		if (hiddenUserIds.value.includes(replyUserId)) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中掘友ID）`
+		// 命中内容
+		let hitKeyword = getTargetKeywordStr(replyContent);
+		if (hitKeyword) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+
+		if (hitContent) {
+			// 给节点标记一个属性
+			$(reply).attr('data-pin-hidden', 1);
+			replyDom.innerText = hitContent;
+		}
+	}
+}
+
+// 处理热评
+const handleHotComments = () => {
+	let comments = [];
+	for (let comment of $('.hot-comment-row .desc')) {
+		if (!$(comment).attr('data-pin-hidden')) {
+			comments.push(comment);
+		}
+	}
+	for (let comment of comments) {
+		// 评论的内容
+		let commentContent = comment.innerText;
+		// 需要替换的文本内容
+		let hitContent = '';
+		// 命中内容
+		let hitKeyword = getTargetKeywordStr(comment.innerText);
+		if (hitKeyword) {
+			hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+		}
+		if (hitContent) {
+			// 给节点标记一个属性
+			$(comment).attr('data-pin-hidden', 1);
+			comment.innerText = hitContent;
+		}
+	}
+}
+
+// 处理评论
+const handleComments = () => {
+	let comments = [];
+	for (let comment of $('.comment')) {
+		if ($(comment).attr('data-jj-helper-comment-id') && !$(comment).attr('data-pin-hidden')) {
+			comments.push(comment);
+		}
+	}
+	for (let comment of comments) {
+		// 评论的用户
+		let commentUserId = $(comment.querySelector('.user-link')).attr('href').split('/user/')[1];
+		// 评论的内容
+		let commentDom = comment.querySelector('.comment-main .content');
+		let commentContent = commentDom.innerText;
+		// 需要替换的文本内容
+		let hitContent = '';
+		// 命中用户
+		if (hiddenUserIds.value.includes(commentUserId)) {
+			hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中掘友ID）`
+		}
+		// 命中内容
+		let hitKeyword = getTargetKeywordStr(commentDom.innerText);
+		if (hitKeyword) {
+			hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+		}
+		if (hitContent) {
+			// 给节点标记一个属性
+			$(comment).attr('data-pin-hidden', 1);
+			commentDom.innerText = hitContent;
+		}
+	}
+}
+
+// 处理沸点
+const handlePins = () => {
+	let pins = [];
+	for (let pin of $('.pin')) {
+		if ($(pin).attr('data-pin-id') && !$(pin).attr('data-pin-hidden')) {
+			pins.push(pin);
+		}
+	}
 	for (let pin of pins) {
-		let auth = $(pin).find('.pin-header-row')[0];
-		if (!auth) continue;
-		if (pin.querySelector('.plugin-pin-shadow')) continue;
-		let authUserId = $(auth).attr('data-author-id');
+		// 如果有展开按钮，则自动展开
+		// let limitButton = pin.querySelector('.limit-btn');
+		// if (limitButton && limitButton.innerText.trim() === '展开') limitButton.click();
+
+		// 取出作者id
+		let authUserId = $(pin).find('.pin-header-row').attr('data-author-id');
+		// 取出沸点内容
 		let contentText = pin.querySelector('.content').innerText;
+
 		let html = ''
-		if (hiddenUserIds.value.includes(authUserId)) { // 隐藏指定用户
-			html = `<div class='plugin-pin-shadow'><span>已屏蔽用户</span></div>`
+
+		// 隐藏指定用户
+		if (hiddenUserIds.value.includes(authUserId)) {
+			html = `<div class='plugin-pin-shadow'>
+								<span class="plugin-pin-shadow-text">命中掘友ID</span>
+								<span class="plugin-pin-shadow-desc">${authUserId}</span>
+							</div>`
 		}
-		let targetHiddenKeywords = hiddenKeywords.value.filter(keyword => contentText.includes(keyword));
-		if (targetHiddenKeywords.length) { // 隐藏指定内容
-			html = `<div class='plugin-pin-shadow'><span>已屏蔽关键字</span></div>`
+		// 隐藏指定内容
+		let hitKeyword = getTargetKeywordStr(contentText);
+		if (hitKeyword) {
+			html = `<div class='plugin-pin-shadow'>
+								<span class="plugin-pin-shadow-text">命中关键字</span>
+								<span class="plugin-pin-shadow-desc">${hitKeyword}</span>
+							</div>`
 		}
+
+		// 如果需要整个屏蔽
 		if (html) {
+			// 给节点标记一个属性
+			$(pin).attr('data-pin-hidden', 1);
 			$(pin).append($(html));
 		}
 	}
-	start();
+}
+
+// 当页面dom发生变化后的处理函数
+const handleDomChange = () => {
+	unBind();
+	handlePins();
+	handleComments();
+	handleReplys();
+	handleHotComments();
+	handleParentReplys();
+	bind();
 }
 
 let timeOut = null;
-const handleDOMNodeInserted = (e) => {
+// 绑定的函数
+const handleDOMNodeInserted = () => {
 	if (timeOut) clearTimeout(timeOut);
 	timeOut = setTimeout(() => {
-		handle();
+		handleDomChange();
+		timeOut = null
 	}, 50)
 }
-const start = () => {
-	$("#juejin").bind('DOMNodeInserted', handleDOMNodeInserted);
+
+const bind = () => {
+	$("#juejin").on('DOMNodeInserted', handleDOMNodeInserted);
 }
-const end = () => {
-	$("#juejin").unbind('DOMNodeInserted', handleDOMNodeInserted);
+const unBind = () => {
+	$("#juejin").off('DOMNodeInserted');
 }
 
-start();
+bind();
+
+onUnmounted(() => {
+	unBind();
+})
 </script>
 <style scoped lang="less">
 .plugin-pin-button {
@@ -92,6 +252,39 @@ start();
 
 	&:hover {
 		color: var(--plugin-title-color);
+	}
+}
+</style>
+<style>
+.pin[data-pin-hidden='1'] {
+	height: 200px;
+	overflow: hidden;
+
+	.plugin-pin-shadow {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		background-color: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(10px);
+		display: flex;
+		flex-direction: column;
+		align-content: center;
+		text-align: center;
+
+		.plugin-pin-shadow-text {
+			margin-top: 90px;
+			font-size: 26px;
+			color: var(--plugin-text-color);
+		}
+
+		.plugin-pin-shadow-desc {
+			margin-top: 4px;
+			font-size: 12px;
+			color: var(--plugin-text-color);
+		}
 	}
 }
 </style>
