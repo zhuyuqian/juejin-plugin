@@ -81,12 +81,10 @@ const METHOD_MAP = {
 	CHANGE_THEME: {
 		target: () => document.querySelector('.setting-common'),
 		insert() {
-			if (!this.app) {
-				$(this.target()).append($(`<div id="CHANGE_THEME"><div>`))
-				this.app = createApp(ChangeTheme);
-				insertPlugin(this.app)
-				this.app.mount("#CHANGE_THEME");
-			}
+			$(this.target()).append($(`<div id="CHANGE_THEME"><div>`))
+			this.app = createApp(ChangeTheme);
+			insertPlugin(this.app)
+			this.app.mount("#CHANGE_THEME");
 		},
 		remove() {
 			this.app?.unmount();
