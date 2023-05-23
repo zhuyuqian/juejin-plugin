@@ -61,7 +61,7 @@
 	.el-dialog__body {
 		padding: 15px;
 
-		.el-select {
+		.el-select, .el-input {
 			width: 100%;
 
 			.el-input__inner {
@@ -71,6 +71,36 @@
 			.el-select__input {
 				border: none;
 			}
+
+			&.is-disabled {
+				.el-input__wrapper {
+					background-color: transparent;
+				}
+			}
 		}
 	}
+}
+
+.plugin-set-nickname {
+	width: 120px;
+	margin-left: 15px;
+	text-align: center;
+	border-radius: 2px;
+	padding: 9px 0;
+	cursor: pointer;
+	font-size: 14px;
+	border: 1px solid var(--plugin-border-color);
+	color: var(--plugin-text-color);
+
+	&:hover {
+		border-color: var(--plugin-primary-color);
+		color: var(--plugin-primary-color);
+	}
+}
+
+.plugin-nick {
+	font-size: 13px;
+	color: var(--plugin-text-color);
+	margin-left: 6px;
+	margin-right: 6px;
 }

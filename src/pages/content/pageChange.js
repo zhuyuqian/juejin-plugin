@@ -6,6 +6,7 @@ import UserYearDynamic from "./component/UserYearDynamic.vue";
 import LotteryAllIn from "./component/LotteryAllIn.vue";
 import ChangeTheme from "./component/ChangeTheme.vue";
 import FuzzyPin from "./component/FuzzyPin.vue";
+import NickName from "./component/NickName.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -55,6 +56,22 @@ const METHOD_MAP = {
 		remove() {
 			// this.app?.unmount();
 			// $(`#FUZZY_PIN`).remove();
+		}
+	},
+	// 昵称（别名）设置
+	NICK_NAME: {
+		target: () => document.querySelector("#juejin"),
+		insert() {
+			if (!this.app) {
+				$(`<div id="NICK_NAME"><div>`).insertAfter(this.target());
+				this.app = createApp(NickName);
+				insertPlugin(this.app)
+				this.app.mount("#NICK_NAME");
+			}
+		},
+		remove() {
+			// this.app?.unmount();
+			// $(`#NICK_NAME`).remove();
 		}
 	},
 	// 删除我的全部沸点
@@ -181,7 +198,7 @@ export const pageChange = async () => {
 const initUrlInfo = async () => {
 	self = await ajax(EVENT_MAP.GET_SELF_INFO);
 	url.url = window.location.origin + window.location.pathname;
-	url.methods = ["CHANGE_THEME", "FUZZY_PIN"];
+	url.methods = ["CHANGE_THEME", "FUZZY_PIN", "NICK_NAME"];
 	let urlArr = url.url.split("/");
 	// 个人主页
 	if (urlArr[3] === 'user') {
