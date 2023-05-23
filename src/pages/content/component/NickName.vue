@@ -16,8 +16,9 @@
 	</el-dialog>
 </template>
 <script setup>
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, getCurrentInstance } from "vue";
 
+let { proxy } = getCurrentInstance();
 let visible = ref(false);
 
 const nickNameMap = ref(JSON.parse(localStorage.getItem('pluginNickNameMap') || '{}'));
@@ -32,12 +33,15 @@ const open = (e) => {
 
 const save = () => {
 	nickNameMap.value[currentNickName.value.userId] = currentNickName.value.nickName;
+	for (let userId in nickNameMap.value) {
+		if (!nickNameMap.value[userId]) delete nickNameMap.value[userId];
+	}
 	localStorage.setItem('pluginNickNameMap', JSON.stringify(nickNameMap.value));
 	visible.value = false;
 	handleDomChange();
 }
 
-const handleUserName = () => {
+const handleInsertNickName = () => {
 	for (let username of $('a.username')) {
 		let userId = $(username).attr('href').split('/user/')[1];
 		let nick = $(username).find('.plugin-nick');
@@ -47,21 +51,39 @@ const handleUserName = () => {
 		}
 		nick.text(nickNameMap.value[userId] || '');
 	}
+	let homeUser = $('.user-info-block');
+	if (homeUser.length) {
+		let userId = proxy.$url.info.userId;
+		let nick = homeUser.find('.plugin-nick');
+		if (!nick.length) {
+			nick = $('<span class="plugin-nick"></span>');
+			homeUser.find('.user-name').append(nick)
+		}
+		nick.text(nickNameMap.value[userId] || '');
+	}
 }
 
 
-const handlePopoverContent = () => {
+const handleInsertButton = () => {
+	// 弹出框
 	let popover = $('.popover-content')
-	if (!popover.html() || !popover.html().includes('operate-btn')) return;
-	let userId = popover.find('.username').attr('href').split('/user/')[1];
-	popover.find('.operate-btn').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
+	if (popover.html() && popover.html().includes('operate-btn')) {
+		let userId = popover.find('.username').attr('href').split('/user/')[1];
+		popover.find('.operate-btn').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
+	}
+	// 用户首页｜用户控制区
+	let user = $('.user-info-block');
+	if (user.length && !user.find('.plugin-set-nickname').length) {
+		let userId = proxy.$url.info.userId;
+		user.find('.introduction .right').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
+	}
 }
 
 // 当页面dom发生变化后的处理函数
 const handleDomChange = () => {
 	unBind();
-	handleUserName();
-	handlePopoverContent();
+	handleInsertNickName();
+	handleInsertButton();
 	bind();
 }
 
