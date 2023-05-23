@@ -4,9 +4,9 @@ import PinClubUserRank from "./component/PinClubUserRank.vue";
 import CancelAllPinsZan from "./component/CancelAllPinsZan.vue";
 import UserYearDynamic from "./component/UserYearDynamic.vue";
 import LotteryAllIn from "./component/LotteryAllIn.vue";
-import ChangeTheme from "./component/ChangeTheme.vue";
 import FuzzyPin from "./component/FuzzyPin.vue";
 import NickName from "./component/NickName.vue";
+import ChangeTheme from "./component/ChangeTheme.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -27,15 +27,66 @@ const insertPlugin = (app) => {
 	}
 }
 
+/*
+* 初始化当前URL信息
+* url：不含任何参数的当前链接
+* methods：最终需要做的哪些事情
+* */
+const initUrlInfo = async () => {
+	self = await ajax(EVENT_MAP.GET_SELF_INFO);
+	url.url = window.location.origin + window.location.pathname;
+	url.methods = ["FUZZY_PIN", "NICK_NAME"];
+	let urlArr = url.url.split("/");
+	// 个人主页
+	if (urlArr[3] === 'user') {
+		// 幸运抽奖
+		if (urlArr[4] === 'center' && urlArr[5] === 'lottery') {
+			url.methods.push('LOTTERY_ALL_IN');
+		} else {
+			// 个人页
+			url.info = { userId: urlArr[4] };
+			let isSelf = !!(self && self.user_basic.user_id === url.info.userId);
+			if (urlArr[5] === "pins" && isSelf) {
+				url.methods.push("REMOVE_ALL_PINGS");
+			}
+			if (urlArr[5] === "praise" && isSelf) {
+				url.methods.push("CANCEL_ALL_PINS_ZAN");
+			}
+		}
+		// 通用设置
+		if (urlArr[4] === 'settings' && urlArr[5] === 'common') {
+			url.methods.push("CHANGE_THEME");
+		}
+	}
+	// 网站主页的沸点页面
+	if (urlArr[3] === 'pins') {
+		url.methods.push("RANDOM_PIN");
+	}
+	// 首页我的圈子 || 推荐圈子 || 圈子页
+	if (urlArr.includes("myclub") || urlArr.includes("club")) {
+		url.methods.push("PING_CLUB_USER_RANK");
+		url.info = { clubId: urlArr[urlArr.length - 1] };
+	}
+};
+
+/*
+* 初始化页面主题
+* */
+const initTheme = () => {
+	$('body').attr('data-plugin-theme', localStorage.getItem('pluginTheme') || 'default')
+}
+
 const METHOD_MAP = {
 	// 切换主题
 	CHANGE_THEME: {
-		target: () => document.querySelector(".search-add"),
+		target: () => document.querySelector('.setting-common'),
 		insert() {
-			$(`<div id="CHANGE_THEME"><div>`).insertAfter(this.target());
-			this.app = createApp(ChangeTheme);
-			insertPlugin(this.app)
-			this.app.mount("#CHANGE_THEME");
+			if (!this.app) {
+				$(this.target()).append($(`<div id="CHANGE_THEME"><div>`))
+				this.app = createApp(ChangeTheme);
+				insertPlugin(this.app)
+				this.app.mount("#CHANGE_THEME");
+			}
 		},
 		remove() {
 			this.app?.unmount();
@@ -168,6 +219,7 @@ const METHOD_MAP = {
 * 3、执行配置好的insert函数（大部分为创建节点然后插入到dom结构中）
 * */
 export const pageChange = async () => {
+	await initTheme();
 	await initUrlInfo();
 	let complete = true;
 	for (let methodName of url.methods) {
@@ -186,44 +238,5 @@ export const pageChange = async () => {
 		if (url.methods.includes(methodName)) {
 			method.insert();
 		}
-	}
-};
-
-
-/*
-* 初始化当前URL信息
-* url：不含任何参数的当前链接
-* methods：最终需要做的哪些事情
-* */
-const initUrlInfo = async () => {
-	self = await ajax(EVENT_MAP.GET_SELF_INFO);
-	url.url = window.location.origin + window.location.pathname;
-	url.methods = ["CHANGE_THEME", "FUZZY_PIN", "NICK_NAME"];
-	let urlArr = url.url.split("/");
-	// 个人主页
-	if (urlArr[3] === 'user') {
-		// 幸运抽奖
-		if (urlArr[4] === 'center' && urlArr[5] === 'lottery') {
-			url.methods.push('LOTTERY_ALL_IN');
-		} else {
-			// 个人页
-			url.info = { userId: urlArr[4] };
-			let isSelf = !!(self && self.user_basic.user_id === url.info.userId);
-			if (urlArr[5] === "pins" && isSelf) {
-				url.methods.push("REMOVE_ALL_PINGS");
-			}
-			if (urlArr[5] === "praise" && isSelf) {
-				url.methods.push("CANCEL_ALL_PINS_ZAN");
-			}
-		}
-	}
-	// 网站主页的沸点页面
-	if (urlArr[3] === 'pins') {
-		url.methods.push("RANDOM_PIN");
-	}
-	// 首页我的圈子 || 推荐圈子 || 圈子页
-	if (urlArr.includes("myclub") || urlArr.includes("club")) {
-		url.methods.push("PING_CLUB_USER_RANK");
-		url.info = { clubId: urlArr[urlArr.length - 1] };
 	}
 };

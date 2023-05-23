@@ -1,6 +1,6 @@
 import { pageChange } from "./pageChange";
 import "../../style/common.less";
-import "../../style/dark.less";
+import "../../style/theme.less";
 
 chrome.runtime.onMessage.addListener(async (request, callback) => {
 	let { from, event, data } = request;
