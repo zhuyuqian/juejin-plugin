@@ -227,7 +227,7 @@ const bind = () => {
 	$("#juejin").on('DOMNodeInserted', handleDOMNodeInserted);
 }
 const unBind = () => {
-	$("#juejin").off('DOMNodeInserted');
+	$("#juejin").off('DOMNodeInserted', handleDOMNodeInserted);
 }
 
 bind();

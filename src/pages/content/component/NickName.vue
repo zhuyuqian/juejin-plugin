@@ -80,7 +80,7 @@ const bind = () => {
 	$(".plugin-set-nickname").on('click', open)
 }
 const unBind = () => {
-	$("#juejin").off('DOMNodeInserted');
+	$("#juejin").off('DOMNodeInserted', handleDOMNodeInserted);
 	$(".plugin-set-nickname").off('click')
 }
 
