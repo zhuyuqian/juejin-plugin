@@ -248,11 +248,11 @@ onUnmounted(() => {
 	text-align: center;
 	box-sizing: border-box;
 	border-radius: 0 4px 4px 0;
-	background-color: var(--plugin-card-background);
-	color: var(--plugin-title-color);
+	background-color: var(--juejin-layer-1);
+	color: var(--juejin-font-1);
 
 	&:hover {
-		color: var(--plugin-primary-color);
+		color: var(--juejin-font-brand2-hover);
 	}
 }
 
@@ -278,13 +278,13 @@ onUnmounted(() => {
 	.plugin-pin-shadow-text {
 		margin-top: 90px;
 		font-size: 26px;
-		color: var(--plugin-text-color);
+		color: var(--juejin-font-2);
 	}
 
 	.plugin-pin-shadow-desc {
 		margin-top: 4px;
 		font-size: 12px;
-		color: var(--plugin-text-color);
+		color: var(--juejin-font-3);
 	}
 }
 </style>
