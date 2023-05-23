@@ -39,7 +39,8 @@
 		"contextMenus",
 		"tabs",
 		"declarativeNetRequest",
-		"notifications"
+		"notifications",
+		"alarms"
 	],
 	"declarative_net_request": {
 		"rule_resources": [

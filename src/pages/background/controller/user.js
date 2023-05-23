@@ -98,19 +98,23 @@ export const getYearDynamic = async ({ userId, isRefresh }) => {
 	return storage;
 }
 
+let loopNotReadMessageCountInterVal = null;
+
 /*
 * 开始循环获取未读消息数
 * */
 export const loopNotReadMessageCount = () => {
-	setInterval(async () => {
+	if (loopNotReadMessageCountInterVal) return;
+	loopNotReadMessageCountInterVal = setInterval(async () => {
 		if (await getSelfStorage()) {
 			let { success, data } = await getNotReadMessageCount();
 			if (!success) return;
 			// count[1]：点赞和收藏  count[3]：评论
 			let { count, total } = data;
 			let items = [];
-			if (count[1]) items.push(`点赞和收藏：${count[1]}条`);
+			if (count[1]) items.push(`赞和收藏：${count[1]}条`);
 			if (count[3]) items.push(`评论：${count[3]}条`);
+			if (count[7]) items.push(`私信：${count[3]}条`);
 			let notReadStrStorage = await getStorage("message-not-read");
 			// 有未读且详情文字不相同
 			if (total && notReadStrStorage !== JSON.stringify(items)) {
