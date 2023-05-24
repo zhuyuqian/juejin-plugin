@@ -76,6 +76,36 @@ const initTheme = () => {
 	$('body').attr('data-plugin-theme', localStorage.getItem('pluginTheme') || 'default')
 }
 
+/*
+* 当页面发生变化的时候需要做的事情
+* 调用时机：刷新页面 || 页面切换
+* 1、判断所有需要的dom是否准备存在，如果不存在，那么500毫秒后重新获取
+* 2、dom准备完毕，先移除之前的组件
+* 3、执行配置好的insert函数（大部分为创建节点然后插入到dom结构中）
+* */
+export const pageChange = async () => {
+	await initTheme();
+	await initUrlInfo();
+	let complete = true;
+	for (let methodName of url.methods) {
+		let method = METHOD_MAP[methodName];
+		if (method && !method.target()) {
+			complete = false;
+			break;
+		}
+	}
+	// 如果需要的dom节点没有准备好，那么500毫秒后继续调用一次
+	if (!complete) return setTimeout(() => pageChange(), 500);
+	// 需要的dom都准备好了，开始执行配置好的事情
+	for (let methodName in METHOD_MAP) {
+		let method = METHOD_MAP[methodName];
+		method.remove();
+		if (url.methods.includes(methodName)) {
+			method.insert();
+		}
+	}
+};
+
 const METHOD_MAP = {
 	// 切换主题
 	CHANGE_THEME: {
@@ -207,34 +237,4 @@ const METHOD_MAP = {
 			$(`#USER_YEAR_DYNAMIC`).remove();
 		}
 	},
-};
-
-/*
-* 当页面发生变化的时候需要做的事情
-* 调用时机：刷新页面 || 页面切换
-* 1、判断所有需要的dom是否准备存在，如果不存在，那么500毫秒后重新获取
-* 2、dom准备完毕，先移除之前的组件
-* 3、执行配置好的insert函数（大部分为创建节点然后插入到dom结构中）
-* */
-export const pageChange = async () => {
-	await initTheme();
-	await initUrlInfo();
-	let complete = true;
-	for (let methodName of url.methods) {
-		let method = METHOD_MAP[methodName];
-		if (method && !method.target()) {
-			complete = false;
-			break;
-		}
-	}
-	// 如果需要的dom节点没有准备好，那么500毫秒后继续调用一次
-	if (!complete) return setTimeout(() => pageChange(), 500);
-	// 需要的dom都准备好了，开始执行配置好的事情
-	for (let methodName in METHOD_MAP) {
-		let method = METHOD_MAP[methodName];
-		method.remove();
-		if (url.methods.includes(methodName)) {
-			method.insert();
-		}
-	}
 };

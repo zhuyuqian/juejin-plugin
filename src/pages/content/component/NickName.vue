@@ -42,6 +42,7 @@ const save = () => {
 }
 
 const handleInsertNickName = () => {
+	// 用户名称旁边
 	for (let username of $('a.username')) {
 		let userId = $(username).attr('href').split('/user/')[1];
 		let nick = $(username).find('.plugin-nick');
@@ -51,6 +52,7 @@ const handleInsertNickName = () => {
 		}
 		nick.text(nickNameMap.value[userId] || '');
 	}
+	// 用户首页
 	let homeUser = $('.user-info-block');
 	if (homeUser.length) {
 		let userId = proxy.$url.info.userId;
@@ -63,11 +65,10 @@ const handleInsertNickName = () => {
 	}
 }
 
-
 const handleInsertButton = () => {
 	// 弹出框
 	let popover = $('.popover-content')
-	if (popover.html() && popover.html().includes('operate-btn')) {
+	if (popover.html() && popover.html().includes('operate-btn') && !popover.find('.plugin-set-nickname').length) {
 		let userId = popover.find('.username').attr('href').split('/user/')[1];
 		popover.find('.operate-btn').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
 	}
