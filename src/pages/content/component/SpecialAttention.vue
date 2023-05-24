@@ -1,7 +1,7 @@
-<!--特别关注-->
+<!--我的关心-->
 <template>
 	<span class="plugin-fixed-left special-attention" :class="{active:showList}" @click="showList = !showList">
-		特<br/>别<br/>关<br/>注
+		我<br/>的<br/>关<br/>心
 	</span>
 	<div class="special-attention-warp" :class="{active:showList}">
 		<div class="attention-box" v-for="attention of attentionList">
@@ -11,7 +11,7 @@
 					{{ attention.userName }}<span class="nick">{{ nickNameMap[attention.userId] || '' }}</span>
 				</div>
 			</a>
-			<span class="cancel" @click.stop="cancel(attention)">取关</span>
+			<span class="cancel" @click.stop="cancel(attention)">移出</span>
 		</div>
 	</div>
 </template>
@@ -42,11 +42,11 @@ const save = (e) => {
 	let attentionIndex = findAttentionIndex(user.userId);
 	if (attentionIndex !== -1) { // 存在，取关
 		attentionList.value.splice(attentionIndex, 1);
-		$('.plugin-set-attention').text('特关')
+		$('.plugin-set-attention').text('关心')
 	} else { // 不存在，前面新增
 		user.addTime = new Date().getTime();
 		attentionList.value.unshift(user);
-		$('.plugin-set-attention').text('取关')
+		$('.plugin-set-attention').text('已关心')
 	}
 	localStorage.setItem('pluginSpecialAttention', JSON.stringify(attentionList.value));
 }
@@ -56,7 +56,7 @@ const save = (e) => {
 const handleInsertButton = () => {
 	// 弹出框
 	let popover = $('.popover-content')
-	let button = $(`<span class="popover-button plugin-set-attention" title="特别关注"></span>`);
+	let button = $(`<span class="popover-button plugin-set-attention" title="特别关心"></span>`);
 	if (popover.html() && popover.html().includes('operate-btn') && !popover.find('.plugin-set-attention').length) {
 		let user = {
 			userId: popover.find('.username').attr('href').split('/user/')[1],
@@ -64,7 +64,7 @@ const handleInsertButton = () => {
 			userAvatar: popover.find('img').attr('src')
 		}
 		let attentionIndex = findAttentionIndex(user.userId);
-		button.text(attentionIndex !== -1 ? '取关' : '特关')
+		button.text(attentionIndex !== -1 ? '已关心' : '关心')
 		button.attr('data-user-json', JSON.stringify(user))
 		popover.find('.operate-btn').append(button);
 	}
@@ -77,7 +77,7 @@ const handleInsertButton = () => {
 			userAvatar: userBlock.find('.avatar').attr('src')
 		}
 		let attentionIndex = findAttentionIndex(user.userId);
-		button.text(attentionIndex !== -1 ? '取关' : '特关')
+		button.text(attentionIndex !== -1 ? '已关心' : '关心')
 		button.attr('data-user-json', JSON.stringify(user));
 		userBlock.find('.introduction .right').append(button)
 	}
