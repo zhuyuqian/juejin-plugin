@@ -1,6 +1,6 @@
 <!--屏蔽沸点-->
 <template>
-	<span class="plugin-pin-button" @click="visible=true">屏<br/>蔽<br/>沸<br/>点</span>
+	<span class="plugin-fixed-left fuzzy-pin" @click="visible=true">屏<br/>蔽<br/>沸<br/>点</span>
 	<el-dialog v-model="visible" title="屏蔽沸点" width="500px" class="plugin-dialog"
 						 :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false">
 		<el-form label-position="top">
@@ -237,23 +237,8 @@ onUnmounted(() => {
 })
 </script>
 <style lang="less">
-.plugin-pin-button {
-	position: fixed;
-	left: 0;
+.fuzzy-pin {
 	top: 100px;
-	width: 40px;
-	padding: 16px 0;
-	cursor: pointer;
-	font-size: 12px;
-	text-align: center;
-	box-sizing: border-box;
-	border-radius: 0 4px 4px 0;
-	background-color: var(--juejin-layer-1);
-	color: var(--juejin-font-1);
-
-	&:hover {
-		color: var(--juejin-font-brand2-hover);
-	}
 }
 
 .pin[data-pin-hidden='1'] {

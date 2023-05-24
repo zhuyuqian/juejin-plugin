@@ -22,6 +22,7 @@ let { proxy } = getCurrentInstance();
 let visible = ref(false);
 
 const nickNameMap = ref(JSON.parse(localStorage.getItem('pluginNickNameMap') || '{}'));
+
 const currentNickName = ref({ userId: null, nickName: '' });
 
 const open = (e) => {
@@ -45,10 +46,10 @@ const handleInsertNickName = () => {
 	// 用户名称旁边
 	for (let username of $('a.username')) {
 		let userId = $(username).attr('href').split('/user/')[1];
-		let nick = $(username).find('.plugin-nick');
+		let nick = $(username).parent().find('.plugin-nick');
 		if (!nick.length) {
 			nick = $('<span class="plugin-nick"></span>');
-			$(username).append(nick)
+			nick.insertBefore($(username));
 		}
 		nick.text(nickNameMap.value[userId] || '');
 	}
@@ -59,7 +60,7 @@ const handleInsertNickName = () => {
 		let nick = homeUser.find('.plugin-nick');
 		if (!nick.length) {
 			nick = $('<span class="plugin-nick"></span>');
-			homeUser.find('.user-name').append(nick)
+			nick.insertBefore(homeUser.find('.user-name'));
 		}
 		nick.text(nickNameMap.value[userId] || '');
 	}
@@ -67,17 +68,19 @@ const handleInsertNickName = () => {
 
 const handleInsertButton = () => {
 	// 弹出框
-	let popover = $('.popover-content')
+	let popover = $('.popover-content');
+	let button = $(`<span class="popover-button  plugin-set-nickname">别名</span>`);
 	if (popover.html() && popover.html().includes('operate-btn') && !popover.find('.plugin-set-nickname').length) {
-		let userId = popover.find('.username').attr('href').split('/user/')[1];
-		popover.find('.operate-btn').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
+		button.attr('data-user-id', popover.find('.username').attr('href').split('/user/')[1]);
+		popover.find('.operate-btn').append(button)
 	}
 	// 用户首页｜用户控制区
 	let user = $('.user-info-block');
 	if (user.length && !user.find('.plugin-set-nickname').length) {
-		let userId = proxy.$url.info.userId;
-		user.find('.introduction .right').append(`<span class="plugin-set-nickname" data-user-id="${userId}">别名</span>`)
+		button.attr('data-user-id', proxy.$url.info.userId);
+		user.find('.introduction .right').append(button)
 	}
+	button.on('click', open)
 }
 
 // 当页面dom发生变化后的处理函数
@@ -100,11 +103,9 @@ const handleDOMNodeInserted = () => {
 
 const bind = () => {
 	$("#juejin").on('DOMNodeInserted', handleDOMNodeInserted);
-	$(".plugin-set-nickname").on('click', open)
 }
 const unBind = () => {
 	$("#juejin").off('DOMNodeInserted', handleDOMNodeInserted);
-	$(".plugin-set-nickname").off('click')
 }
 
 bind();

@@ -7,6 +7,7 @@ import LotteryAllIn from "./component/LotteryAllIn.vue";
 import FuzzyPin from "./component/FuzzyPin.vue";
 import NickName from "./component/NickName.vue";
 import ChangeTheme from "./component/ChangeTheme.vue";
+import SpecialAttention from "./component/SpecialAttention.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -35,7 +36,7 @@ const insertPlugin = (app) => {
 const initUrlInfo = async () => {
 	self = await ajax(EVENT_MAP.GET_SELF_INFO);
 	url.url = window.location.origin + window.location.pathname;
-	url.methods = ["FUZZY_PIN", "NICK_NAME"];
+	url.methods = ["FUZZY_PIN", "NICK_NAME", "SPECIAL_ATTENTION"];
 	let urlArr = url.url.split("/");
 	// 个人主页
 	if (urlArr[3] === 'user') {
@@ -133,8 +134,6 @@ const METHOD_MAP = {
 			}
 		},
 		remove() {
-			// this.app?.unmount();
-			// $(`#FUZZY_PIN`).remove();
 		}
 	},
 	// 昵称（别名）设置
@@ -149,8 +148,6 @@ const METHOD_MAP = {
 			}
 		},
 		remove() {
-			// this.app?.unmount();
-			// $(`#NICK_NAME`).remove();
 		}
 	},
 	// 删除我的全部沸点
@@ -207,6 +204,20 @@ const METHOD_MAP = {
 		remove() {
 			this.app?.unmount();
 			$(`#RANDOM_PIN`).remove();
+		}
+	},
+	// 特别关注
+	SPECIAL_ATTENTION: {
+		target: () => document.querySelector("#juejin"),
+		insert() {
+			if (!this.app) {
+				$(`<div id="SPECIAL_ATTENTION"><div>`).insertAfter(this.target());
+				this.app = createApp(SpecialAttention);
+				insertPlugin(this.app)
+				this.app.mount("#SPECIAL_ATTENTION");
+			}
+		},
+		remove() {
 		}
 	},
 	// 梭哈抽奖｜未做功能

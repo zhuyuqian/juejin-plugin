@@ -251,23 +251,6 @@
 	}
 }
 
-//.el-button {
-//	&:hover {
-//		color: var(--juejin-brand-1-normal);
-//		border-color:var(--juejin)
-//	}
-//
-//	&.el-button--primary {
-//		background-color: var(--juejin-brand-1-normal);
-//		border-color: var(--juejin-brand-1-normal);
-//
-//		&:hover {
-//			background-color: var(--juejin-brand-2-hover);
-//			color: var(--el-color-white);
-//		}
-//	}
-//}
-
 .el-select, .el-input {
 
 	.el-input__inner {
@@ -295,6 +278,25 @@
 	}
 }
 
+.plugin-fixed-left {
+	position: fixed;
+	z-index: 10;
+	left: 0;
+	width: 40px;
+	padding: 16px 0;
+	cursor: pointer;
+	font-size: 12px;
+	text-align: center;
+	box-sizing: border-box;
+	border-radius: 0 4px 4px 0;
+	background-color: var(--juejin-layer-1);
+	color: var(--juejin-font-1);
+
+	&:hover, &.active {
+		color: var(--juejin-brand-1-normal);
+	}
+}
+
 .plugin-dialog {
 
 	.el-dialog__header {
@@ -319,32 +321,19 @@
 }
 
 .plugin-nick {
-	font-size: 13px;
-	margin-left: 6px;
+	font-size: 14px;
 	margin-right: 6px;
 	color: var(--juejin-font-3);
 }
 
-.plugin-set-nickname {
-	box-sizing: border-box;
-	margin-left: 15px;
-	text-align: center;
-	border-radius: 2px;
-	padding: 9px 0;
+.popover-button {
+	margin-left: 10px;
 	cursor: pointer;
-	font-size: 14px;
-	width: 120px;
-	border: 1px solid var(--juejin-brand-1-normal);
+	font-size: 12px;
 	color: var(--juejin-font-2);
+	white-space:nowrap;
 
 	&:hover {
 		color: var(--juejin-brand-1-normal);
-	}
-}
-
-.user-info-block {
-	.plugin-set-nickname {
-		padding: 6px 0;
-		width: 100px;
 	}
 }
