@@ -8,6 +8,9 @@
     <div class="plugin-float-button" :class="{active:pageInfo.fuzzyPin.show}"
          @click="clickButton('fuzzyPin')">屏<br/>蔽<br/>沸<br/>点
     </div>
+    <div class="plugin-float-button" :class="{active:pageInfo.collectPin.show}"
+         @click="clickButton('collectPin')">收<br/>藏<br/>沸<br/>点
+    </div>
   </div>
   <div class="plugin-float-popup" :class="{active:pageInfo.special.show}">
     <div class="attention-box" v-for="user of pageInfo.special.users">
@@ -43,9 +46,22 @@
         <el-input v-model="pageInfo.nick.currentUserId" placeholder="请输入用户id" disabled/>
       </el-form-item>
       <el-form-item label="配置昵称">
-        <el-input v-model="pageInfo.nick.nameMap[pageInfo.nick.currentUserId]" placeholder="请输入备注名称" @blur="saveNickName"/>
+        <el-input v-model="pageInfo.nick.nameMap[pageInfo.nick.currentUserId]" placeholder="请输入备注名称"
+                  @blur="saveNickName"/>
       </el-form-item>
     </el-form>
+  </div>
+  <div class="plugin-float-popup" :class="{active:pageInfo.collectPin.show}">
+    <div class="collect-pins-warp">
+      <a class="collect-pins-box" target="_blank" v-for="pin of pageInfo.collectPin.pins" :key="pin.id"
+         :href="`https://juejin.cn/pin/${pin.id}`">
+        <div class="pin-content pub-ellipsis-2">{{ pin.content }}</div>
+        <div class="pin-info">
+          <span>{{ $dayjs(pin.addTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
+          <span>{{ pin.club.name }}</span>
+        </div>
+      </a>
+    </div>
   </div>
 </template>
 <script setup>
@@ -69,6 +85,10 @@ const pageInfo = reactive({
       userIds: JSON.parse(localStorage.getItem('pluginHiddenUserIds') || '[]'),
       keywords: JSON.parse(localStorage.getItem('pluginHiddenKeywords') || '[]')
     }
+  },
+  collectPin: {
+    show: false,
+    pins: JSON.parse(localStorage.getItem('pluginCollectPins') || '[]'),
   }
 })
 
@@ -388,12 +408,75 @@ const handleSpecialAttention = () => {
   button.on('click', saveSpecialUser)
 }
 
+/*-------------收藏沸点------------------*/
+
+const findCollectPinIndex = (pinId) => {
+  return pageInfo.collectPin.pins.findIndex(pin => pin.id === pinId);
+}
+
+const handleCollectButtonClick = (pin) => {
+  let id = $(pin).attr('data-pin-id');
+  let content = $(pin).find('.content').html();
+  let club = $(pin).find('.club').length ? {
+    id: $(pin).find('.club').attr('href').split('/')[3],
+    name: $(pin).find('.club span').text().trim()
+  } : {id: null, name: null};
+  let user = {id: $(pin).find('.username').attr('href').split('/')[2], name: $(pin).find('.username').text().trim()};
+  let hasIndex = findCollectPinIndex(id);
+  if (hasIndex === -1) {
+    pageInfo.collectPin.pins.unshift({
+      addTime: new Date().getTime(),
+      id,
+      content,
+      club,
+      user
+    })
+  } else {
+    pageInfo.collectPin.pins.splice(hasIndex, 1);
+  }
+  localStorage.setItem('pluginCollectPins', JSON.stringify(pageInfo.collectPin.pins));
+  handleDomChange()
+}
+
+const insertCollectPinButton = () => {
+  for (let pin of $('.pin')) {
+    if (!$(pin).attr('data-pin-id')) continue
+    $(pin).find('.action-box .action').css('flex', 1);
+    let button = null;
+    if (!($(pin).find('.plugin-collect-button').length)) {
+      button = $('<div class="plugin-collect-button"></div>');
+      button.click(() => {
+        handleCollectButtonClick(pin)
+      })
+      $(pin).find('.action-box').append(button)
+    } else {
+      button = $(pin).find('.plugin-collect-button')
+    }
+    let pinId = $(pin).attr('data-pin-id');
+    let hasIndex = findCollectPinIndex(pinId);
+    if (hasIndex === -1) {
+      button.attr('plugin-is-collect', 0);
+      button.text('收藏');
+    } else {
+      button.attr('plugin-is-collect', 1)
+      button.text('取消收藏');
+    }
+  }
+}
+
+const handleCollectPin = () => {
+  insertCollectPinButton();
+}
+
+/*-------------------------*/
+
 // 当页面dom发生变化后的处理函数
 const handleDomChange = () => {
   unBind();
   handleSpecialAttention();
   handleFuzzyPin();
   handleNickName();
+  handleCollectPin();
   bind();
 }
 
@@ -551,6 +634,48 @@ onUnmounted(() => {
     margin-top: 4px;
     font-size: 12px;
     color: var(--juejin-font-3);
+  }
+}
+
+.plugin-collect-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover, &[plugin-is-collect="1"] {
+    color: var(--el-color-primary);
+  }
+}
+
+.collect-pins-warp {
+  .collect-pins-box {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 10px;
+
+    .pin-content {
+      color: var(--juejin-font-1);
+    }
+
+    .pin-info {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--juejin-font-3);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      .pin-content {
+        color: var(--el-color-primary)
+      }
+    }
   }
 }
 </style>

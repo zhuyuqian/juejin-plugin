@@ -6,13 +6,13 @@ import UserYearDynamic from "./component/UserYearDynamic.vue";
 import LotteryAllIn from "./component/LotteryAllIn.vue";
 import ChangeTheme from "./component/ChangeTheme.vue";
 import CommonFloat from "./component/CommonFloat.vue";
+import RandomPin from "./component/RandomPin.vue";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 
 import {dayjs} from "../../tool";
 import {ajax, EVENT_MAP} from "./api";
-import RandomPin from "./component/RandomPin.vue";
 
 let self = null;
 let url = {methods: [], url: "", info: {}};
