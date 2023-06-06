@@ -55,7 +55,7 @@
     <div class="collect-pins-warp">
       <a class="collect-pins-box" target="_blank" v-for="pin of pageInfo.collectPin.pins" :key="pin.id"
          :href="`https://juejin.cn/pin/${pin.id}`">
-        <div class="pin-content pub-ellipsis-2">{{ pin.content }}</div>
+        <div class="pin-content pub-ellipsis-2" v-html="pin.content"></div>
         <div class="pin-info">
           <span>{{ $dayjs(pin.addTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
           <span>{{ pin.club.name }}</span>
@@ -459,7 +459,7 @@ const insertCollectPinButton = () => {
       button.text('收藏');
     } else {
       button.attr('plugin-is-collect', 1)
-      button.text('取消收藏');
+      button.text('已收藏');
     }
   }
 }
