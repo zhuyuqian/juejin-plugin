@@ -1,0 +1,556 @@
+<!--左侧浮动内容-->
+<template>
+  <div class="plugin-float">
+    <div class="plugin-float-button" :class="{active:pageInfo.special.show}"
+         @click="clickButton('special')">
+      我<br/>的<br/>关<br/>心
+    </div>
+    <div class="plugin-float-button" :class="{active:pageInfo.fuzzyPin.show}"
+         @click="clickButton('fuzzyPin')">屏<br/>蔽<br/>沸<br/>点
+    </div>
+  </div>
+  <div class="plugin-float-popup" :class="{active:pageInfo.special.show}">
+    <div class="attention-box" v-for="user of pageInfo.special.users">
+      <a class="info" target="_blank" :href="`/user/${user.userId}`">
+        <img class="avatar" :src="user.userAvatar"/>
+        <div class="name">
+          {{ user.userName }}<span class="nick">{{ pageInfo.nick.nameMap[user.userId] || '' }}</span>
+        </div>
+      </a>
+      <span class="cancel" @click.stop="removeSpecialUser(user)">移出</span>
+    </div>
+  </div>
+  <div class="plugin-float-popup" :class="{active:pageInfo.fuzzyPin.show}">
+    <el-form label-position="top">
+      <el-form-item label="指定用户ID">
+        <el-select v-model="pageInfo.fuzzyPin.info.userIds" multiple filterable allow-create default-first-option
+                   :reserve-keyword="false" placeholder="请输入用户id" style="width: 100%" @change="saveFuzzyPin">
+          <el-option v-for="userId in pageInfo.fuzzyPin.info.userIds" :key="userId" :label="userId" :value="userId"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="指定关键字">
+        <el-select v-model="pageInfo.fuzzyPin.info.keywords" multiple filterable allow-create default-first-option
+                   :reserve-keyword="false" placeholder="请输入关键字" style="width: 100%" @change="saveFuzzyPin">
+          <el-option v-for="keyword in pageInfo.fuzzyPin.info.keywords" :key="keyword" :label="keyword"
+                     :value="keyword"/>
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </div>
+  <div class="plugin-float-popup" :class="{active:pageInfo.nick.show}">
+    <el-form label-position="top">
+      <el-form-item label="用户Id">
+        <el-input v-model="pageInfo.nick.currentUserId" placeholder="请输入用户id" disabled/>
+      </el-form-item>
+      <el-form-item label="配置昵称">
+        <el-input v-model="pageInfo.nick.nameMap[pageInfo.nick.currentUserId]" placeholder="请输入备注名称" @blur="saveNickName"/>
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script setup>
+import {reactive, onUnmounted, getCurrentInstance} from 'vue';
+
+let {proxy} = getCurrentInstance();
+// 页面数据
+const pageInfo = reactive({
+  special: {
+    show: false,
+    users: JSON.parse(localStorage.getItem('pluginSpecialAttention') || '[]')
+  },
+  nick: {
+    show: false,
+    currentUserId: null,
+    nameMap: JSON.parse(localStorage.getItem('pluginNickNameMap') || '{}')
+  },
+  fuzzyPin: {
+    show: false,
+    info: {
+      userIds: JSON.parse(localStorage.getItem('pluginHiddenUserIds') || '[]'),
+      keywords: JSON.parse(localStorage.getItem('pluginHiddenKeywords') || '[]')
+    }
+  }
+})
+
+const clickButton = (name) => {
+  unBind()
+  let isShow = pageInfo[name].show;
+  for (let key in pageInfo) {
+    pageInfo[key].show = false;
+  }
+  pageInfo[name].show = !isShow;
+  bind();
+}
+
+/*-------------别名设置------------------*/
+
+const openNickName = (e) => {
+  let userId = $(e.currentTarget).attr('data-user-id');
+  if (!userId) return;
+  pageInfo.nick.currentUserId = userId;
+  clickButton('nick')
+}
+
+const handleInsertNickName = () => {
+  // 用户名称旁边
+  for (let username of $('a.username')) {
+    let userId = $(username).attr('href').split('/user/')[1];
+    let nick = $(username).parent().find('.plugin-nick');
+    if (!nick.length) {
+      nick = $('<span class="plugin-nick"></span>');
+      nick.insertBefore($(username));
+    }
+    nick.text(pageInfo.nick.nameMap[userId] || '');
+  }
+  // 用户首页
+  let homeUser = $('.user-info-block');
+  if (homeUser.length) {
+    let userId = proxy.$url.info.userId;
+    let nick = homeUser.find('.plugin-nick');
+    if (!nick.length) {
+      nick = $('<span class="plugin-nick"></span>');
+      nick.insertBefore(homeUser.find('.user-name'));
+    }
+    nick.text(pageInfo.nick.nameMap[userId] || '');
+  }
+}
+
+const handleInsertButton = () => {
+  // 弹出框
+  let popover = $('.popover-content');
+  let button = $(`<span class="popover-button  plugin-set-nickname">别名</span>`);
+  if (popover.html() && popover.html().includes('operate-btn') && !popover.find('.plugin-set-nickname').length) {
+    button.attr('data-user-id', popover.find('.username').attr('href').split('/user/')[1]);
+    popover.find('.operate-btn').append(button)
+  }
+  // 用户首页｜用户控制区
+  let user = $('.user-info-block');
+  if (user.length && !user.find('.plugin-set-nickname').length) {
+    button.attr('data-user-id', proxy.$url.info.userId);
+    user.find('.introduction .right').append(button)
+  }
+  button.on('click', openNickName)
+}
+
+const handleNickName = () => {
+  handleInsertButton();
+  handleInsertNickName();
+}
+
+const saveNickName = () => {
+  for (let userId in pageInfo.nick.nameMap) {
+    if (!pageInfo.nick.nameMap[userId]) delete pageInfo.nick.nameMap[userId];
+  }
+  localStorage.setItem('pluginNickNameMap', JSON.stringify(pageInfo.nick.nameMap));
+  pageInfo.nick.show = false;
+  handleDomChange();
+}
+
+/*-------------屏蔽沸点------------------*/
+
+// 保存屏蔽内容
+const saveFuzzyPin = () => {
+  localStorage.setItem('pluginHiddenUserIds', JSON.stringify(pageInfo.fuzzyPin.info.userIds));
+  localStorage.setItem('pluginHiddenKeywords', JSON.stringify(pageInfo.fuzzyPin.info.keywords));
+  handleDomChange();
+}
+
+// 获取命中的关键字
+const getTargetKeywordStr = content => {
+  let targets = pageInfo.fuzzyPin.info.keywords.filter(keyword => content.includes(keyword));
+  return targets.length ? targets.join(';') : '';
+}
+
+// 处理上级回复
+const handleParentReplys = () => {
+  let replys = [];
+  for (let reply of $('.sub-comment .parent-wrapper .parent-content')) {
+    if (!$(reply).attr('data-pin-hidden')) {
+      replys.push(reply)
+    }
+  }
+  for (let reply of replys) {
+    let replyContent = reply.innerText;
+    // 需要替换的文本内容
+    let hitContent = '';
+    // 命中内容
+    let hitKeyword = getTargetKeywordStr(replyContent);
+    if (hitKeyword) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+
+    if (hitContent) {
+      // 给节点标记一个属性
+      $(reply).attr('data-pin-hidden', 1);
+      reply.innerText = hitContent;
+    }
+  }
+}
+
+// 处理回复
+const handleReplys = () => {
+  let replys = [];
+  for (let reply of $('.sub-comment')) {
+    if ($(reply).attr('data-jj-helper-comment-id') && !$(reply).attr('data-pin-hidden')) {
+      replys.push(reply)
+    }
+  }
+  for (let reply of replys) {
+    // 回复的用户
+    let replyUserId = $(reply.querySelector('.user-link')).attr('href').split('/user/')[1];
+    // 回复的内容
+    let replyDom = reply.querySelector('.content-wrapper .content');
+
+    let replyContent = replyDom.innerText;
+    // 需要替换的文本内容
+    let hitContent = '';
+    // 命中用户
+    if (pageInfo.fuzzyPin.info.userIds.includes(replyUserId)) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中掘友ID）`
+    // 命中内容
+    let hitKeyword = getTargetKeywordStr(replyContent);
+    if (hitKeyword) hitContent = `${new Array(replyContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+
+    if (hitContent) {
+      // 给节点标记一个属性
+      $(reply).attr('data-pin-hidden', 1);
+      replyDom.innerText = hitContent;
+    }
+  }
+}
+
+// 处理热评
+const handleHotComments = () => {
+  let comments = [];
+  for (let comment of $('.hot-comment-row .desc')) {
+    if (!$(comment).attr('data-pin-hidden')) {
+      comments.push(comment);
+    }
+  }
+  for (let comment of comments) {
+    // 评论的内容
+    let commentContent = comment.innerText;
+    // 需要替换的文本内容
+    let hitContent = '';
+    // 命中内容
+    let hitKeyword = getTargetKeywordStr(comment.innerText);
+    if (hitKeyword) {
+      hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+    }
+    if (hitContent) {
+      // 给节点标记一个属性
+      $(comment).attr('data-pin-hidden', 1);
+      comment.innerText = hitContent;
+    }
+  }
+}
+
+// 处理评论
+const handleComments = () => {
+  let comments = [];
+  for (let comment of $('.comment')) {
+    if ($(comment).attr('data-jj-helper-comment-id') && !$(comment).attr('data-pin-hidden')) {
+      comments.push(comment);
+    }
+  }
+  for (let comment of comments) {
+    // 评论的用户
+    let commentUserId = $(comment.querySelector('.user-link')).attr('href').split('/user/')[1];
+    // 评论的内容
+    let commentDom = comment.querySelector('.comment-main .content');
+    let commentContent = commentDom.innerText;
+    // 需要替换的文本内容
+    let hitContent = '';
+    // 命中用户
+    if (pageInfo.fuzzyPin.info.userIds.includes(commentUserId)) {
+      hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中掘友ID）`
+    }
+    // 命中内容
+    let hitKeyword = getTargetKeywordStr(commentDom.innerText);
+    if (hitKeyword) {
+      hitContent = `${new Array(commentContent.length).fill('*').join('')}（命中关键字：${hitKeyword}）`
+    }
+    if (hitContent) {
+      // 给节点标记一个属性
+      $(comment).attr('data-pin-hidden', 1);
+      commentDom.innerText = hitContent;
+    }
+  }
+}
+
+// 处理沸点
+const handlePins = () => {
+  let pins = [];
+  for (let pin of $('.pin')) {
+    if ($(pin).attr('data-pin-id') && !$(pin).attr('data-pin-hidden')) {
+      pins.push(pin);
+    }
+  }
+  for (let pin of pins) {
+
+    // 取出作者id
+    let authUserId = $(pin).find('.pin-header-row').attr('data-author-id');
+    // 取出沸点内容
+    let contentText = pin.querySelector('.content').innerText;
+
+    let html = ''
+
+    // 隐藏指定用户
+    if (pageInfo.fuzzyPin.info.userIds.includes(authUserId)) {
+      html = `<div class='plugin-pin-shadow'>
+								<span class="plugin-pin-shadow-text">命中掘友ID</span>
+								<span class="plugin-pin-shadow-desc">${authUserId}</span>
+							</div>`
+    }
+    // 隐藏指定内容
+    let hitKeyword = getTargetKeywordStr(contentText);
+    if (hitKeyword) {
+      html = `<div class='plugin-pin-shadow'>
+								<span class="plugin-pin-shadow-text">命中关键字</span>
+								<span class="plugin-pin-shadow-desc">${hitKeyword}</span>
+							</div>`
+    }
+
+    // 如果需要整个屏蔽
+    if (html) {
+      // 给节点标记一个属性
+      $(pin).attr('data-pin-hidden', 1);
+      $(pin).append($(html));
+    }
+  }
+}
+
+// 处理屏蔽沸点
+const handleFuzzyPin = () => {
+  handlePins();
+  handleComments();
+  handleReplys();
+  handleHotComments();
+  handleParentReplys();
+}
+
+/*-------------我的关心------------------*/
+
+// 查找特别关心用户的下标
+const findSpecialUserIndex = (userId) => {
+  return pageInfo.special.users.findIndex(user => user.userId === userId);
+}
+
+// 取消特别关心
+const removeSpecialUser = (user) => {
+  let userIndex = findSpecialUserIndex(user.userId);
+  pageInfo.special.users.splice(userIndex, 1);
+  localStorage.setItem('pluginSpecialAttention', JSON.stringify(pageInfo.special.users));
+}
+
+// 保存特别关心
+const saveSpecialUser = (e) => {
+  let userStr = $(e.currentTarget).attr('data-user-json');
+  let user = JSON.parse(userStr);
+  let userIndex = findSpecialUserIndex(user.userId);
+  if (userIndex !== -1) { // 存在，取关
+    pageInfo.special.users.splice(userIndex, 1);
+    $('.plugin-set-attention').text('关心')
+  } else { // 不存在，前面新增
+    user.addTime = new Date().getTime();
+    pageInfo.special.users.unshift(user);
+    $('.plugin-set-attention').text('已关心')
+  }
+  localStorage.setItem('pluginSpecialAttention', JSON.stringify(pageInfo.special.users));
+}
+
+// 处理特别关心
+const handleSpecialAttention = () => {
+  // 弹出框
+  let popover = $('.popover-content')
+  let button = $(`<span class="popover-button plugin-set-attention" title="特别关心"></span>`);
+  if (popover.html() && popover.html().includes('operate-btn') && !popover.find('.plugin-set-attention').length) {
+    let user = {
+      userId: popover.find('.username').attr('href').split('/user/')[1],
+      userName: popover.find('.username').text().trim(),
+      userAvatar: popover.find('img').attr('src')
+    }
+    let attentionIndex = findSpecialUserIndex(user.userId);
+    button.text(attentionIndex !== -1 ? '已关心' : '关心')
+    button.attr('data-user-json', JSON.stringify(user))
+    popover.find('.operate-btn').append(button);
+  }
+  // 用户首页｜用户控制区
+  let userBlock = $('.user-info-block');
+  if (userBlock.length && !userBlock.find('.plugin-set-attention').length) {
+    let user = {
+      userId: proxy.$url.info.userId,
+      userName: userBlock.find('.user-name').text().trim(),
+      userAvatar: userBlock.find('.avatar').attr('src')
+    }
+    let attentionIndex = findSpecialUserIndex(user.userId);
+    button.text(attentionIndex !== -1 ? '已关心' : '关心')
+    button.attr('data-user-json', JSON.stringify(user));
+    userBlock.find('.introduction .right').append(button)
+  }
+  button.on('click', saveSpecialUser)
+}
+
+// 当页面dom发生变化后的处理函数
+const handleDomChange = () => {
+  unBind();
+  handleSpecialAttention();
+  handleFuzzyPin();
+  handleNickName();
+  bind();
+}
+
+let timeOut = null;
+// 绑定的函数
+const handleDOMNodeInserted = () => {
+  if (timeOut) clearTimeout(timeOut);
+  timeOut = setTimeout(() => {
+    handleDomChange();
+    timeOut = null
+  }, 50)
+}
+
+// 绑定dom变化监听函数
+const bind = () => {
+  $("#juejin").on('DOMNodeInserted', handleDOMNodeInserted);
+
+}
+// 移除dom变化监听函数
+const unBind = () => {
+  $("#juejin").off('DOMNodeInserted', handleDOMNodeInserted);
+}
+
+bind();
+
+onUnmounted(() => {
+  unBind();
+})
+</script>
+<style lang="less">
+.plugin-float {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 110px;
+
+  .plugin-float-button {
+    width: 40px;
+    margin-bottom: 10px;
+    padding: 16px 0;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: 0 4px 4px 0;
+    background-color: var(--juejin-layer-1);
+    color: var(--juejin-font-1);
+
+    &:hover, &.active {
+      color: var(--juejin-brand-1-normal);
+    }
+  }
+}
+
+.plugin-float-popup {
+  z-index: 0;
+  left: -300px;
+  transition: left 0.5s;
+  position: fixed;
+  top: 110px;
+  width: 250px;
+  bottom: 100px;
+  border-radius: 4px;
+  overflow-y: auto;
+  background-color: var(--juejin-layer-1);
+  padding: 10px;
+  box-sizing: border-box;
+
+  &.active {
+    left: 50px;
+  }
+
+  .attention-box {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+
+    .info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+      }
+
+      .name {
+        font-size: 14px;
+        margin-left: 10px;
+        color: var(--juejin-font-1);
+        font-weight: bold;
+
+        .nick {
+          margin-left: 4px;
+          font-size: 12px;
+          color: var(--juejin-font-3);
+        }
+      }
+    }
+
+    .cancel {
+      font-size: 12px;
+      display: none;
+      cursor: pointer;
+      color: var(--juejin-font-3);
+    }
+
+    &:hover {
+      .name {
+        color: var(--el-color-primary);
+      }
+
+      .cancel {
+        display: block;
+        color: var(--el-color-primary);
+      }
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+.pin[data-pin-hidden='1'] {
+  height: 200px;
+  overflow: hidden;
+}
+
+.plugin-pin-shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  text-align: center;
+
+  .plugin-pin-shadow-text {
+    margin-top: 90px;
+    font-size: 26px;
+    color: var(--juejin-font-2);
+  }
+
+  .plugin-pin-shadow-desc {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--juejin-font-3);
+  }
+}
+</style>

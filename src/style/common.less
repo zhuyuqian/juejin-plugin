@@ -291,6 +291,7 @@
 
   .el-input__inner {
     border: none;
+    background-color: transparent;
   }
 
   .el-select__input {
@@ -300,6 +301,10 @@
   &.is-disabled {
     .el-input__wrapper {
       background-color: transparent;
+
+      .el-input__inner {
+        background-color: transparent;
+      }
     }
   }
 }
@@ -311,25 +316,6 @@
 
   &:hover {
     background-color: var(--juejin-brand-fill2-hover);
-  }
-}
-
-.plugin-fixed-left {
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  width: 40px;
-  padding: 16px 0;
-  cursor: pointer;
-  font-size: 12px;
-  text-align: center;
-  box-sizing: border-box;
-  border-radius: 0 4px 4px 0;
-  background-color: var(--juejin-layer-1);
-  color: var(--juejin-font-1);
-
-  &:hover, &.active {
-    color: var(--juejin-brand-1-normal);
   }
 }
 
