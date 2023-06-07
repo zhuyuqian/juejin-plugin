@@ -579,7 +579,11 @@ const getPinInfoByDom = (pinEl) => {
   }
   let images = [];
   for (let imgEl of $pin.find('.pin-img')) {
-    images.push($(imgEl).find('.image').attr('src'))
+    let src = $(imgEl).find('.image').attr('src');
+    // 裁剪：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-zoom-mark-crop-v2:460:460:0:0.awebp
+    // 原图：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-watermark.awebp
+    src = src.replace('-zoom-mark-crop-v2:460:460:0:0', '-watermark')
+    images.push(src)
   }
   return {id, content, user, club, images};
 }
