@@ -40,17 +40,6 @@
       </el-form-item>
     </el-form>
   </div>
-  <div class="plugin-float-popup" :class="{active:pageInfo.nick.show}">
-    <el-form label-position="top">
-      <el-form-item label="用户Id">
-        <el-input v-model="pageInfo.nick.currentUserId" placeholder="请输入用户id" disabled/>
-      </el-form-item>
-      <el-form-item label="配置昵称">
-        <el-input v-model="pageInfo.nick.nameMap[pageInfo.nick.currentUserId]" placeholder="请输入备注名称"
-                  @blur="saveNickName"/>
-      </el-form-item>
-    </el-form>
-  </div>
   <div class="plugin-float-popup" :class="{active:pageInfo.collectPin.show}">
     <div class="collect-pins-warp">
       <a class="collect-pins-box" target="_blank" v-for="pin of pageInfo.collectPin.pins" :key="pin.id"
@@ -63,23 +52,44 @@
       </a>
     </div>
   </div>
-  <div class="plugin-float-popup" :class="{active:pageInfo.checkPoster.show}" v-loading="pageInfo.checkPoster.loading">
-    <div class="plugin-check-poster" v-if="pageInfo.checkPoster.info && !pageInfo.checkPoster.base64"
-         ref="pluginPoster">
-      <img :src="pageInfo.checkPoster.info.user.avatar" class="plugin-avatar" alt="img"/>
-      <div class="plugin-user-name">{{ pageInfo.checkPoster.info.user.name }}</div>
-      <div class="plugin-content" v-html="pageInfo.checkPoster.info.content"></div>
-      <div class="plugin-images">
-        <img class="plugin-image" v-for="image of pageInfo.checkPoster.info.images" :src="image" alt="img"/>
+  <el-dialog title="昵称修改" v-model="pageInfo.nick.show" width="450px" :close-on-press-escape="false"
+             :close-on-click-modal="false" :show-close="false">
+    <el-form label-position="top">
+      <el-form-item label="用户Id">
+        <el-input v-model="pageInfo.nick.currentUserId" placeholder="请输入用户id" disabled/>
+      </el-form-item>
+      <el-form-item label="配置昵称">
+        <el-input v-model="pageInfo.nick.nameMap[pageInfo.nick.currentUserId]" placeholder="请输入备注名称"/>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button type="primary" @click="saveNickName">保存</el-button>
+      <el-button @click="pageInfo.nick.show=false">关闭</el-button>
+    </template>
+  </el-dialog>
+  <el-dialog title="分享图" v-model="pageInfo.checkPoster.show" width="450px" :close-on-press-escape="false"
+             :close-on-click-modal="false" :show-close="false">
+    <div v-loading="pageInfo.checkPoster.loading">
+      <div class="plugin-check-poster" v-if="pageInfo.checkPoster.info && !pageInfo.checkPoster.base64"
+           ref="pluginPoster">
+        <img :src="pageInfo.checkPoster.info.user.avatar" class="plugin-avatar" alt="img"/>
+        <div class="plugin-user-name">{{ pageInfo.checkPoster.info.user.name }}</div>
+        <div class="plugin-content" v-html="pageInfo.checkPoster.info.content"></div>
+        <div class="plugin-images">
+          <img class="plugin-image" v-for="image of pageInfo.checkPoster.info.images" :src="image" alt="img"/>
+        </div>
+        <div class="plugin-club">
+          <span>{{ pageInfo.checkPoster.info.club.name }}</span>
+        </div>
+        <vue-qr class="plugin-qr-code" :logoSrc="pageInfo.checkPoster.info.user.avatar"
+                :text="`https://juejin.cn/pin/${pageInfo.checkPoster.info.id}`" :size="80" :margin="5" alt="img"/>
       </div>
-      <div class="plugin-club">
-        <span>{{ pageInfo.checkPoster.info.club.name }}</span>
-      </div>
-      <vue-qr class="plugin-qr-code" :logoSrc="pageInfo.checkPoster.info.user.avatar"
-              :text="`https://juejin.cn/pin/${pageInfo.checkPoster.info.id}`" :size="60" :margin="5" alt="img"/>
+      <img style="width: 100%" v-if="pageInfo.checkPoster.base64" :src="pageInfo.checkPoster.base64" alt="img"/>
     </div>
-    <img v-if="pageInfo.checkPoster.base64" :src="pageInfo.checkPoster.base64" alt="img"/>
-  </div>
+    <template #footer>
+      <el-button :disabled="pageInfo.checkPoster.loading" @click="pageInfo.checkPoster.show=false">关闭</el-button>
+    </template>
+  </el-dialog>
 </template>
 <script setup>
 import {ref, reactive, onUnmounted, getCurrentInstance, nextTick} from 'vue';
@@ -492,7 +502,7 @@ const changeImageBase = async () => {
   }
 
   nextTick(() => {
-    html2canvas(pluginPoster.value).then(canvas => {
+    html2canvas(pluginPoster.value, {scale: 2, dpi: 300}).then(canvas => {
       pageInfo.checkPoster.base64 = canvas.toDataURL('image/jpeg', 1.0).toString();
       pageInfo.checkPoster.info = null;
       pageInfo.checkPoster.loading = false;
@@ -507,9 +517,9 @@ const createCheckPoster = (type, info) => {
   pageInfo.checkPoster.base64 = null
   pageInfo.checkPoster.info = info;
   pageInfo.checkPoster.type = type;
-  nextTick(() => {
+  setTimeout(() => {
     changeImageBase();
-  })
+  }, 500)
 }
 
 const handleCheckPoster = () => {
@@ -869,7 +879,7 @@ onUnmounted(() => {
 
   .plugin-qr-code {
     display: block !important;
-    margin: 20px auto 0;
+    margin: 30px auto 0;
   }
 }
 </style>
