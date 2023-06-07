@@ -463,34 +463,31 @@ const handleCollectButtonClick = (pinEl) => {
   handleDomChange()
 }
 
-const insertCollectPinButton = () => {
+const handleCollectPin = () => {
   for (let pin of $('.pin')) {
-    if (!$(pin).attr('data-pin-id')) continue
-    $(pin).find('.action-box .action').css('flex', 1);
+    let $pin = $(pin);
+    if (!$pin.attr('data-pin-id')) continue
+    // 增加关注按钮
     let button = null;
-    if (!($(pin).find('.plugin-collect-button').length)) {
-      button = $('<div class="plugin-collect-button"></div>');
-      button.click(() => {
-        handleCollectButtonClick(pin)
-      })
-      $(pin).find('.action-box').append(button)
+    if (!($pin.find('.plugin-collect-button').length)) {
+      button = $('<li class="plugin-collect-button"></li>');
+      button.click(() => handleCollectButtonClick(pin))
+      $(pin).find('.dislike-menu ul').prepend(button)
     } else {
-      button = $(pin).find('.plugin-collect-button')
+      button = $pin.find('.plugin-collect-button')
     }
-    let pinId = $(pin).attr('data-pin-id');
+    let pinId = $pin.attr('data-pin-id');
     let hasIndex = findCollectPinIndex(pinId);
     if (hasIndex === -1) {
-      button.attr('plugin-is-collect', 0);
       button.text('收藏');
     } else {
-      button.attr('plugin-is-collect', 1)
-      button.text('已收藏');
+      button.text('取消收藏');
+    }
+    // 增加快捷进入详情页
+    if (!$pin.find('.plugin-pin-fast-jump-detail').length) {
+      $(pin).find('.dislike-menu ul').prepend($(`<a class="plugin-pin-fast-jump-detail" href="https://juejin.cn/pin/${pinId}" target="_blank">沸点详情</a>`))
     }
   }
-}
-
-const handleCollectPin = () => {
-  insertCollectPinButton();
 }
 
 /*-------------生成海报------------------*/
@@ -628,7 +625,7 @@ onUnmounted(() => {
 <style lang="less">
 .plugin-float {
   position: fixed;
-  z-index: 10;
+  z-index: 1000;
   left: 0;
   top: 110px;
 
@@ -651,7 +648,7 @@ onUnmounted(() => {
 }
 
 .plugin-float-popup {
-  z-index: 0;
+  z-index: 999;
   left: -300px;
   transition: left 0.5s;
   position: fixed;
@@ -663,6 +660,7 @@ onUnmounted(() => {
   background-color: var(--juejin-layer-1);
   padding: 10px;
   box-sizing: border-box;
+  border: 1px solid var(--juejin-layer-3-border);
 
   &.active {
     left: 50px;
@@ -756,16 +754,22 @@ onUnmounted(() => {
   }
 }
 
-.plugin-collect-button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  cursor: pointer;
+.dislike-list {
+  max-height: none !important;
+}
 
-  &:hover, &[plugin-is-collect="1"] {
-    color: var(--el-color-primary);
+.plugin-collect-button, .plugin-pin-fast-jump-detail {
+  display: block;
+  cursor: pointer;
+  height: 34px;
+  line-height: 34px;
+  text-indent: 36px;
+  color: var(--juejin-font-1);
+  font-size: 14px;
+
+  &:hover {
+    color: var(--juejin-font-1);
+    background-color: var(--juejin-component-hover);
   }
 }
 
