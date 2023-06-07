@@ -63,11 +63,31 @@
       </a>
     </div>
   </div>
+  <div class="plugin-float-popup" :class="{active:pageInfo.checkPoster.show}" v-loading="pageInfo.checkPoster.loading">
+    <div class="plugin-check-poster" v-if="pageInfo.checkPoster.info && !pageInfo.checkPoster.base64"
+         ref="pluginPoster">
+      <img :src="pageInfo.checkPoster.info.user.avatar" class="plugin-avatar" alt="img"/>
+      <div class="plugin-user-name">{{ pageInfo.checkPoster.info.user.name }}</div>
+      <div class="plugin-content" v-html="pageInfo.checkPoster.info.content"></div>
+      <div class="plugin-images">
+        <img class="plugin-image" v-for="image of pageInfo.checkPoster.info.images" :src="image" alt="img"/>
+      </div>
+      <div class="plugin-club">
+        <span>{{ pageInfo.checkPoster.info.club.name }}</span>
+      </div>
+      <vue-qr class="plugin-qr-code" :logoSrc="pageInfo.checkPoster.info.user.avatar"
+              :text="`https://juejin.cn/pin/${pageInfo.checkPoster.info.id}`" :size="60" :margin="5" alt="img"/>
+    </div>
+    <img v-if="pageInfo.checkPoster.base64" :src="pageInfo.checkPoster.base64" alt="img"/>
+  </div>
 </template>
 <script setup>
-import {reactive, onUnmounted, getCurrentInstance} from 'vue';
+import {ref, reactive, onUnmounted, getCurrentInstance, nextTick} from 'vue';
+import vueQr from 'vue-qr/src/packages/vue-qr.vue';
+import html2canvas from 'html2canvas';
 
 let {proxy} = getCurrentInstance();
+const pluginPoster = ref(null);
 // 页面数据
 const pageInfo = reactive({
   special: {
@@ -89,6 +109,13 @@ const pageInfo = reactive({
   collectPin: {
     show: false,
     pins: JSON.parse(localStorage.getItem('pluginCollectPins') || '[]'),
+  },
+  checkPoster: {
+    show: false,
+    type: null,
+    base64: null,
+    info: null,
+    loading: false
   }
 })
 
@@ -414,23 +441,11 @@ const findCollectPinIndex = (pinId) => {
   return pageInfo.collectPin.pins.findIndex(pin => pin.id === pinId);
 }
 
-const handleCollectButtonClick = (pin) => {
-  let id = $(pin).attr('data-pin-id');
-  let content = $(pin).find('.content').html();
-  let club = $(pin).find('.club').length ? {
-    id: $(pin).find('.club').attr('href').split('/')[3],
-    name: $(pin).find('.club span').text().trim()
-  } : {id: null, name: null};
-  let user = {id: $(pin).find('.username').attr('href').split('/')[2], name: $(pin).find('.username').text().trim()};
-  let hasIndex = findCollectPinIndex(id);
+const handleCollectButtonClick = (pinEl) => {
+  let pin = getPinInfoByDom(pinEl)
+  let hasIndex = findCollectPinIndex(pin.id);
   if (hasIndex === -1) {
-    pageInfo.collectPin.pins.unshift({
-      addTime: new Date().getTime(),
-      id,
-      content,
-      club,
-      user
-    })
+    pageInfo.collectPin.pins.unshift(Object.assign({addTime: new Date().getTime()}, pin))
   } else {
     pageInfo.collectPin.pins.splice(hasIndex, 1);
   }
@@ -468,7 +483,96 @@ const handleCollectPin = () => {
   insertCollectPinButton();
 }
 
+/*-------------生成海报------------------*/
+const changeImageBase = async () => {
+  for (let imgEl of $(pluginPoster.value).find('img')) {
+    let src = $(imgEl).attr('src');
+    let newSrc = await loadImage(src);
+    $(imgEl).attr('src', newSrc)
+  }
+
+  nextTick(() => {
+    html2canvas(pluginPoster.value).then(canvas => {
+      pageInfo.checkPoster.base64 = canvas.toDataURL('image/jpeg', 1.0).toString();
+      pageInfo.checkPoster.info = null;
+      pageInfo.checkPoster.loading = false;
+    })
+  })
+}
+
+// 生成海报
+const createCheckPoster = (type, info) => {
+  pageInfo.checkPoster.show = true;
+  pageInfo.checkPoster.loading = true;
+  pageInfo.checkPoster.base64 = null
+  pageInfo.checkPoster.info = info;
+  pageInfo.checkPoster.type = type;
+  nextTick(() => {
+    changeImageBase();
+  })
+}
+
+const handleCheckPoster = () => {
+  // 获取分享弹出层
+  let sharePanel = $('.share-panel');
+  // 如果没有就跳过
+  if (!sharePanel.length) return;
+  // 生成点击按钮
+  let button = $('<div class="plugin-check-poster-button">生成海报</div>');
+  // 追加到子集第一个
+  sharePanel.prepend(button);
+  // 增加点击事件
+  button.click(() => {
+    let pin = getPinInfoByDom(sharePanel.closest('.pin')[0])
+    createCheckPoster(1, pin);
+  })
+}
+
 /*-------------------------*/
+
+const loadImage = (src) => {
+  const getImage = (image) => {
+    let canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    let context = canvas.getContext('2d');
+    context.drawImage(image, 0, 0, image.width, image.height);
+    let quality = 0.8;
+    // 这里的dataurl就是base64类型
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  return new Promise(res => {
+    let image = new Image();
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = src;
+    image.onload = () => {
+      res(getImage(image))
+    }
+  })
+}
+
+// 从沸点节点里面获取沸点信息
+const getPinInfoByDom = (pinEl) => {
+  let $pin = $(pinEl);
+  let id = $pin.attr('data-pin-id');
+  let content = $pin.find('.content').html();
+  let user = {
+    id: $pin.find('.user-link').attr('href').split('/')[2],
+    name: $pin.find('.username').text().trim(),
+    avatar: $pin.find('.avatar').attr('src')
+  }
+  let club = {id: null, name: ''};
+  if ($pin.find('.club').length) {
+    club.id = $pin.find('.club').attr('href').split('/')[3]
+    club.name = $pin.find('.club span').text().trim()
+  }
+  let images = [];
+  for (let imgEl of $pin.find('.pin-img')) {
+    images.push($(imgEl).find('.image').attr('src'))
+  }
+  return {id, content, user, club, images};
+}
 
 // 当页面dom发生变化后的处理函数
 const handleDomChange = () => {
@@ -477,6 +581,7 @@ const handleDomChange = () => {
   handleFuzzyPin();
   handleNickName();
   handleCollectPin();
+  handleCheckPoster();
   bind();
 }
 
@@ -676,6 +781,95 @@ onUnmounted(() => {
         color: var(--el-color-primary)
       }
     }
+  }
+}
+
+.plugin-check-poster-button {
+  font-size: 14px;
+  padding: 8px 0;
+  text-align: center;
+  cursor: pointer;
+  color: var(--juejin-font-2);
+  border-bottom: 1px solid var(--juejin-layer-3-border);
+
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
+
+.plugin-check-poster {
+  padding: 20px;
+  position: relative;
+  background-color: var(--juejin-layer-1);
+
+  &:before {
+    position: absolute;
+    content: '';
+    left: 10px;
+    right: 10px;
+    bottom: 108px;
+    top: 40px;
+    border: 1px solid var(--juejin-layer-3-border);
+    border-radius: 4px;
+    z-index: 0;
+  }
+
+  .plugin-avatar {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+
+  .plugin-user-name {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--juejin-font-2);
+    font-weight: bold;
+  }
+
+  .plugin-content {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 26px;
+    color: var(--juejin-font-1);
+
+    img {
+      width: 15px;
+      display: inline-block;
+    }
+  }
+
+  .plugin-images {
+    margin-top: 10px;
+    font-size: 0;
+
+    .plugin-image {
+      width: 100%;
+    }
+  }
+
+  .plugin-club {
+    margin-top: 10px;
+    text-align: center;
+
+    span {
+      position: relative;
+      z-index: 1;
+      padding: 0 10px;
+      background-color: var(--juejin-layer-1);
+      font-size: 12px;
+      color: var(--juejin-font-3);
+    }
+  }
+
+  .plugin-qr-code {
+    display: block !important;
+    margin: 20px auto 0;
   }
 }
 </style>
