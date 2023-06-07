@@ -578,8 +578,10 @@ const getPinInfoByDom = (pinEl) => {
   for (let imgEl of $pin.find('.pin-img')) {
     let src = $(imgEl).find('.image').attr('src');
     // 裁剪：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-zoom-mark-crop-v2:460:460:0:0.awebp
+    //      https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b578cca130f4d2285e7b76c74c0c722~tplv-k3u1fbpfcp-zoom-mark-crop-v2:240:240:0:0.awebp?
     // 原图：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-watermark.awebp
-    src = src.replace('-zoom-mark-crop-v2:460:460:0:0', '-watermark')
+            src = src.replace('-zoom-mark-crop-v2:460:460:0:0', '-watermark')
+                      .replace('-zoom-mark-crop-v2:240:240:0:0', '-watermark');
     images.push(src)
   }
   return {id, content, user, club, images};
