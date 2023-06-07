@@ -79,7 +79,7 @@
           <img class="plugin-image" v-for="image of pageInfo.checkPoster.info.images" :src="image" alt="img"/>
         </div>
         <div class="plugin-club">
-          <span>{{ pageInfo.checkPoster.info.club.name }}</span>
+          <span>{{ pageInfo.checkPoster.info.club.name || '/' }}</span>
         </div>
         <vue-qr class="plugin-qr-code" :logoSrc="pageInfo.checkPoster.info.user.avatar"
                 :text="`https://juejin.cn/pin/${pageInfo.checkPoster.info.id}`" :size="80" :margin="5" alt="img"/>
@@ -808,7 +808,7 @@ onUnmounted(() => {
 }
 
 .plugin-check-poster {
-  padding: 20px;
+  padding: 10px 20px 20px 20px;
   position: relative;
   background-color: var(--juejin-layer-1);
 
@@ -817,7 +817,7 @@ onUnmounted(() => {
     content: '';
     left: 10px;
     right: 10px;
-    bottom: 108px;
+    bottom: 138px;
     top: 40px;
     border: 1px solid var(--juejin-layer-3-border);
     border-radius: 4px;
@@ -828,14 +828,15 @@ onUnmounted(() => {
     position: relative;
     z-index: 1;
     display: block;
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     margin: 0 auto;
+    border: 10px solid var(--juejin-layer-1);
+    box-sizing: border-box;
   }
 
   .plugin-user-name {
-    margin-top: 10px;
     text-align: center;
     font-size: 13px;
     color: var(--juejin-font-2);
@@ -880,6 +881,7 @@ onUnmounted(() => {
   .plugin-qr-code {
     display: block !important;
     margin: 30px auto 0;
+    border-radius: 4px;
   }
 }
 </style>
