@@ -7,6 +7,7 @@ import LotteryAllIn from "./component/LotteryAllIn.vue";
 import ChangeTheme from "./component/ChangeTheme.vue";
 import CommonFloat from "./component/CommonFloat.vue";
 import RandomPin from "./component/RandomPin.vue";
+import LikePins from './component/LikePins.vue';
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -34,7 +35,7 @@ const insertPlugin = (app) => {
 const initUrlInfo = async () => {
     self = await ajax(EVENT_MAP.GET_SELF_INFO);
     url.url = window.location.origin + window.location.pathname;
-    url.methods = ["COMMON_FLOAT"];
+    url.methods = ["COMMON_FLOAT", "LIKE_PINS"];
     let urlArr = url.url.split("/");
     // 个人主页
     if (urlArr[3] === 'user') {
@@ -129,6 +130,20 @@ const METHOD_MAP = {
                 this.app = createApp(CommonFloat);
                 insertPlugin(this.app)
                 this.app.mount("#COMMON_FLOAT");
+            }
+        },
+        remove() {
+        }
+    },
+    // 点赞沸点列表
+    LIKE_PINS: {
+        target: () => document.querySelector("#juejin"),
+        insert() {
+            if (!this.app) {
+                $(`<div id="LINK_PINS"><div>`).insertAfter(this.target());
+                this.app = createApp(LikePins);
+                insertPlugin(this.app)
+                this.app.mount("#LINK_PINS");
             }
         },
         remove() {

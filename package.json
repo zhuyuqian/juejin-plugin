@@ -17,6 +17,8 @@
     "git-cz": "^4.9.0",
     "html2canvas": "^1.4.1",
     "js-base64": "^3.7.5",
+    "nodejieba": "^2.6.0",
+    "segment": "^0.1.3",
     "vue": "^3.2.31",
     "vue-canvas-poster": "^1.2.1",
     "vue-qr": "^4.0.9"

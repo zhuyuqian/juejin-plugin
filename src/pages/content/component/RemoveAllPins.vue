@@ -3,7 +3,7 @@
   <el-button class="remove-all-pins" type="primary" @click="openListVisible">
     我的全部沸点
   </el-button>
-  <el-dialog v-model="listVisible" title="我发布的沸点" width="50%" class="plugin-dialog"
+  <el-dialog v-model="listVisible" :title="`我发布的沸点(${pins.length})`" width="50%" class="plugin-dialog"
              :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false">
     <el-table :data="pins" border style="width: 100%" size="small" height="50vh" v-loading="loading"
               @selection-change="selectRemovePins">
@@ -21,7 +21,11 @@
           </el-icon>
         </template>
       </el-table-column>
-      <el-table-column label="内容" prop="msg_Info.content" align="center" show-overflow-tooltip/>
+      <el-table-column label="内容" prop="msg_Info.content" align="center" show-overflow-tooltip>
+        <template #default="scope">
+          <a :href="`https://juejin.cn/pin/${scope.row.msg_id}`" target="_blank">{{ scope.row.msg_Info.content }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="评论数" prop="msg_Info.comment_count" width="80" align="center" sortable/>
       <el-table-column label="点赞数" prop="msg_Info.digg_count" width="80" align="center" sortable/>
       <el-table-column label="发布时间" prop="msg_Info.ctime" width="160" align="center" sortable>
@@ -56,6 +60,7 @@ let removePins = ref([]);
 let loading = ref(true);
 let removing = ref(false);
 let listVisible = ref(false)
+
 
 // 点击删除
 const removePin = async () => {
