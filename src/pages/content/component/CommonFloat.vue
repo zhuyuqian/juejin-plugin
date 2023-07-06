@@ -95,6 +95,8 @@
 import {ref, reactive, onUnmounted, getCurrentInstance, nextTick} from 'vue';
 import vueQr from 'vue-qr/src/packages/vue-qr.vue';
 import html2canvas from 'html2canvas';
+import {ajax, EVENT_MAP} from "@/pages/content/api";
+import {openLink} from "@/tool";
 
 let {proxy} = getCurrentInstance();
 const pluginPoster = ref(null);
@@ -485,7 +487,21 @@ const handleCollectPin = () => {
     }
     // 增加快捷进入详情页
     if (!$pin.find('.plugin-pin-fast-jump-detail').length) {
-      $(pin).find('.dislike-menu ul').prepend($(`<a class="plugin-pin-fast-jump-detail" href="https://juejin.cn/pin/${pinId}" target="_blank">沸点详情</a>`))
+      $(pin).find('.dislike-menu ul').prepend($(`<a class="plugin-pin-fast-jump-detail" href="https://juejin.cn/pin/${pinId}" target="_blank">详情</a>`))
+    }
+    // 增加快捷复制沸点发送的功能
+    if (!$pin.find('.plugin-pin-fast-copy-push').length) {
+      let copyButton = $(`<span class="plugin-pin-fast-copy-push">复制</span>`);
+      copyButton.click(async () => {
+        if (confirm("你确定要复制并发送该沸点么？")) {
+          let newPinInfo = await ajax(EVENT_MAP.COPY_PIN_PUSH, pinId);
+          if (newPinInfo) {
+            openLink(`https://juejin.cn/pin/${newPinInfo.msg_id}`)
+          }
+          console.log(newPinInfo)
+        }
+      })
+      $(pin).find('.dislike-menu ul').prepend(copyButton)
     }
   }
 }
@@ -580,8 +596,8 @@ const getPinInfoByDom = (pinEl) => {
     // 裁剪：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-zoom-mark-crop-v2:460:460:0:0.awebp
     //      https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b578cca130f4d2285e7b76c74c0c722~tplv-k3u1fbpfcp-zoom-mark-crop-v2:240:240:0:0.awebp?
     // 原图：https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e9f50bc9b0e47ef89a129195d6ae391~tplv-k3u1fbpfcp-watermark.awebp
-            src = src.replace('-zoom-mark-crop-v2:460:460:0:0', '-watermark')
-                      .replace('-zoom-mark-crop-v2:240:240:0:0', '-watermark');
+    src = src.replace('-zoom-mark-crop-v2:460:460:0:0', '-watermark')
+        .replace('-zoom-mark-crop-v2:240:240:0:0', '-watermark');
     images.push(src)
   }
   return {id, content, user, club, images};
@@ -760,7 +776,7 @@ onUnmounted(() => {
   max-height: none !important;
 }
 
-.plugin-collect-button, .plugin-pin-fast-jump-detail {
+.plugin-collect-button, .plugin-pin-fast-jump-detail, .plugin-pin-fast-copy-push {
   display: block;
   cursor: pointer;
   height: 34px;

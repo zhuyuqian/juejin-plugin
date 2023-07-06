@@ -95,4 +95,15 @@ export const getRandInt = (min, max, type) => {
 	}
 }
 
+export const openLink = (link, target = '_black') => {
+	let a = document.createElement("a");
+	a.style.display = 'none'
+	if (target == '_black') target += ('_' + new Date().getTime());
+	a.target = target;
+	a.href = link;
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+}
+
 

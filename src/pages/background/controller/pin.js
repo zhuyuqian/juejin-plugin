@@ -1,5 +1,5 @@
 // 沸点相关
-import {getShortMsgList, removeShortMsg} from "../api/content";
+import {getShortMsgDetail, getShortMsgList, publishShortMsg, removeShortMsg} from "../api/content";
 import {queryTopicDetail} from "../api/tag";
 import {getTopicShortMsgList} from "../api/recommend";
 import {getStorage, setStorage} from "../chrome";
@@ -174,4 +174,26 @@ export const getRandomText = async (clubName) => {
     }
     return {success: true, data: resStr, err_msg: ''};
 
+}
+
+/*
+* 复制并发布沸点
+* */
+export const copyPinPush = async (pinId) => {
+    let {success, data} = await getShortMsgDetail(pinId);
+    if (!success) return null;
+    let pushInfo = {
+        sync_to_org: false,
+        content: data.msg_Info.content,
+        pic_list: data.msg_Info.pic_list,
+        topic_id: data.msg_Info.topic_id,
+        theme_id: data.msg_Info.theme_id,
+        jcode_id: data.msg_Info.jcode_id,
+        url: data.msg_Info.url,
+        url_pic: data.msg_Info.url_pic,
+        url_title: data.msg_Info.url_title,
+    };
+    let publishRes = await publishShortMsg(pushInfo);
+    if (!publishRes.success) return null;
+    return publishRes.data;
 }
