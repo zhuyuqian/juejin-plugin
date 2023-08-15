@@ -583,7 +583,7 @@ const getPinInfoByDom = (pinEl) => {
   let user = {
     id: $pin.find('.user-link').attr('href').split('/')[2],
     name: $pin.find('.username').text().trim(),
-    avatar: $pin.find('.avatar').attr('src')
+    avatar: $pin.find('.avatar-img').attr('src')
   }
   let club = {id: null, name: ''};
   if ($pin.find('.club').length) {
