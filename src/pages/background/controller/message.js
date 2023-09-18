@@ -1,6 +1,6 @@
 // 消息相关
 
-import {getSelfStorage, getYearDynamic} from "./user";
+import {getSelfStorage, getYearDynamic, getSelfTaskInfo} from "./user";
 import {
     getPinClubInfo,
     getUserPins,
@@ -24,6 +24,7 @@ const eventHandleMap = {
     'get-year-dynamic': (data) => getYearDynamic(data), // 获取年度动态
     'get-random-text': (data) => getRandomText(data), // 获取随机文本
     'copy-pin-push': (data) => copyPinPush(data), // 复制并发布沸点
+    'get-self-task-info': () => getSelfTaskInfo(), // 获取个人任务信息
 }
 
 const handleOnMessage = async (event, data, callback) => {

@@ -8,6 +8,7 @@ import ChangeTheme from "./component/ChangeTheme.vue";
 import CommonFloat from "./component/CommonFloat.vue";
 import RandomPin from "./component/RandomPin.vue";
 import LikePins from './component/LikePins.vue';
+import TaskList from './component/TaskList.vue';
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -35,7 +36,7 @@ const insertPlugin = (app) => {
 const initUrlInfo = async () => {
     self = await ajax(EVENT_MAP.GET_SELF_INFO);
     url.url = window.location.origin + window.location.pathname;
-    url.methods = ["COMMON_FLOAT", "LIKE_PINS"];
+    url.methods = ["COMMON_FLOAT", "LIKE_PINS", 'TASK_LIST'];
     let urlArr = url.url.split("/");
     // 个人主页
     if (urlArr[3] === 'user') {
@@ -233,4 +234,18 @@ const METHOD_MAP = {
             $(`#USER_YEAR_DYNAMIC`).remove();
         }
     },
+    // 任务列表
+    TASK_LIST: {
+        target: () => document.querySelector("#juejin"),
+        insert() {
+            if (!this.app) {
+                $(`<div id="TASK_LIST"><div>`).insertAfter(this.target());
+                this.app = createApp(TaskList);
+                insertPlugin(this.app)
+                this.app.mount("#TASK_LIST");
+            }
+        },
+        remove() {
+        }
+    }
 };

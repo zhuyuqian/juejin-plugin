@@ -11,5 +11,6 @@ export const EVENT_MAP = {
     CANCEL_ZAN_PIN: 'cancel-zan-pin',
     GET_YEAR_DYNAMIC: 'get-year-dynamic',
     GET_RANDOM_TEXT: 'get-random-text',
-    COPY_PIN_PUSH: 'copy-pin-push'
+    COPY_PIN_PUSH: 'copy-pin-push',
+    GET_SELF_TASK_INFO: 'get-self-task-info'
 }
