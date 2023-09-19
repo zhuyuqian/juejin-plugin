@@ -222,6 +222,5 @@ export const getSelfTaskInfo = async () => {
     r.currentLevelSpec = res.data.level_spec.find(item => item.min_score <= res.data.current_score && item.max_score >= res.data.current_score);
     r.currentPercent = (r.currentScore / r.currentLevelSpec.max_score) * 100 + '%';
     r.levelOrigin = res.data;
-    console.log(r)
     return r;
 }
