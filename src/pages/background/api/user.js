@@ -95,3 +95,15 @@ export const getTaskList = (userId, growthType = 1) => ajax({
     data: {growth_type: growthType},
     isInclude: true,
 })
+
+/*
+* 获取当前成长进度
+* @param userId 用户id
+* @param growthType 类型
+* */
+export const getProgress = (userId, growthType = 1) => ajax({
+    url: `https://api.juejin.cn/growth_api/v1/user_growth/progress?uuid=${userId}`,
+    method: 'POST',
+    data: {growth_type: growthType},
+    isInclude: true,
+})
