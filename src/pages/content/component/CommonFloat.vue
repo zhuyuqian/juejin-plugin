@@ -159,7 +159,11 @@ const handleInsertNickName = () => {
       nick = $('<span class="plugin-nick"></span>');
       nick.insertBefore($(username));
     }
-    nick.text(pageInfo.nick.nameMap[userId] || '');
+    let nickName = pageInfo.nick.nameMap[userId] || '';
+    nick.text(nickName);
+    if (!nickName) {
+      nick.remove();
+    }
   }
   // 用户首页
   let homeUser = $('.user-info-block');
