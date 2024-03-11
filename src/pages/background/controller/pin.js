@@ -129,6 +129,43 @@ export const getRandomText = async (clubName) => {
             if (jokeInfo && jokeInfo.list.length) {
                 resStr += `${jokeInfo.list[getRandInt(0, jokeInfo.list.length - 1)].content}`;
             }
+        } else if (clubName.includes('上班摸鱼')) {
+            const holidayList = [
+                {'date': '2024-1-1', 'name': '元旦'},
+                {'date': '2024-2-09', 'name': '除夕'},
+                {'date': '2024-2-10', 'name': '春节'},
+                {'date': '2024-4-5', 'name': '清明节'},
+                {'date': '2024-5-1', 'name': '劳动节'},
+                {'date': '2024-6-10', 'name': '端午节'},
+                {'date': '2024-9-17', 'name': '中秋节'},
+                {'date': '2024-10-01', 'name': '国庆节'}
+            ]
+            const moYuTextList = [
+                '偶尔摸鱼有害健康，常常摸鱼收获满满。',
+                '人生就是浑水，你不去趟，怎么能摸鱼呢？',
+                '上班摸鱼就是要发扬死猪不怕开水烫的精神！',
+                '“懒”是我养的宠物，再忙都要花点时间摸摸才行！',
+                '有一条深海鱼在往深处游，游着游着它就哭了，因为它觉得压力好大。',
+                '人类的终极目标是闲情逸致，而不是工作！',
+                '摸鱼也是一种对生活的抵抗。',
+                '也许工作比无所事事，对世界的危害更大！',
+                '感觉有什么东西在扒拉我，以为是爱情的魔爪，没想到是你的鱼钩！',
+                '本来摸鱼的时候，内心还是有点愧疚的，但是你“摸鱼的时候多想想你的工资”从此摸鱼就安心多了！'
+            ]
+            resStr += `【摸鱼办】提醒您：工作再累，一定不要忘记摸鱼哦！\n有事没事起身去茶水间，去厕所，去廊道走走别总在工位上坐着，钱是老板的，但命是自己的。\n`;
+            // 周末
+            let weekend = new Date().getDay() //获取当前星期X(0-6,0代表星期天)
+            if (weekend !== 0 && weekend !== 6) {
+                resStr += `\n距离【周末】还有：${6 - weekend}天`
+            }
+            holidayList.forEach(holiday => {
+                let diff = dayjs(holiday.date).diff(dayjs(), 'day');
+                if (diff > 0) {
+                    resStr += `\n距离【${holiday.name}】还有：${diff + 1}天`
+                }
+            })
+            resStr += '\n' + moYuTextList[getRandInt(0, moYuTextList.length - 1)];
+            resStr += '\n' + '上班是帮老板赚钱，摸鱼是赚老板的钱！最后，祝愿天下所有摸鱼人，都能愉快渡过每一天...';
         } else if (clubName.includes('今日新鲜事')) { // 今日新鲜事
             // 先获取列表
             await sleep(1);
@@ -163,12 +200,12 @@ export const getRandomText = async (clubName) => {
                 resStr += `\n\n${weatherInfo.address}｜${weatherInfo.temp}｜${weatherInfo.weather}｜风向${weatherInfo.windDirection}｜风力${weatherInfo.windPower}｜湿度${weatherInfo.humidity}`
             }
         }
-        // 获取当日万年历
+        // // 获取当日万年历
         // await sleep(1);
-        // let { data: dayInfo } = await fetch(
-        // 	`https://www.mxnzp.com/api/holiday/single/${dayjs().format('YYYYMMDD')}?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json())
+        // let {data: dayInfo} = await fetch(
+        //     `https://www.mxnzp.com/api/holiday/single/${dayjs().format('YYYYMMDD')}?app_id=${appId}&app_secret=${appSecret}`).then(res => res.json())
         // if (dayInfo) {
-        // 	resStr += `\n${dayInfo.date}｜${dayInfo.yearTips}年｜${dayInfo.typeDes}｜农历${dayInfo.lunarCalendar}｜${dayInfo.solarTerms}`;
+        //     resStr = `${dayInfo.date}｜${dayInfo.yearTips}年｜${dayInfo.typeDes}｜农历${dayInfo.lunarCalendar}｜${dayInfo.solarTerms}\n\n${resStr}`;
         // }
     } catch (e) {
     }
